@@ -1,0 +1,6 @@
+.claude/
+*.pptx
+*.docx
+supabase.txt
+node_modules/
+.vercel/

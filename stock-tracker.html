@@ -1,0 +1,2901 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>Asset Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f0f2f5;
+        --card: #ffffff;
+        --card-hover: #f8f9fb;
+        --text: #1a1a2e;
+        --text-secondary: #6b7280;
+        --text-tertiary: #9ca3af;
+        --border: #e5e7eb;
+        --accent: #4f46e5;
+        --accent-light: #818cf8;
+        --accent-bg: rgba(79, 70, 229, 0.08);
+        --green: #10b981;
+        --green-bg: rgba(16, 185, 129, 0.1);
+        --red: #ef4444;
+        --red-bg: rgba(239, 68, 68, 0.1);
+        --yellow: #f59e0b;
+        --radius: 16px;
+        --radius-sm: 12px;
+        --shadow-sm:
+          0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+        --shadow: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+        --shadow-lg:
+          0 8px 30px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+        --nav-bg: #1e1b4b;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          system-ui,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        padding-bottom: 88px;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ─── Top Header ─── */
+      .top-header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(240, 242, 245, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .top-header h1 {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: var(--accent);
+      }
+      .header-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        box-shadow: var(--shadow-sm);
+      }
+      .icon-btn:active {
+        transform: scale(0.95);
+        background: var(--card-hover);
+      }
+      .icon-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      /* ─── User Chip ─── */
+      .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+        font-family: inherit;
+      }
+      .user-chip:active { transform: scale(0.95); }
+      .user-chip.signed-out {
+        background: var(--accent-bg);
+        color: var(--accent);
+      }
+      .user-chip.signed-in {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .user-chip .chip-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      .user-chip.signed-out .chip-dot { background: var(--accent); }
+      .user-chip.signed-in .chip-dot { background: var(--green); }
+
+      /* ─── Bottom Nav ─── */
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        padding: 0 12px env(safe-area-inset-bottom, 8px);
+        display: flex;
+        justify-content: center;
+      }
+      .bottom-nav-inner {
+        background: var(--nav-bg);
+        border-radius: 20px 20px 0 0;
+        display: flex;
+        justify-content: space-around;
+        padding: 8px 8px 10px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 -4px 30px rgba(30, 27, 75, 0.15);
+      }
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 6px 14px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 10px;
+        font-weight: 500;
+        gap: 4px;
+        transition: all 0.25s;
+        border-radius: 12px;
+        font-family: inherit;
+        min-width: 62px;
+      }
+      .nav-item.active {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .nav-item svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      /* ─── Pages ─── */
+      .page {
+        display: none;
+        padding: 16px 20px;
+        animation: fadeIn 0.3s ease;
+      }
+      .page.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ─── Hero Card (Gradient) ─── */
+      .hero-card {
+        background: linear-gradient(
+          135deg,
+          #4f46e5 0%,
+          #7c3aed 50%,
+          #a78bfa 100%
+        );
+        border-radius: 20px;
+        padding: 24px;
+        color: #fff;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 32px rgba(79, 70, 229, 0.25);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-card::before {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -20%;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+      }
+      .hero-card::after {
+        content: "";
+        position: absolute;
+        bottom: -30%;
+        left: -10%;
+        width: 150px;
+        height: 150px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+      }
+      .hero-card .hero-label {
+        font-size: 13px;
+        font-weight: 500;
+        opacity: 0.8;
+        margin-bottom: 4px;
+        position: relative;
+        z-index: 1;
+      }
+      .hero-card .hero-value {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -1px;
+        position: relative;
+        z-index: 1;
+      }
+      .hero-card .hero-sub {
+        font-size: 14px;
+        font-weight: 600;
+        margin-top: 4px;
+        position: relative;
+        z-index: 1;
+      }
+      .hero-stats {
+        display: flex;
+        gap: 16px;
+        margin-top: 16px;
+        position: relative;
+        z-index: 1;
+      }
+      .hero-stat {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 10px 14px;
+        flex: 1;
+      }
+      .hero-stat .hs-label {
+        font-size: 11px;
+        opacity: 0.7;
+        margin-bottom: 2px;
+      }
+      .hero-stat .hs-value {
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      /* ─── Cards ─── */
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      /* ─── Summary Mini Cards ─── */
+      .mini-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .mini-card {
+        background: var(--card);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        box-shadow: var(--shadow-sm);
+      }
+      .mini-card .mc-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        font-size: 18px;
+      }
+      .mini-card .mc-label {
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+      .mini-card .mc-value {
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .mini-card .mc-sub {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        margin-top: 2px;
+      }
+
+      /* ─── Section Title ─── */
+      .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 14px;
+        letter-spacing: -0.3px;
+      }
+
+      /* ─── Stock List ─── */
+      .stock-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        background: var(--card);
+        border-radius: var(--radius-sm);
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: var(--shadow-sm);
+      }
+      .stock-item:active {
+        transform: scale(0.985);
+        background: var(--card-hover);
+      }
+      .stock-left {
+        flex: 1;
+      }
+      .stock-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: var(--accent-bg);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 13px;
+        color: var(--accent);
+        margin-right: 12px;
+        flex-shrink: 0;
+      }
+      .stock-item-inner {
+        display: flex;
+        align-items: center;
+      }
+      .stock-info {
+        flex: 1;
+      }
+      .stock-ticker {
+        font-weight: 700;
+        font-size: 15px;
+        color: var(--text);
+      }
+      .stock-name {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-top: 1px;
+      }
+      .stock-right {
+        text-align: right;
+      }
+      .stock-price {
+        font-weight: 700;
+        font-size: 15px;
+        color: var(--text);
+      }
+      .stock-pnl {
+        font-size: 13px;
+        font-weight: 600;
+        margin-top: 2px;
+      }
+      .stock-alloc-bar {
+        width: 100%;
+        height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        margin-top: 6px;
+        overflow: hidden;
+      }
+      .stock-alloc-fill {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 2px;
+        transition: width 0.3s;
+      }
+
+      /* ─── Flow / Dividend List ─── */
+      .list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        background: var(--card);
+        border-radius: var(--radius-sm);
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: var(--shadow-sm);
+      }
+      .list-item:active {
+        transform: scale(0.985);
+      }
+      .list-item .li-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+      }
+      .list-item .li-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      .li-icon-deposit {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .li-icon-withdraw {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .li-icon-dividend {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--yellow);
+      }
+      .list-item .li-info {
+        flex: 1;
+      }
+      .list-item .li-title {
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .list-item .li-sub {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-top: 2px;
+      }
+      .list-item .li-right {
+        text-align: right;
+      }
+      .list-item .li-amount {
+        font-weight: 700;
+        font-size: 15px;
+      }
+      .list-item .li-detail {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        margin-top: 2px;
+      }
+
+      /* ─── FX Summary Row ─── */
+      .fx-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .fx-card {
+        background: var(--card);
+        border-radius: var(--radius-sm);
+        padding: 14px;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+      }
+      .fx-card .fx-label {
+        font-size: 10px;
+        color: var(--text-tertiary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+      }
+      .fx-card .fx-value {
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      /* ─── FAB ─── */
+      .fab {
+        position: fixed;
+        bottom: 92px;
+        right: 20px;
+        z-index: 40;
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-light));
+        border: none;
+        color: #fff;
+        font-size: 28px;
+        font-weight: 300;
+        cursor: pointer;
+        box-shadow: 0 6px 24px rgba(79, 70, 229, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      .fab:active {
+        transform: scale(0.9);
+      }
+
+      /* ─── Modal ─── */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(6px);
+        align-items: flex-end;
+        justify-content: center;
+      }
+      .modal-overlay.show {
+        display: flex;
+      }
+      .modal {
+        background: var(--card);
+        border-radius: 24px 24px 0 0;
+        width: 100%;
+        max-width: 500px;
+        max-height: 88vh;
+        overflow-y: auto;
+        padding: 8px 20px env(safe-area-inset-bottom, 24px);
+        animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(100%);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+      .modal-handle {
+        width: 40px;
+        height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+        margin: 8px auto 16px;
+      }
+      .modal h2 {
+        font-size: 20px;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 20px;
+        letter-spacing: -0.3px;
+      }
+
+      /* ─── Form ─── */
+      .form-group {
+        margin-bottom: 16px;
+        position: relative;
+      }
+      .form-group label {
+        display: block;
+        font-size: 13px;
+        color: var(--text-secondary);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 14px 16px;
+        background: var(--bg);
+        border: 2px solid transparent;
+        border-radius: var(--radius-sm);
+        color: var(--text);
+        font-size: 15px;
+        font-family: inherit;
+        font-weight: 500;
+        outline: none;
+        transition: all 0.2s;
+      }
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: var(--accent);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+      }
+      .form-group input::placeholder {
+        color: var(--text-tertiary);
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+      .btn:active {
+        transform: scale(0.98);
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--accent), var(--accent-light));
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+      }
+      .btn-danger {
+        background: var(--red);
+        color: #fff;
+        margin-top: 10px;
+      }
+      .btn-ghost {
+        background: transparent;
+        color: var(--text-secondary);
+        margin-top: 8px;
+        font-weight: 600;
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--accent);
+        border: 2px solid var(--accent);
+        margin-top: 8px;
+        font-weight: 600;
+      }
+
+      /* ─── Autocomplete ─── */
+      .autocomplete-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 10;
+        background: var(--card);
+        border-radius: 12px;
+        box-shadow: var(--shadow-lg);
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+        margin-top: 4px;
+        border: 1px solid var(--border);
+      }
+      .autocomplete-list.show {
+        display: block;
+      }
+      .ac-item {
+        padding: 10px 14px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background 0.15s;
+        font-size: 14px;
+      }
+      .ac-item:hover,
+      .ac-item.selected {
+        background: var(--accent-bg);
+      }
+      .ac-item:first-child {
+        border-radius: 12px 12px 0 0;
+      }
+      .ac-item:last-child {
+        border-radius: 0 0 12px 12px;
+      }
+      .ac-ticker {
+        font-weight: 700;
+        color: var(--accent);
+      }
+      .ac-name {
+        color: var(--text-secondary);
+        font-size: 12px;
+      }
+
+      /* ─── Chart Container ─── */
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto 12px;
+      }
+
+      /* ─── Tags ─── */
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .tag-positive {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .tag-negative {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+
+      /* ─── Positive / Negative ─── */
+      .positive {
+        color: var(--green);
+      }
+      .negative {
+        color: var(--red);
+      }
+
+      /* ─── Empty State ─── */
+      .empty-state {
+        text-align: center;
+        padding: 48px 24px;
+        color: var(--text-tertiary);
+      }
+      .empty-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        background: var(--accent-bg);
+        margin: 0 auto 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+      }
+      .empty-state p {
+        font-size: 15px;
+        font-weight: 500;
+      }
+      .empty-state .empty-sub {
+        font-size: 13px;
+        margin-top: 4px;
+        color: var(--text-tertiary);
+      }
+
+      /* ─── Toast ─── */
+      .toast {
+        position: fixed;
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--nav-bg);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 14px;
+        font-size: 14px;
+        font-weight: 600;
+        z-index: 200;
+        animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      }
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-12px) scale(0.95);
+        }
+      }
+
+      /* ─── Confirm Dialog ─── */
+      .confirm-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 150;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(6px);
+        align-items: center;
+        justify-content: center;
+      }
+      .confirm-overlay.show {
+        display: flex;
+      }
+      .confirm-box {
+        background: var(--card);
+        border-radius: 20px;
+        padding: 28px 24px;
+        max-width: 320px;
+        width: 90%;
+        text-align: center;
+        box-shadow: var(--shadow-lg);
+      }
+      .confirm-box p {
+        margin-bottom: 24px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      .confirm-actions {
+        display: flex;
+        gap: 10px;
+      }
+      .confirm-actions .btn {
+        flex: 1;
+        padding: 14px;
+      }
+
+      /* ─── API Key Banner ─── */
+      .api-banner {
+        background: var(--accent-bg);
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .api-banner:active {
+        background: rgba(79, 70, 229, 0.14);
+      }
+      .api-banner .ab-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      .api-banner .ab-text {
+        flex: 1;
+        font-size: 13px;
+        color: var(--accent);
+        font-weight: 500;
+      }
+      .api-banner .ab-arrow {
+        color: var(--accent);
+        font-size: 16px;
+      }
+
+      .api-connected {
+        background: var(--green-bg);
+      }
+      .api-connected .ab-text {
+        color: var(--green);
+      }
+      .api-connected .ab-arrow {
+        color: var(--green);
+      }
+
+      /* ─── Cloud Banner ─── */
+      .cloud-banner {
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .cloud-banner:active { opacity: 0.8; }
+      .cloud-banner .cb-icon { font-size: 18px; flex-shrink: 0; }
+      .cloud-banner .cb-text { flex: 1; font-size: 13px; font-weight: 500; }
+      .cloud-banner .cb-arrow { font-size: 16px; }
+      .cloud-banner.cloud-off {
+        background: rgba(245, 158, 11, 0.1);
+      }
+      .cloud-banner.cloud-off .cb-text,
+      .cloud-banner.cloud-off .cb-arrow { color: var(--yellow); }
+      .cloud-banner.cloud-on {
+        background: var(--green-bg);
+      }
+      .cloud-banner.cloud-on .cb-text,
+      .cloud-banner.cloud-on .cb-arrow { color: var(--green); }
+
+      /* ─── Refresh Button ─── */
+      .refresh-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+      .refresh-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 10px;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+      }
+      .refresh-btn:active {
+        transform: scale(0.95);
+      }
+      .refresh-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .refresh-btn svg {
+        width: 16px;
+        height: 16px;
+      }
+      .refresh-btn.loading svg {
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .last-updated {
+        font-size: 11px;
+        color: var(--text-tertiary);
+      }
+
+      /* ─── Cloud Modal Sections ─── */
+      .cloud-section { display: none; }
+      .cloud-section.active { display: block; }
+      .sql-box {
+        background: #1e1b4b;
+        color: #a5b4fc;
+        border-radius: 12px;
+        padding: 14px;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        line-height: 1.5;
+        overflow-x: auto;
+        margin: 12px 0;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .cloud-step {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        margin-bottom: 14px;
+      }
+      .cloud-step-num {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .cloud-step-text {
+        font-size: 13px;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        padding-top: 3px;
+      }
+      .cloud-user-info {
+        background: var(--bg);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+        text-align: center;
+      }
+      .cloud-user-info .cui-email {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .cloud-user-info .cui-status {
+        font-size: 12px;
+        color: var(--green);
+        font-weight: 500;
+        margin-top: 4px;
+      }
+
+      /* ─── Scrollbar ─── */
+      ::-webkit-scrollbar {
+        width: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Header -->
+    <div class="top-header">
+      <h1>Asset Tracker</h1>
+      <div class="header-actions">
+        <button class="user-chip signed-out" id="userChip" onclick="openCloudModal()">
+          <span class="chip-dot"></span>
+          <span id="userChipLabel">Cloud</span>
+        </button>
+        <button class="icon-btn" onclick="exportData()" title="Export">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </button>
+        <button
+          class="icon-btn"
+          onclick="document.getElementById('importFile').click()"
+          title="Import"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+        </button>
+        <input
+          type="file"
+          id="importFile"
+          accept=".json"
+          style="display: none"
+          onchange="importData(event)"
+        />
+      </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="page-dashboard" class="page active">
+      <div id="cloudBanner"></div>
+      <div id="dashHero"></div>
+      <div class="mini-cards" id="dashMini"></div>
+      <div class="card">
+        <div class="section-title">Allocation</div>
+        <div class="chart-container"><canvas id="pieChart"></canvas></div>
+        <div id="pieEmpty"></div>
+      </div>
+      <div class="card">
+        <div class="section-title">P&L by Stock</div>
+        <div style="position: relative; width: 100%; height: 200px">
+          <canvas id="pnlChart"></canvas>
+        </div>
+        <div id="pnlEmpty"></div>
+      </div>
+    </div>
+
+    <!-- Stocks Page -->
+    <div id="page-stocks" class="page">
+      <div id="stocksHero"></div>
+      <div id="apiBanner"></div>
+      <div class="refresh-row">
+        <div class="section-title" style="margin-bottom: 0">Holdings</div>
+        <button
+          class="refresh-btn"
+          id="refreshBtn"
+          onclick="refreshAllPrices()"
+          title="Refresh prices"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <polyline points="23 4 23 10 17 10" />
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+          </svg>
+          <span id="refreshLabel">Refresh</span>
+        </button>
+      </div>
+      <div
+        class="last-updated"
+        id="lastUpdated"
+        style="margin-bottom: 12px"
+      ></div>
+      <div id="stockList"></div>
+    </div>
+
+    <!-- Money Flow Page -->
+    <div id="page-flow" class="page">
+      <div id="flowHero"></div>
+      <div class="fx-row" id="fxRow"></div>
+      <div class="section-title">Transactions</div>
+      <div id="flowList"></div>
+    </div>
+
+    <!-- Dividends Page -->
+    <div id="page-dividends" class="page">
+      <div id="divHero"></div>
+      <div class="section-title">Dividend Records</div>
+      <div id="divList"></div>
+    </div>
+
+    <!-- FAB -->
+    <button class="fab" id="fab" onclick="openAddModal()">+</button>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <button class="nav-item active" data-page="dashboard">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" />
+          </svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-page="stocks">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+          <span>Stocks</span>
+        </button>
+        <button class="nav-item" data-page="flow">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+          <span>Money</span>
+        </button>
+        <button class="nav-item" data-page="dividends">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M16 8l-4 4-4-4" />
+            <path d="M16 12l-4 4-4-4" />
+          </svg>
+          <span>Dividends</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Stock Modal -->
+    <div class="modal-overlay" id="modalStock">
+      <div class="modal">
+        <div class="modal-handle"></div>
+        <h2 id="modalStockTitle">Add Stock</h2>
+        <form id="stockForm" onsubmit="saveStock(event)">
+          <input type="hidden" id="stockEditId" />
+          <div class="form-group">
+            <label>Ticker</label>
+            <input
+              type="text"
+              id="stockTicker"
+              placeholder="Search ticker e.g. AAPL"
+              required
+              autocomplete="off"
+              style="text-transform: uppercase"
+            />
+            <div class="autocomplete-list" id="tickerAC"></div>
+          </div>
+          <div class="form-group">
+            <label>Company Name</label>
+            <input
+              type="text"
+              id="stockNameInput"
+              placeholder="Auto-filled or type manually"
+            />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Shares</label>
+              <input
+                type="number"
+                id="stockShares"
+                placeholder="0"
+                step="any"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>Avg Cost (USD)</label>
+              <input
+                type="number"
+                id="stockAvgCost"
+                placeholder="0.00"
+                step="any"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label
+              >Current Price (USD)
+              <span style="font-weight: 400; color: var(--text-tertiary)"
+                >- auto-fetched if API key set</span
+              ></label
+            >
+            <input
+              type="number"
+              id="stockCurrentPrice"
+              placeholder="Auto or manual"
+              step="any"
+            />
+          </div>
+          <div class="form-group">
+            <label>Sector</label>
+            <select id="stockSector">
+              <option value="">Select sector</option>
+              <option value="Technology">Technology</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Financial">Financial</option>
+              <option value="Consumer">Consumer</option>
+              <option value="Energy">Energy</option>
+              <option value="Industrial">Industrial</option>
+              <option value="Communication">Communication</option>
+              <option value="Real Estate">Real Estate</option>
+              <option value="Utilities">Utilities</option>
+              <option value="ETF">ETF</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" id="stockSubmitBtn">
+            Add Stock
+          </button>
+          <div id="stockEditActions" style="display: none">
+            <button
+              type="button"
+              class="btn btn-danger"
+              onclick="confirmDeleteStock()"
+            >
+              Delete Stock
+            </button>
+          </div>
+          <button
+            type="button"
+            class="btn btn-ghost"
+            onclick="closeModal('modalStock')"
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Flow Modal -->
+    <div class="modal-overlay" id="modalFlow">
+      <div class="modal">
+        <div class="modal-handle"></div>
+        <h2 id="modalFlowTitle">Add Transaction</h2>
+        <form id="flowForm" onsubmit="saveFlow(event)">
+          <input type="hidden" id="flowEditId" />
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="flowDate" required />
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select id="flowType" required onchange="toggleFlowFields()">
+              <option value="deposit">Deposit (THB &rarr; USD)</option>
+              <option value="withdraw">Withdraw (USD &rarr; THB)</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Amount (THB)</label>
+              <input
+                type="number"
+                id="flowTHB"
+                placeholder="0.00"
+                step="any"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>FX Rate (THB/USD)</label>
+              <input
+                type="number"
+                id="flowRate"
+                placeholder="e.g. 35.50"
+                step="any"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Amount USD (auto)</label>
+            <input
+              type="number"
+              id="flowUSD"
+              placeholder="0.00"
+              step="any"
+              readonly
+              style="opacity: 0.6"
+            />
+          </div>
+          <div class="form-group">
+            <label>Note</label>
+            <input type="text" id="flowNote" placeholder="e.g. DCA monthly" />
+          </div>
+          <button type="submit" class="btn btn-primary" id="flowSubmitBtn">
+            Add Transaction
+          </button>
+          <div id="flowEditActions" style="display: none">
+            <button
+              type="button"
+              class="btn btn-danger"
+              onclick="confirmDeleteFlow()"
+            >
+              Delete
+            </button>
+          </div>
+          <button
+            type="button"
+            class="btn btn-ghost"
+            onclick="closeModal('modalFlow')"
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Dividend Modal -->
+    <div class="modal-overlay" id="modalDiv">
+      <div class="modal">
+        <div class="modal-handle"></div>
+        <h2 id="modalDivTitle">Add Dividend</h2>
+        <form id="divForm" onsubmit="saveDiv(event)">
+          <input type="hidden" id="divEditId" />
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" id="divDate" required />
+            </div>
+            <div class="form-group">
+              <label>Ticker</label>
+              <input
+                type="text"
+                id="divTicker"
+                placeholder="AAPL"
+                required
+                autocomplete="off"
+                style="text-transform: uppercase"
+              />
+              <div class="autocomplete-list" id="divTickerAC"></div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Amount (USD)</label>
+              <input
+                type="number"
+                id="divAmount"
+                placeholder="0.00"
+                step="any"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>Tax Withheld (USD)</label>
+              <input
+                type="number"
+                id="divTax"
+                placeholder="0.00"
+                step="any"
+                value="0"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Note</label>
+            <input
+              type="text"
+              id="divNote"
+              placeholder="e.g. Q1 2026 dividend"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary" id="divSubmitBtn">
+            Add Dividend
+          </button>
+          <div id="divEditActions" style="display: none">
+            <button
+              type="button"
+              class="btn btn-danger"
+              onclick="confirmDeleteDiv()"
+            >
+              Delete
+            </button>
+          </div>
+          <button
+            type="button"
+            class="btn btn-ghost"
+            onclick="closeModal('modalDiv')"
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div class="confirm-overlay" id="confirmDialog">
+      <div class="confirm-box">
+        <p id="confirmMsg">Are you sure?</p>
+        <div class="confirm-actions">
+          <button
+            class="btn btn-ghost"
+            onclick="closeConfirm()"
+            style="margin: 0"
+          >
+            Cancel
+          </button>
+          <button class="btn btn-danger" id="confirmYes" style="margin: 0">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- API Settings Modal -->
+    <div class="modal-overlay" id="modalAPI">
+      <div class="modal">
+        <div class="modal-handle"></div>
+        <h2>API Settings</h2>
+        <div style="padding: 0 4px">
+          <div
+            style="
+              background: var(--accent-bg);
+              border-radius: 12px;
+              padding: 14px;
+              margin-bottom: 16px;
+            "
+          >
+            <p
+              style="
+                font-size: 13px;
+                color: var(--accent);
+                font-weight: 500;
+                line-height: 1.5;
+              "
+            >
+              Get your free API key from <strong>finnhub.io</strong><br />
+              Sign up &rarr; Dashboard &rarr; Copy API Key
+            </p>
+          </div>
+          <div class="form-group">
+            <label>Finnhub API Key</label>
+            <input
+              type="text"
+              id="apiKeyInput"
+              placeholder="Paste your API key here"
+            />
+          </div>
+          <button class="btn btn-primary" onclick="saveApiKey()">
+            Save Key
+          </button>
+          <button
+            class="btn btn-ghost"
+            id="removeKeyBtn"
+            onclick="removeApiKey()"
+            style="display: none; color: var(--red)"
+          >
+            Remove Key
+          </button>
+          <button class="btn btn-ghost" onclick="closeModal('modalAPI')">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cloud Sync Modal -->
+    <div class="modal-overlay" id="modalCloud">
+      <div class="modal">
+        <div class="modal-handle"></div>
+        <h2>&#9729; Cloud Sync</h2>
+
+        <!-- Section: Setup -->
+        <div class="cloud-section active" id="cloudSetup">
+          <div class="cloud-step">
+            <div class="cloud-step-num">1</div>
+            <div class="cloud-step-text">
+              Go to <strong>supabase.com</strong> and create a free project
+            </div>
+          </div>
+          <div class="cloud-step">
+            <div class="cloud-step-num">2</div>
+            <div class="cloud-step-text">
+              In <strong>SQL Editor</strong>, run this query to create the table:
+            </div>
+          </div>
+          <div class="sql-box">create table user_data (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  data jsonb default '{}'::jsonb,
+  updated_at timestamptz default now(),
+  unique(user_id)
+);
+
+alter table user_data enable row level security;
+
+create policy "Users can manage own data"
+  on user_data for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);</div>
+          <div class="cloud-step">
+            <div class="cloud-step-num">3</div>
+            <div class="cloud-step-text">
+              Go to <strong>Settings &rarr; API</strong> and copy your <strong>Project URL</strong> and <strong>anon public key</strong>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Supabase Project URL</label>
+            <input type="text" id="sbUrl" placeholder="https://xxxxx.supabase.co" />
+          </div>
+          <div class="form-group">
+            <label>Anon Public Key</label>
+            <input type="text" id="sbKey" placeholder="eyJhbGciOiJIUzI1NiIs..." />
+          </div>
+          <button class="btn btn-primary" onclick="saveSupabaseConfig()">Save &amp; Continue</button>
+          <button class="btn btn-ghost" onclick="closeModal('modalCloud')">Cancel</button>
+        </div>
+
+        <!-- Section: Login -->
+        <div class="cloud-section" id="cloudLogin">
+          <div style="text-align:center;margin-bottom:20px">
+            <div style="font-size:40px;margin-bottom:8px">&#9729;</div>
+            <p style="font-size:14px;color:var(--text-secondary)">Sign in to sync your data across devices</p>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="cloudEmail" placeholder="you@email.com" />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="cloudPass" placeholder="Min 6 characters" />
+          </div>
+          <button class="btn btn-primary" onclick="cloudSignIn()">Sign In</button>
+          <button class="btn btn-outline" onclick="cloudSignUp()">Create Account</button>
+          <button class="btn btn-ghost" onclick="showCloudSection('cloudSetup')" style="font-size:12px">&#9881; Change Supabase Config</button>
+          <button class="btn btn-ghost" onclick="closeModal('modalCloud')">Cancel</button>
+        </div>
+
+        <!-- Section: Signed In -->
+        <div class="cloud-section" id="cloudSignedIn">
+          <div class="cloud-user-info">
+            <div style="font-size:36px;margin-bottom:8px">&#9989;</div>
+            <div class="cui-email" id="cloudUserEmail">user@email.com</div>
+            <div class="cui-status">&#9679; Synced to cloud</div>
+          </div>
+          <button class="btn btn-primary" onclick="cloudPush()" style="margin-bottom:8px">
+            &#8593; Push Data to Cloud
+          </button>
+          <button class="btn btn-outline" onclick="cloudPull()" style="margin-top:0">
+            &#8595; Pull Data from Cloud
+          </button>
+          <button class="btn btn-ghost" onclick="cloudSignOut()" style="color:var(--red)">Sign Out</button>
+          <button class="btn btn-ghost" onclick="closeModal('modalCloud')">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ─── US Stock Ticker Database ───
+      const US_STOCKS = [
+        { t: "AAPL", n: "Apple Inc.", s: "Technology" },
+        { t: "MSFT", n: "Microsoft Corp.", s: "Technology" },
+        { t: "GOOGL", n: "Alphabet Inc.", s: "Communication" },
+        { t: "GOOG", n: "Alphabet (C)", s: "Communication" },
+        { t: "AMZN", n: "Amazon.com Inc.", s: "Consumer" },
+        { t: "NVDA", n: "NVIDIA Corp.", s: "Technology" },
+        { t: "META", n: "Meta Platforms", s: "Communication" },
+        { t: "TSLA", n: "Tesla Inc.", s: "Consumer" },
+        { t: "BRK.B", n: "Berkshire Hathaway", s: "Financial" },
+        { t: "UNH", n: "UnitedHealth Group", s: "Healthcare" },
+        { t: "JNJ", n: "Johnson & Johnson", s: "Healthcare" },
+        { t: "V", n: "Visa Inc.", s: "Financial" },
+        { t: "XOM", n: "Exxon Mobil", s: "Energy" },
+        { t: "JPM", n: "JPMorgan Chase", s: "Financial" },
+        { t: "WMT", n: "Walmart Inc.", s: "Consumer" },
+        { t: "MA", n: "Mastercard Inc.", s: "Financial" },
+        { t: "PG", n: "Procter & Gamble", s: "Consumer" },
+        { t: "HD", n: "Home Depot", s: "Consumer" },
+        { t: "CVX", n: "Chevron Corp.", s: "Energy" },
+        { t: "MRK", n: "Merck & Co.", s: "Healthcare" },
+        { t: "LLY", n: "Eli Lilly & Co.", s: "Healthcare" },
+        { t: "ABBV", n: "AbbVie Inc.", s: "Healthcare" },
+        { t: "PEP", n: "PepsiCo Inc.", s: "Consumer" },
+        { t: "KO", n: "Coca-Cola Co.", s: "Consumer" },
+        { t: "AVGO", n: "Broadcom Inc.", s: "Technology" },
+        { t: "COST", n: "Costco Wholesale", s: "Consumer" },
+        { t: "TMO", n: "Thermo Fisher", s: "Healthcare" },
+        { t: "MCD", n: "McDonald's Corp.", s: "Consumer" },
+        { t: "CSCO", n: "Cisco Systems", s: "Technology" },
+        { t: "ACN", n: "Accenture plc", s: "Technology" },
+        { t: "ABT", n: "Abbott Labs", s: "Healthcare" },
+        { t: "DHR", n: "Danaher Corp.", s: "Healthcare" },
+        { t: "NEE", n: "NextEra Energy", s: "Utilities" },
+        { t: "ADBE", n: "Adobe Inc.", s: "Technology" },
+        { t: "NFLX", n: "Netflix Inc.", s: "Communication" },
+        { t: "TXN", n: "Texas Instruments", s: "Technology" },
+        { t: "CRM", n: "Salesforce Inc.", s: "Technology" },
+        { t: "AMD", n: "Advanced Micro Devices", s: "Technology" },
+        { t: "INTC", n: "Intel Corp.", s: "Technology" },
+        { t: "QCOM", n: "Qualcomm Inc.", s: "Technology" },
+        { t: "INTU", n: "Intuit Inc.", s: "Technology" },
+        { t: "AMGN", n: "Amgen Inc.", s: "Healthcare" },
+        { t: "AMAT", n: "Applied Materials", s: "Technology" },
+        { t: "ISRG", n: "Intuitive Surgical", s: "Healthcare" },
+        { t: "BKNG", n: "Booking Holdings", s: "Consumer" },
+        { t: "NOW", n: "ServiceNow Inc.", s: "Technology" },
+        { t: "MDLZ", n: "Mondelez Int'l", s: "Consumer" },
+        { t: "ADP", n: "ADP Inc.", s: "Technology" },
+        { t: "GILD", n: "Gilead Sciences", s: "Healthcare" },
+        { t: "REGN", n: "Regeneron Pharma", s: "Healthcare" },
+        { t: "VRTX", n: "Vertex Pharma", s: "Healthcare" },
+        { t: "ADI", n: "Analog Devices", s: "Technology" },
+        { t: "PANW", n: "Palo Alto Networks", s: "Technology" },
+        { t: "SNPS", n: "Synopsys Inc.", s: "Technology" },
+        { t: "KLAC", n: "KLA Corp.", s: "Technology" },
+        { t: "LRCX", n: "Lam Research", s: "Technology" },
+        { t: "MELI", n: "MercadoLibre", s: "Consumer" },
+        { t: "PYPL", n: "PayPal Holdings", s: "Financial" },
+        { t: "SQ", n: "Block Inc.", s: "Financial" },
+        { t: "SHOP", n: "Shopify Inc.", s: "Technology" },
+        { t: "CRWD", n: "CrowdStrike", s: "Technology" },
+        { t: "SNOW", n: "Snowflake Inc.", s: "Technology" },
+        { t: "DDOG", n: "Datadog Inc.", s: "Technology" },
+        { t: "ZS", n: "Zscaler Inc.", s: "Technology" },
+        { t: "NET", n: "Cloudflare Inc.", s: "Technology" },
+        { t: "PLTR", n: "Palantir Tech.", s: "Technology" },
+        { t: "COIN", n: "Coinbase Global", s: "Financial" },
+        { t: "MSTR", n: "MicroStrategy", s: "Technology" },
+        { t: "UBER", n: "Uber Technologies", s: "Technology" },
+        { t: "ABNB", n: "Airbnb Inc.", s: "Consumer" },
+        { t: "ARM", n: "Arm Holdings", s: "Technology" },
+        { t: "SMCI", n: "Super Micro Comp.", s: "Technology" },
+        { t: "DIS", n: "Walt Disney Co.", s: "Communication" },
+        { t: "CMCSA", n: "Comcast Corp.", s: "Communication" },
+        { t: "NKE", n: "Nike Inc.", s: "Consumer" },
+        { t: "SBUX", n: "Starbucks Corp.", s: "Consumer" },
+        { t: "BA", n: "Boeing Co.", s: "Industrial" },
+        { t: "CAT", n: "Caterpillar Inc.", s: "Industrial" },
+        { t: "GS", n: "Goldman Sachs", s: "Financial" },
+        { t: "MS", n: "Morgan Stanley", s: "Financial" },
+        { t: "BLK", n: "BlackRock Inc.", s: "Financial" },
+        { t: "SCHW", n: "Charles Schwab", s: "Financial" },
+        { t: "C", n: "Citigroup Inc.", s: "Financial" },
+        { t: "BAC", n: "Bank of America", s: "Financial" },
+        { t: "WFC", n: "Wells Fargo", s: "Financial" },
+        { t: "PFE", n: "Pfizer Inc.", s: "Healthcare" },
+        { t: "BMY", n: "Bristol-Myers Squibb", s: "Healthcare" },
+        { t: "ORCL", n: "Oracle Corp.", s: "Technology" },
+        { t: "IBM", n: "IBM Corp.", s: "Technology" },
+        { t: "GE", n: "GE Aerospace", s: "Industrial" },
+        { t: "RTX", n: "RTX Corp.", s: "Industrial" },
+        { t: "HON", n: "Honeywell Int'l", s: "Industrial" },
+        { t: "UPS", n: "United Parcel Service", s: "Industrial" },
+        { t: "LMT", n: "Lockheed Martin", s: "Industrial" },
+        { t: "DE", n: "Deere & Company", s: "Industrial" },
+        { t: "T", n: "AT&T Inc.", s: "Communication" },
+        { t: "VZ", n: "Verizon Comms.", s: "Communication" },
+        { t: "COP", n: "ConocoPhillips", s: "Energy" },
+        { t: "SLB", n: "Schlumberger", s: "Energy" },
+        { t: "SO", n: "Southern Company", s: "Utilities" },
+        { t: "DUK", n: "Duke Energy", s: "Utilities" },
+        // Popular ETFs
+        { t: "SPY", n: "S&P 500 ETF", s: "ETF" },
+        { t: "QQQ", n: "Nasdaq 100 ETF", s: "ETF" },
+        { t: "VOO", n: "Vanguard S&P 500", s: "ETF" },
+        { t: "VTI", n: "Vanguard Total Market", s: "ETF" },
+        { t: "IWM", n: "Russell 2000 ETF", s: "ETF" },
+        { t: "DIA", n: "Dow Jones ETF", s: "ETF" },
+        { t: "VGT", n: "Vanguard IT ETF", s: "ETF" },
+        { t: "ARKK", n: "ARK Innovation ETF", s: "ETF" },
+        { t: "SCHD", n: "Schwab Dividend ETF", s: "ETF" },
+        { t: "VYM", n: "Vanguard High Div.", s: "ETF" },
+        { t: "XLF", n: "Financial Select ETF", s: "ETF" },
+        { t: "XLE", n: "Energy Select ETF", s: "ETF" },
+        { t: "XLK", n: "Tech Select ETF", s: "ETF" },
+        { t: "XLV", n: "Health Care ETF", s: "ETF" },
+        { t: "GLD", n: "Gold ETF", s: "ETF" },
+        { t: "SLV", n: "Silver ETF", s: "ETF" },
+        { t: "TLT", n: "20+ Year Bond ETF", s: "ETF" },
+        { t: "VNQ", n: "Vanguard REIT ETF", s: "ETF" },
+        { t: "SOXX", n: "Semiconductor ETF", s: "ETF" },
+        { t: "SMH", n: "VanEck Semicon. ETF", s: "ETF" },
+      ];
+
+      // ─── Data Store ───
+      const STORAGE_KEY = "dime_stock_tracker";
+      let data = loadData();
+
+      function defaultData() {
+        return { stocks: [], flows: [], dividends: [] };
+      }
+      function loadData() {
+        try {
+          const r = localStorage.getItem(STORAGE_KEY);
+          if (r) return JSON.parse(r);
+        } catch (e) {}
+        return defaultData();
+      }
+      function save() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        // Auto-push to cloud if signed in
+        if (sb && currentUser) {
+          cloudPushSilent();
+        }
+      }
+      function genId() {
+        return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      }
+
+      // ─── Supabase Cloud Sync ───
+      const SB_URL_KEY = "dime_sb_url";
+      const SB_ANON_KEY = "dime_sb_anon";
+      let sb = null;
+      let currentUser = null;
+
+      function initSupabase() {
+        const url = localStorage.getItem(SB_URL_KEY);
+        const anon = localStorage.getItem(SB_ANON_KEY);
+        if (url && anon) {
+          try {
+            sb = supabase.createClient(url, anon);
+            return true;
+          } catch (e) {
+            console.warn("Supabase init failed:", e);
+            sb = null;
+          }
+        }
+        return false;
+      }
+
+      function saveSupabaseConfig() {
+        const url = document.getElementById("sbUrl").value.trim().replace(/\/+$/, "");
+        const key = document.getElementById("sbKey").value.trim();
+        if (!url || !key) {
+          showToast("Please fill in both fields");
+          return;
+        }
+        localStorage.setItem(SB_URL_KEY, url);
+        localStorage.setItem(SB_ANON_KEY, key);
+        if (initSupabase()) {
+          showToast("Supabase configured!");
+          showCloudSection("cloudLogin");
+        } else {
+          showToast("Failed to connect");
+        }
+      }
+
+      async function cloudSignIn() {
+        if (!sb) { showToast("Set up Supabase first"); return; }
+        const email = document.getElementById("cloudEmail").value.trim();
+        const pass = document.getElementById("cloudPass").value;
+        if (!email || !pass) { showToast("Enter email and password"); return; }
+        try {
+          const { data: authData, error } = await sb.auth.signInWithPassword({ email, password: pass });
+          if (error) throw error;
+          currentUser = authData.user;
+          showToast("Signed in!");
+          showCloudSection("cloudSignedIn");
+          updateUserChip();
+          renderCloudBanner();
+          await cloudPull();
+        } catch (e) {
+          showToast("Sign in failed: " + (e.message || e));
+        }
+      }
+
+      async function cloudSignUp() {
+        if (!sb) { showToast("Set up Supabase first"); return; }
+        const email = document.getElementById("cloudEmail").value.trim();
+        const pass = document.getElementById("cloudPass").value;
+        if (!email || !pass) { showToast("Enter email and password"); return; }
+        if (pass.length < 6) { showToast("Password must be at least 6 characters"); return; }
+        try {
+          const { data: authData, error } = await sb.auth.signUp({ email, password: pass });
+          if (error) throw error;
+          if (authData.user) {
+            currentUser = authData.user;
+            showToast("Account created & signed in!");
+            showCloudSection("cloudSignedIn");
+            updateUserChip();
+            renderCloudBanner();
+            await cloudPush();
+          } else {
+            showToast("Check your email to confirm");
+          }
+        } catch (e) {
+          showToast("Sign up failed: " + (e.message || e));
+        }
+      }
+
+      async function cloudSignOut() {
+        if (!sb) return;
+        await sb.auth.signOut();
+        currentUser = null;
+        showToast("Signed out");
+        showCloudSection("cloudLogin");
+        updateUserChip();
+        renderCloudBanner();
+      }
+
+      async function cloudPush() {
+        if (!sb || !currentUser) { showToast("Sign in first"); return; }
+        try {
+          const { error } = await sb.from("user_data").upsert({
+            user_id: currentUser.id,
+            data: data,
+            updated_at: new Date().toISOString()
+          }, { onConflict: "user_id" });
+          if (error) throw error;
+          showToast("Data pushed to cloud!");
+        } catch (e) {
+          showToast("Push failed: " + (e.message || e));
+        }
+      }
+
+      async function cloudPushSilent() {
+        if (!sb || !currentUser) return;
+        try {
+          await sb.from("user_data").upsert({
+            user_id: currentUser.id,
+            data: data,
+            updated_at: new Date().toISOString()
+          }, { onConflict: "user_id" });
+        } catch (e) {
+          console.warn("Silent push failed:", e);
+        }
+      }
+
+      async function cloudPull() {
+        if (!sb || !currentUser) { showToast("Sign in first"); return; }
+        try {
+          const { data: rows, error } = await sb.from("user_data")
+            .select("data")
+            .eq("user_id", currentUser.id)
+            .maybeSingle();
+          if (error) throw error;
+          if (rows && rows.data) {
+            data = rows.data;
+            save();
+            renderAll();
+            showToast("Data pulled from cloud!");
+          } else {
+            showToast("No cloud data found. Pushing local data...");
+            await cloudPush();
+          }
+        } catch (e) {
+          showToast("Pull failed: " + (e.message || e));
+        }
+      }
+
+      async function initAuth() {
+        if (!initSupabase()) return;
+        try {
+          const { data: sessionData } = await sb.auth.getSession();
+          if (sessionData && sessionData.session) {
+            currentUser = sessionData.session.user;
+            updateUserChip();
+            renderCloudBanner();
+          }
+        } catch (e) {
+          console.warn("Auth init error:", e);
+        }
+      }
+
+      function showCloudSection(id) {
+        document.querySelectorAll(".cloud-section").forEach(s => s.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        if (id === "cloudSignedIn" && currentUser) {
+          document.getElementById("cloudUserEmail").textContent = currentUser.email || "User";
+        }
+      }
+
+      function openCloudModal() {
+        const hasConfig = localStorage.getItem(SB_URL_KEY) && localStorage.getItem(SB_ANON_KEY);
+        if (currentUser) {
+          showCloudSection("cloudSignedIn");
+        } else if (hasConfig) {
+          showCloudSection("cloudLogin");
+          // Pre-fill config
+          document.getElementById("sbUrl").value = localStorage.getItem(SB_URL_KEY) || "";
+          document.getElementById("sbKey").value = localStorage.getItem(SB_ANON_KEY) || "";
+        } else {
+          showCloudSection("cloudSetup");
+        }
+        openModal("modalCloud");
+      }
+
+      function updateUserChip() {
+        const chip = document.getElementById("userChip");
+        const label = document.getElementById("userChipLabel");
+        if (currentUser) {
+          chip.className = "user-chip signed-in";
+          label.textContent = "Synced";
+        } else {
+          chip.className = "user-chip signed-out";
+          label.textContent = "Cloud";
+        }
+      }
+
+      function renderCloudBanner() {
+        const el = document.getElementById("cloudBanner");
+        if (!el) return;
+        if (currentUser) {
+          el.innerHTML = `<div class="cloud-banner cloud-on" onclick="openCloudModal()">
+            <span class="cb-icon">&#9729;</span>
+            <span class="cb-text">Synced to cloud &middot; ${currentUser.email || "User"}</span>
+            <span class="cb-arrow">&rsaquo;</span>
+          </div>`;
+        } else {
+          el.innerHTML = `<div class="cloud-banner cloud-off" onclick="openCloudModal()">
+            <span class="cb-icon">&#9729;</span>
+            <span class="cb-text">Set up cloud sync for multi-device access</span>
+            <span class="cb-arrow">&rsaquo;</span>
+          </div>`;
+        }
+      }
+
+      // ─── Finnhub API ───
+      const API_KEY_STORAGE = "dime_finnhub_key";
+      const LAST_UPDATE_STORAGE = "dime_last_price_update";
+
+      function getApiKey() {
+        return localStorage.getItem(API_KEY_STORAGE) || "";
+      }
+      function saveApiKey() {
+        const key = document.getElementById("apiKeyInput").value.trim();
+        if (!key) {
+          showToast("Please enter an API key");
+          return;
+        }
+        localStorage.setItem(API_KEY_STORAGE, key);
+        closeModal("modalAPI");
+        showToast("API key saved");
+        renderApiBanner();
+        refreshAllPrices();
+      }
+      function removeApiKey() {
+        localStorage.removeItem(API_KEY_STORAGE);
+        closeModal("modalAPI");
+        showToast("API key removed");
+        renderApiBanner();
+      }
+      function openApiSettings() {
+        const key = getApiKey();
+        document.getElementById("apiKeyInput").value = key;
+        document.getElementById("removeKeyBtn").style.display = key
+          ? "block"
+          : "none";
+        openModal("modalAPI");
+      }
+
+      function renderApiBanner() {
+        const key = getApiKey();
+        const el = document.getElementById("apiBanner");
+        if (!el) return;
+        if (key) {
+          el.innerHTML = `<div class="api-banner api-connected" onclick="openApiSettings()">
+      <span class="ab-icon">&#9889;</span>
+      <span class="ab-text">Finnhub connected &middot; Tap to manage</span>
+      <span class="ab-arrow">&rsaquo;</span>
+    </div>`;
+        } else {
+          el.innerHTML = `<div class="api-banner" onclick="openApiSettings()">
+      <span class="ab-icon">&#128273;</span>
+      <span class="ab-text">Set up Finnhub API for real-time prices</span>
+      <span class="ab-arrow">&rsaquo;</span>
+    </div>`;
+        }
+      }
+
+      function renderLastUpdated() {
+        const el = document.getElementById("lastUpdated");
+        if (!el) return;
+        const ts = localStorage.getItem(LAST_UPDATE_STORAGE);
+        if (ts) {
+          const d = new Date(parseInt(ts));
+          el.textContent =
+            "Prices updated: " +
+            d.toLocaleString("en-US", {
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+        } else {
+          el.textContent = "";
+        }
+      }
+
+      async function fetchQuote(ticker) {
+        const key = getApiKey();
+        if (!key) return null;
+        try {
+          const resp = await fetch(
+            `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${encodeURIComponent(key)}`,
+          );
+          if (!resp.ok) throw new Error("API error");
+          const json = await resp.json();
+          if (json.c && json.c > 0) return json.c;
+          return null;
+        } catch (e) {
+          console.warn("Finnhub fetch error for", ticker, e);
+          return null;
+        }
+      }
+
+      async function refreshAllPrices() {
+        const key = getApiKey();
+        if (!key) {
+          openApiSettings();
+          return;
+        }
+        if (data.stocks.length === 0) {
+          showToast("No stocks to refresh");
+          return;
+        }
+
+        const btn = document.getElementById("refreshBtn");
+        const label = document.getElementById("refreshLabel");
+        btn.disabled = true;
+        btn.classList.add("loading");
+        label.textContent = "Updating...";
+
+        let updated = 0;
+        let failed = 0;
+        for (let i = 0; i < data.stocks.length; i++) {
+          const stock = data.stocks[i];
+          label.textContent = `${i + 1}/${data.stocks.length}`;
+          const price = await fetchQuote(stock.ticker);
+          if (price !== null) {
+            stock.currentPrice = price;
+            updated++;
+          } else {
+            failed++;
+          }
+          if (i < data.stocks.length - 1) {
+            await new Promise((r) => setTimeout(r, 250));
+          }
+        }
+
+        save();
+        localStorage.setItem(LAST_UPDATE_STORAGE, Date.now().toString());
+        renderAll();
+
+        btn.disabled = false;
+        btn.classList.remove("loading");
+        label.textContent = "Refresh";
+
+        if (failed > 0) {
+          showToast(`Updated ${updated}, failed ${failed}`);
+        } else {
+          showToast(`All ${updated} prices updated`);
+        }
+      }
+
+      async function fetchSinglePrice(ticker) {
+        const key = getApiKey();
+        if (!key || !ticker) return null;
+        return await fetchQuote(ticker);
+      }
+
+      // ─── Autocomplete ───
+      function setupAutocomplete(inputId, acListId) {
+        const input = document.getElementById(inputId);
+        const list = document.getElementById(acListId);
+        let selectedIdx = -1;
+
+        input.addEventListener("input", () => {
+          const val = input.value.toUpperCase().trim();
+          if (val.length < 1) {
+            list.classList.remove("show");
+            return;
+          }
+          const matches = US_STOCKS.filter(
+            (s) => s.t.startsWith(val) || s.n.toUpperCase().includes(val),
+          ).slice(0, 8);
+          if (matches.length === 0) {
+            list.classList.remove("show");
+            return;
+          }
+          selectedIdx = -1;
+          list.innerHTML = matches
+            .map(
+              (m, i) =>
+                `<div class="ac-item" data-idx="${i}" data-ticker="${m.t}" data-name="${m.n}" data-sector="${m.s}">
+        <span><span class="ac-ticker">${m.t}</span></span>
+        <span class="ac-name">${m.n}</span>
+      </div>`,
+            )
+            .join("");
+          list.classList.add("show");
+
+          list.querySelectorAll(".ac-item").forEach((item) => {
+            item.addEventListener("click", () => {
+              input.value = item.dataset.ticker;
+              if (inputId === "stockTicker") {
+                document.getElementById("stockNameInput").value =
+                  item.dataset.name;
+                const sectorSel = document.getElementById("stockSector");
+                for (let o of sectorSel.options) {
+                  if (o.value === item.dataset.sector) {
+                    sectorSel.value = o.value;
+                    break;
+                  }
+                }
+              }
+              list.classList.remove("show");
+            });
+          });
+        });
+
+        input.addEventListener("keydown", (e) => {
+          const items = list.querySelectorAll(".ac-item");
+          if (!list.classList.contains("show") || items.length === 0) return;
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            selectedIdx = Math.min(selectedIdx + 1, items.length - 1);
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            selectedIdx = Math.max(selectedIdx - 1, 0);
+          } else if (e.key === "Enter" && selectedIdx >= 0) {
+            e.preventDefault();
+            items[selectedIdx].click();
+            return;
+          } else return;
+          items.forEach((it, i) =>
+            it.classList.toggle("selected", i === selectedIdx),
+          );
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!input.contains(e.target) && !list.contains(e.target))
+            list.classList.remove("show");
+        });
+      }
+
+      // ─── Navigation ───
+      let currentPage = "dashboard";
+      document.querySelectorAll(".nav-item").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          currentPage = btn.dataset.page;
+          document
+            .querySelectorAll(".nav-item")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          document
+            .querySelectorAll(".page")
+            .forEach((p) => p.classList.remove("active"));
+          document
+            .getElementById("page-" + currentPage)
+            .classList.add("active");
+          renderAll();
+        });
+      });
+
+      // ─── Modal Helpers ───
+      function openModal(id) {
+        document.getElementById(id).classList.add("show");
+        document.body.style.overflow = "hidden";
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("show");
+        document.body.style.overflow = "";
+      }
+      function openAddModal() {
+        if (currentPage === "stocks" || currentPage === "dashboard")
+          openStockModal();
+        else if (currentPage === "flow") openFlowModal();
+        else if (currentPage === "dividends") openDivModal();
+      }
+
+      // ─── Toast ───
+      function showToast(msg) {
+        const t = document.createElement("div");
+        t.className = "toast";
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 2000);
+      }
+
+      // ─── Confirm ───
+      let confirmCallback = null;
+      function showConfirm(msg, cb) {
+        document.getElementById("confirmMsg").textContent = msg;
+        confirmCallback = cb;
+        document.getElementById("confirmDialog").classList.add("show");
+      }
+      function closeConfirm() {
+        document.getElementById("confirmDialog").classList.remove("show");
+        confirmCallback = null;
+      }
+      document.getElementById("confirmYes").addEventListener("click", () => {
+        if (confirmCallback) confirmCallback();
+        closeConfirm();
+      });
+
+      // ─── Format Helpers ───
+      function fmt(n, d = 2) {
+        return Number(n).toLocaleString("en-US", {
+          minimumFractionDigits: d,
+          maximumFractionDigits: d,
+        });
+      }
+      function fmtUSD(n) {
+        return "$" + fmt(n);
+      }
+      function fmtTHB(n) {
+        return "\u0E3F" + fmt(n);
+      }
+      function fmtPct(n) {
+        return (n >= 0 ? "+" : "") + fmt(n) + "%";
+      }
+      function pnlClass(n) {
+        return n >= 0 ? "positive" : "negative";
+      }
+
+      // ─── STOCKS ───
+      function openStockModal(stock = null) {
+        const form = document.getElementById("stockForm");
+        form.reset();
+        document.getElementById("tickerAC").classList.remove("show");
+        if (stock) {
+          document.getElementById("modalStockTitle").textContent = "Edit Stock";
+          document.getElementById("stockSubmitBtn").textContent = "Update";
+          document.getElementById("stockEditActions").style.display = "block";
+          document.getElementById("stockEditId").value = stock.id;
+          document.getElementById("stockTicker").value = stock.ticker;
+          document.getElementById("stockNameInput").value = stock.name || "";
+          document.getElementById("stockShares").value = stock.shares;
+          document.getElementById("stockAvgCost").value = stock.avgCost;
+          document.getElementById("stockCurrentPrice").value =
+            stock.currentPrice;
+          document.getElementById("stockSector").value = stock.sector || "";
+        } else {
+          document.getElementById("modalStockTitle").textContent = "Add Stock";
+          document.getElementById("stockSubmitBtn").textContent = "Add Stock";
+          document.getElementById("stockEditActions").style.display = "none";
+          document.getElementById("stockEditId").value = "";
+        }
+        openModal("modalStock");
+      }
+
+      async function saveStock(e) {
+        e.preventDefault();
+        const id = document.getElementById("stockEditId").value;
+        const ticker = document
+          .getElementById("stockTicker")
+          .value.toUpperCase()
+          .trim();
+        const priceInput = document.getElementById("stockCurrentPrice").value;
+        let currentPrice = parseFloat(priceInput) || 0;
+
+        if (!priceInput && getApiKey()) {
+          showToast("Fetching price for " + ticker + "...");
+          const fetched = await fetchSinglePrice(ticker);
+          if (fetched !== null) {
+            currentPrice = fetched;
+          } else {
+            showToast("Could not fetch price. Please enter manually.");
+            return;
+          }
+        } else if (!priceInput && !getApiKey()) {
+          currentPrice =
+            parseFloat(document.getElementById("stockAvgCost").value) || 0;
+        }
+
+        const sd = {
+          ticker,
+          name: document.getElementById("stockNameInput").value.trim(),
+          shares: parseFloat(document.getElementById("stockShares").value),
+          avgCost: parseFloat(document.getElementById("stockAvgCost").value),
+          currentPrice,
+          sector: document.getElementById("stockSector").value,
+        };
+        if (id) {
+          const idx = data.stocks.findIndex((s) => s.id === id);
+          if (idx !== -1) data.stocks[idx] = { ...data.stocks[idx], ...sd };
+          showToast("Stock updated");
+        } else {
+          data.stocks.push({ id: genId(), ...sd });
+          showToast("Stock added");
+        }
+        save();
+        closeModal("modalStock");
+        renderAll();
+      }
+
+      function confirmDeleteStock() {
+        const id = document.getElementById("stockEditId").value;
+        showConfirm("Delete this stock?", () => {
+          data.stocks = data.stocks.filter((s) => s.id !== id);
+          save();
+          closeModal("modalStock");
+          renderAll();
+          showToast("Stock deleted");
+        });
+      }
+
+      function renderStocks() {
+        renderApiBanner();
+        renderLastUpdated();
+        const list = document.getElementById("stockList");
+        const totalValue = data.stocks.reduce(
+          (s, st) => s + st.shares * st.currentPrice,
+          0,
+        );
+        const totalCost = data.stocks.reduce(
+          (s, st) => s + st.shares * st.avgCost,
+          0,
+        );
+        const totalPnl = totalValue - totalCost;
+        const totalPnlPct = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
+
+        document.getElementById("stocksHero").innerHTML = `
+    <div class="hero-card">
+      <div class="hero-label">Total Value</div>
+      <div class="hero-value">${fmtUSD(totalValue)}</div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hs-label">P&L</div>
+          <div class="hs-value">${totalPnl >= 0 ? "+" : ""}${fmtUSD(totalPnl)}</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hs-label">Return</div>
+          <div class="hs-value">${fmtPct(totalPnlPct)}</div>
+        </div>
+      </div>
+    </div>`;
+
+        if (data.stocks.length === 0) {
+          list.innerHTML =
+            '<div class="empty-state"><div class="empty-icon">&#128200;</div><p>No stocks yet</p><p class="empty-sub">Tap + to add your first stock</p></div>';
+          return;
+        }
+        list.innerHTML = data.stocks
+          .sort((a, b) => b.shares * b.currentPrice - a.shares * a.currentPrice)
+          .map((s) => {
+            const value = s.shares * s.currentPrice;
+            const cost = s.shares * s.avgCost;
+            const pnl = value - cost;
+            const pnlPct = cost > 0 ? (pnl / cost) * 100 : 0;
+            const alloc = totalValue > 0 ? (value / totalValue) * 100 : 0;
+            return `<div class="stock-item" onclick='openStockModal(${JSON.stringify(s).replace(/'/g, "&#39;")})'>
+        <div class="stock-item-inner" style="flex:1">
+          <div class="stock-icon">${s.ticker.slice(0, 2)}</div>
+          <div class="stock-info">
+            <div class="stock-ticker">${s.ticker}</div>
+            <div class="stock-name">${s.name || s.sector || ""}</div>
+          </div>
+        </div>
+        <div class="stock-right">
+          <div class="stock-price">${fmtUSD(value)}</div>
+          <div class="stock-pnl ${pnlClass(pnl)}">${fmtPct(pnlPct)}</div>
+          <div class="stock-alloc-bar"><div class="stock-alloc-fill" style="width:${alloc}%"></div></div>
+        </div>
+      </div>`;
+          })
+          .join("");
+      }
+
+      // ─── MONEY FLOW ───
+      function openFlowModal(flow = null) {
+        const form = document.getElementById("flowForm");
+        form.reset();
+        if (flow) {
+          document.getElementById("modalFlowTitle").textContent =
+            "Edit Transaction";
+          document.getElementById("flowSubmitBtn").textContent = "Update";
+          document.getElementById("flowEditActions").style.display = "block";
+          document.getElementById("flowEditId").value = flow.id;
+          document.getElementById("flowDate").value = flow.date;
+          document.getElementById("flowType").value = flow.type;
+          document.getElementById("flowTHB").value = flow.amountTHB;
+          document.getElementById("flowRate").value = flow.rate;
+          document.getElementById("flowUSD").value = flow.amountUSD;
+          document.getElementById("flowNote").value = flow.note || "";
+        } else {
+          document.getElementById("modalFlowTitle").textContent =
+            "Add Transaction";
+          document.getElementById("flowSubmitBtn").textContent =
+            "Add Transaction";
+          document.getElementById("flowEditActions").style.display = "none";
+          document.getElementById("flowEditId").value = "";
+          document.getElementById("flowDate").value = new Date()
+            .toISOString()
+            .slice(0, 10);
+        }
+        openModal("modalFlow");
+      }
+      function toggleFlowFields() {
+        calcFlowUSD();
+      }
+      function calcFlowUSD() {
+        const thb = parseFloat(document.getElementById("flowTHB").value) || 0;
+        const rate = parseFloat(document.getElementById("flowRate").value) || 0;
+        if (rate > 0)
+          document.getElementById("flowUSD").value = (thb / rate).toFixed(2);
+      }
+      document.getElementById("flowTHB").addEventListener("input", calcFlowUSD);
+      document
+        .getElementById("flowRate")
+        .addEventListener("input", calcFlowUSD);
+
+      function saveFlow(e) {
+        e.preventDefault();
+        const id = document.getElementById("flowEditId").value;
+        const fd = {
+          date: document.getElementById("flowDate").value,
+          type: document.getElementById("flowType").value,
+          amountTHB: parseFloat(document.getElementById("flowTHB").value),
+          rate: parseFloat(document.getElementById("flowRate").value),
+          amountUSD: parseFloat(document.getElementById("flowUSD").value),
+          note: document.getElementById("flowNote").value.trim(),
+        };
+        if (id) {
+          const idx = data.flows.findIndex((f) => f.id === id);
+          if (idx !== -1) data.flows[idx] = { ...data.flows[idx], ...fd };
+          showToast("Updated");
+        } else {
+          data.flows.push({ id: genId(), ...fd });
+          showToast("Transaction added");
+        }
+        save();
+        closeModal("modalFlow");
+        renderAll();
+      }
+      function confirmDeleteFlow() {
+        const id = document.getElementById("flowEditId").value;
+        showConfirm("Delete this transaction?", () => {
+          data.flows = data.flows.filter((f) => f.id !== id);
+          save();
+          closeModal("modalFlow");
+          renderAll();
+          showToast("Deleted");
+        });
+      }
+
+      function renderFlows() {
+        const deposits = data.flows.filter((f) => f.type === "deposit");
+        const withdraws = data.flows.filter((f) => f.type === "withdraw");
+        const totalDepTHB = deposits.reduce((s, f) => s + f.amountTHB, 0);
+        const totalDepUSD = deposits.reduce((s, f) => s + f.amountUSD, 0);
+        const totalWdTHB = withdraws.reduce((s, f) => s + f.amountTHB, 0);
+        const avgRate = totalDepUSD > 0 ? totalDepTHB / totalDepUSD : 0;
+        const netTHB = totalDepTHB - totalWdTHB;
+
+        document.getElementById("flowHero").innerHTML = `
+    <div class="hero-card" style="background:linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%); box-shadow: 0 8px 32px rgba(5,150,105,0.25);">
+      <div class="hero-label">Net Investment (THB)</div>
+      <div class="hero-value">${fmtTHB(netTHB)}</div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hs-label">Deposited</div>
+          <div class="hs-value">${fmtTHB(totalDepTHB)}</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hs-label">Withdrawn</div>
+          <div class="hs-value">${fmtTHB(totalWdTHB)}</div>
+        </div>
+      </div>
+    </div>`;
+
+        document.getElementById("fxRow").innerHTML = `
+    <div class="fx-card"><div class="fx-label">Avg FX Rate</div><div class="fx-value">${avgRate > 0 ? fmt(avgRate, 2) : "-"}</div></div>
+    <div class="fx-card"><div class="fx-label">Total USD</div><div class="fx-value">${fmtUSD(totalDepUSD)}</div></div>
+    <div class="fx-card"><div class="fx-label">Transactions</div><div class="fx-value">${data.flows.length}</div></div>`;
+
+        const list = document.getElementById("flowList");
+        if (data.flows.length === 0) {
+          list.innerHTML =
+            '<div class="empty-state"><div class="empty-icon">&#128176;</div><p>No transactions yet</p><p class="empty-sub">Track your THB to USD transfers</p></div>';
+        } else {
+          list.innerHTML = data.flows
+            .sort((a, b) => b.date.localeCompare(a.date))
+            .map((f) => {
+              const isDep = f.type === "deposit";
+              return `<div class="list-item" onclick='openFlowModal(${JSON.stringify(f).replace(/'/g, "&#39;")})'>
+        <div class="li-left">
+          <div class="li-icon ${isDep ? "li-icon-deposit" : "li-icon-withdraw"}">${isDep ? "&#8593;" : "&#8595;"}</div>
+          <div class="li-info">
+            <div class="li-title">${isDep ? "Deposit" : "Withdraw"}</div>
+            <div class="li-sub">${f.date}${f.note ? " &middot; " + f.note : ""}</div>
+          </div>
+        </div>
+        <div class="li-right">
+          <div class="li-amount">${fmtTHB(f.amountTHB)}</div>
+          <div class="li-detail">${fmtUSD(f.amountUSD)} @ ${fmt(f.rate, 2)}</div>
+        </div>
+      </div>`;
+            })
+            .join("");
+        }
+      }
+
+      // ─── DIVIDENDS ───
+      function openDivModal(div = null) {
+        const form = document.getElementById("divForm");
+        form.reset();
+        document.getElementById("divTickerAC").classList.remove("show");
+        if (div) {
+          document.getElementById("modalDivTitle").textContent =
+            "Edit Dividend";
+          document.getElementById("divSubmitBtn").textContent = "Update";
+          document.getElementById("divEditActions").style.display = "block";
+          document.getElementById("divEditId").value = div.id;
+          document.getElementById("divDate").value = div.date;
+          document.getElementById("divTicker").value = div.ticker;
+          document.getElementById("divAmount").value = div.amount;
+          document.getElementById("divTax").value = div.tax || 0;
+          document.getElementById("divNote").value = div.note || "";
+        } else {
+          document.getElementById("modalDivTitle").textContent = "Add Dividend";
+          document.getElementById("divSubmitBtn").textContent = "Add Dividend";
+          document.getElementById("divEditActions").style.display = "none";
+          document.getElementById("divEditId").value = "";
+          document.getElementById("divDate").value = new Date()
+            .toISOString()
+            .slice(0, 10);
+        }
+        openModal("modalDiv");
+      }
+
+      function saveDiv(e) {
+        e.preventDefault();
+        const id = document.getElementById("divEditId").value;
+        const dd = {
+          date: document.getElementById("divDate").value,
+          ticker: document
+            .getElementById("divTicker")
+            .value.toUpperCase()
+            .trim(),
+          amount: parseFloat(document.getElementById("divAmount").value),
+          tax: parseFloat(document.getElementById("divTax").value) || 0,
+          note: document.getElementById("divNote").value.trim(),
+        };
+        if (id) {
+          const idx = data.dividends.findIndex((d) => d.id === id);
+          if (idx !== -1)
+            data.dividends[idx] = { ...data.dividends[idx], ...dd };
+          showToast("Updated");
+        } else {
+          data.dividends.push({ id: genId(), ...dd });
+          showToast("Dividend added");
+        }
+        save();
+        closeModal("modalDiv");
+        renderAll();
+      }
+      function confirmDeleteDiv() {
+        const id = document.getElementById("divEditId").value;
+        showConfirm("Delete this dividend?", () => {
+          data.dividends = data.dividends.filter((d) => d.id !== id);
+          save();
+          closeModal("modalDiv");
+          renderAll();
+          showToast("Deleted");
+        });
+      }
+
+      function renderDividends() {
+        const totalGross = data.dividends.reduce((s, d) => s + d.amount, 0);
+        const totalTax = data.dividends.reduce((s, d) => s + (d.tax || 0), 0);
+        const totalNet = totalGross - totalTax;
+
+        document.getElementById("divHero").innerHTML = `
+    <div class="hero-card" style="background:linear-gradient(135deg, #D97706 0%, #F59E0B 50%, #FBBF24 100%); box-shadow: 0 8px 32px rgba(217,119,6,0.25);">
+      <div class="hero-label">Total Dividends (Net)</div>
+      <div class="hero-value">${fmtUSD(totalNet)}</div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hs-label">Gross</div>
+          <div class="hs-value">${fmtUSD(totalGross)}</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hs-label">Tax</div>
+          <div class="hs-value">-${fmtUSD(totalTax)}</div>
+        </div>
+      </div>
+    </div>`;
+
+        const list = document.getElementById("divList");
+        if (data.dividends.length === 0) {
+          list.innerHTML =
+            '<div class="empty-state"><div class="empty-icon">&#128181;</div><p>No dividends yet</p><p class="empty-sub">Record your dividend income</p></div>';
+        } else {
+          list.innerHTML = data.dividends
+            .sort((a, b) => b.date.localeCompare(a.date))
+            .map((d) => {
+              const net = d.amount - (d.tax || 0);
+              return `<div class="list-item" onclick='openDivModal(${JSON.stringify(d).replace(/'/g, "&#39;")})'>
+        <div class="li-left">
+          <div class="li-icon li-icon-dividend">&#128178;</div>
+          <div class="li-info">
+            <div class="li-title">${d.ticker}</div>
+            <div class="li-sub">${d.date}${d.note ? " &middot; " + d.note : ""}</div>
+          </div>
+        </div>
+        <div class="li-right">
+          <div class="li-amount positive">${fmtUSD(net)}</div>
+          ${d.tax > 0 ? `<div class="li-detail">Tax: ${fmtUSD(d.tax)}</div>` : ""}
+        </div>
+      </div>`;
+            })
+            .join("");
+        }
+      }
+
+      // ─── DASHBOARD ───
+      let pieChart = null,
+        pnlChart = null;
+      const COLORS = [
+        "#4F46E5",
+        "#10B981",
+        "#F59E0B",
+        "#EF4444",
+        "#8B5CF6",
+        "#06B6D4",
+        "#EC4899",
+        "#14B8A6",
+        "#F97316",
+        "#6366F1",
+        "#84CC16",
+        "#A855F7",
+      ];
+
+      function renderDashboard() {
+        renderCloudBanner();
+        const totalValue = data.stocks.reduce(
+          (s, st) => s + st.shares * st.currentPrice,
+          0,
+        );
+        const totalCost = data.stocks.reduce(
+          (s, st) => s + st.shares * st.avgCost,
+          0,
+        );
+        const totalPnl = totalValue - totalCost;
+        const totalPnlPct = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
+        const totalDivNet = data.dividends.reduce(
+          (s, d) => s + d.amount - (d.tax || 0),
+          0,
+        );
+        const deposits = data.flows.filter((f) => f.type === "deposit");
+        const totalDepTHB = deposits.reduce((s, f) => s + f.amountTHB, 0);
+        const totalDepUSD = deposits.reduce((s, f) => s + f.amountUSD, 0);
+        const avgRate = totalDepUSD > 0 ? totalDepTHB / totalDepUSD : 0;
+
+        document.getElementById("dashHero").innerHTML = `
+    <div class="hero-card">
+      <div class="hero-label">Portfolio Value</div>
+      <div class="hero-value">${fmtUSD(totalValue)}</div>
+      <div class="hero-sub ${pnlClass(totalPnl)}" style="color:${totalPnl >= 0 ? "rgba(255,255,255,0.9)" : "#fca5a5"}">${fmtPct(totalPnlPct)} (${totalPnl >= 0 ? "+" : ""}${fmtUSD(totalPnl)})</div>
+    </div>`;
+
+        document.getElementById("dashMini").innerHTML = `
+    <div class="mini-card">
+      <div class="mc-icon" style="background:var(--green-bg)">&#128178;</div>
+      <div class="mc-label">Dividends</div>
+      <div class="mc-value positive">${fmtUSD(totalDivNet)}</div>
+      <div class="mc-sub">${data.dividends.length} payments</div>
+    </div>
+    <div class="mini-card">
+      <div class="mc-icon" style="background:var(--accent-bg)">&#128177;</div>
+      <div class="mc-label">Avg FX Rate</div>
+      <div class="mc-value">${avgRate > 0 ? fmt(avgRate, 2) : "-"}</div>
+      <div class="mc-sub">Invested ${fmtTHB(totalDepTHB)}</div>
+    </div>`;
+
+        renderPieChart();
+        renderPnlChart();
+      }
+
+      function renderPieChart() {
+        const canvas = document.getElementById("pieChart");
+        const ctx = canvas.getContext("2d");
+        const emptyEl = document.getElementById("pieEmpty");
+        if (pieChart) pieChart.destroy();
+        if (data.stocks.length === 0) {
+          canvas.style.display = "none";
+          emptyEl.innerHTML =
+            '<p style="text-align:center;color:var(--text-tertiary);padding:20px;font-size:14px">Add stocks to see allocation</p>';
+          return;
+        }
+        canvas.style.display = "block";
+        emptyEl.innerHTML = "";
+        const sorted = [...data.stocks].sort(
+          (a, b) => b.shares * b.currentPrice - a.shares * a.currentPrice,
+        );
+        pieChart = new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: sorted.map((s) => s.ticker),
+            datasets: [
+              {
+                data: sorted.map((s) => s.shares * s.currentPrice),
+                backgroundColor: sorted.map(
+                  (_, i) => COLORS[i % COLORS.length],
+                ),
+                borderWidth: 3,
+                borderColor: "#fff",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            cutout: "60%",
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: {
+                  color: "#6b7280",
+                  padding: 14,
+                  font: { size: 12, family: "Inter", weight: "500" },
+                  usePointStyle: true,
+                  pointStyleWidth: 8,
+                },
+              },
+              tooltip: {
+                callbacks: {
+                  label: (c) => {
+                    const t = c.dataset.data.reduce((a, b) => a + b, 0);
+                    return `${c.label}: $${c.parsed.toFixed(2)} (${((c.parsed / t) * 100).toFixed(1)}%)`;
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      function renderPnlChart() {
+        const canvas = document.getElementById("pnlChart");
+        const ctx = canvas.getContext("2d");
+        const emptyEl = document.getElementById("pnlEmpty");
+        if (pnlChart) pnlChart.destroy();
+        if (data.stocks.length === 0) {
+          canvas.style.display = "none";
+          emptyEl.innerHTML =
+            '<p style="text-align:center;color:var(--text-tertiary);padding:20px;font-size:14px">Add stocks to see P&L</p>';
+          return;
+        }
+        canvas.style.display = "block";
+        emptyEl.innerHTML = "";
+        const sorted = [...data.stocks].sort(
+          (a, b) =>
+            (b.currentPrice - b.avgCost) * b.shares -
+            (a.currentPrice - a.avgCost) * a.shares,
+        );
+        const values = sorted.map(
+          (s) => (s.currentPrice - s.avgCost) * s.shares,
+        );
+        pnlChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: sorted.map((s) => s.ticker),
+            datasets: [
+              {
+                data: values,
+                backgroundColor: values.map((v) =>
+                  v >= 0 ? "#10B981" : "#EF4444",
+                ),
+                borderRadius: 8,
+                barThickness: "flex",
+                maxBarThickness: 44,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: { label: (c) => `P&L: $${c.parsed.y.toFixed(2)}` },
+              },
+            },
+            scales: {
+              x: {
+                ticks: {
+                  color: "#9ca3af",
+                  font: { size: 11, family: "Inter", weight: "600" },
+                },
+                grid: { display: false },
+              },
+              y: {
+                ticks: {
+                  color: "#9ca3af",
+                  font: { size: 10 },
+                  callback: (v) => "$" + v.toFixed(0),
+                },
+                grid: { color: "#f0f0f0" },
+              },
+            },
+          },
+        });
+      }
+
+      // ─── Render All ───
+      function renderAll() {
+        renderDashboard();
+        renderStocks();
+        renderFlows();
+        renderDividends();
+      }
+
+      // ─── Export / Import ───
+      function exportData() {
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `dime-tracker-${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("Data exported");
+      }
+      function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const imp = JSON.parse(e.target.result);
+            if (imp.stocks && imp.flows && imp.dividends) {
+              data = imp;
+              save();
+              renderAll();
+              showToast("Imported successfully");
+            } else showToast("Invalid file");
+          } catch (err) {
+            showToast("Error reading file");
+          }
+        };
+        reader.readAsText(file);
+        event.target.value = "";
+      }
+
+      // ─── Init ───
+      setupAutocomplete("stockTicker", "tickerAC");
+      setupAutocomplete("divTicker", "divTickerAC");
+      renderAll();
+      initAuth();
+    </script>
+  </body>
+</html>
