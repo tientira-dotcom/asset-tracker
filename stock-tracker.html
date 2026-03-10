@@ -1154,7 +1154,7 @@
         <div id="pieEmpty"></div>
       </div>
       <div class="card">
-        <div class="section-title">P&L by Stock</div>
+        <div class="section-title">Cost by Stock</div>
         <div style="position: relative; width: 100%; height: 200px">
           <canvas id="pnlChart"></canvas>
         </div>
@@ -1362,40 +1362,14 @@
               placeholder="Auto-filled or type manually"
             />
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Shares</label>
-              <input
-                type="number"
-                id="stockShares"
-                placeholder="0"
-                step="any"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label>Avg Cost (USD)</label>
-              <input
-                type="number"
-                id="stockAvgCost"
-                placeholder="0.00"
-                step="any"
-                required
-              />
-            </div>
-          </div>
           <div class="form-group">
-            <label
-              >Current Price (USD)
-              <span style="font-weight: 400; color: var(--text-tertiary)"
-                >- auto-fetched if API key set</span
-              ></label
-            >
+            <label>Total Cost (USD)</label>
             <input
               type="number"
-              id="stockCurrentPrice"
-              placeholder="Auto or manual"
+              id="stockTotalCost"
+              placeholder="0.00"
               step="any"
+              required
             />
           </div>
           <div class="form-group">
@@ -2437,10 +2411,7 @@ create policy "Users can manage own data"
           document.getElementById("stockEditId").value = stock.id;
           document.getElementById("stockTicker").value = stock.ticker;
           document.getElementById("stockNameInput").value = stock.name || "";
-          document.getElementById("stockShares").value = stock.shares;
-          document.getElementById("stockAvgCost").value = stock.avgCost;
-          document.getElementById("stockCurrentPrice").value =
-            stock.currentPrice;
+          document.getElementById("stockTotalCost").value = stock.totalCost || 0;
           document.getElementById("stockSector").value = stock.sector || "";
         } else {
           document.getElementById("modalStockTitle").textContent = "Add Stock";
@@ -2458,28 +2429,20 @@ create policy "Users can manage own data"
           .getElementById("stockTicker")
           .value.toUpperCase()
           .trim();
-        const priceInput = document.getElementById("stockCurrentPrice").value;
-        let currentPrice = parseFloat(priceInput) || 0;
 
-        if (!priceInput && getApiKey()) {
+        let currentPrice = 0;
+        if (getApiKey()) {
           showToast("Fetching price for " + ticker + "...");
           const fetched = await fetchSinglePrice(ticker);
           if (fetched !== null) {
             currentPrice = fetched;
-          } else {
-            showToast("Could not fetch price. Please enter manually.");
-            return;
           }
-        } else if (!priceInput && !getApiKey()) {
-          currentPrice =
-            parseFloat(document.getElementById("stockAvgCost").value) || 0;
         }
 
         const sd = {
           ticker,
           name: document.getElementById("stockNameInput").value.trim(),
-          shares: parseFloat(document.getElementById("stockShares").value),
-          avgCost: parseFloat(document.getElementById("stockAvgCost").value),
+          totalCost: parseFloat(document.getElementById("stockTotalCost").value) || 0,
           currentPrice,
           sector: document.getElementById("stockSector").value,
         };
@@ -2511,29 +2474,23 @@ create policy "Users can manage own data"
         renderApiBanner();
         renderLastUpdated();
         const list = document.getElementById("stockList");
-        const totalValue = data.stocks.reduce(
-          (s, st) => s + st.shares * st.currentPrice,
+        const totalInvested = data.stocks.reduce(
+          (s, st) => s + (st.totalCost || 0),
           0,
         );
-        const totalCost = data.stocks.reduce(
-          (s, st) => s + st.shares * st.avgCost,
-          0,
-        );
-        const totalPnl = totalValue - totalCost;
-        const totalPnlPct = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
 
         document.getElementById("stocksHero").innerHTML = `
     <div class="hero-card">
-      <div class="hero-label">Total Value</div>
-      <div class="hero-value">${fmtUSD(totalValue)}</div>
+      <div class="hero-label">Total Invested</div>
+      <div class="hero-value">${fmtUSD(totalInvested)}</div>
       <div class="hero-stats">
         <div class="hero-stat">
-          <div class="hs-label">P&L</div>
-          <div class="hs-value">${totalPnl >= 0 ? "+" : ""}${fmtUSD(totalPnl)}</div>
+          <div class="hs-label">Stocks</div>
+          <div class="hs-value">${data.stocks.length}</div>
         </div>
         <div class="hero-stat">
-          <div class="hs-label">Return</div>
-          <div class="hs-value">${fmtPct(totalPnlPct)}</div>
+          <div class="hs-label">Sectors</div>
+          <div class="hs-value">${new Set(data.stocks.map(s => s.sector).filter(Boolean)).size}</div>
         </div>
       </div>
     </div>`;
@@ -2544,13 +2501,10 @@ create policy "Users can manage own data"
           return;
         }
         list.innerHTML = data.stocks
-          .sort((a, b) => b.shares * b.currentPrice - a.shares * a.currentPrice)
+          .sort((a, b) => (b.totalCost || 0) - (a.totalCost || 0))
           .map((s) => {
-            const value = s.shares * s.currentPrice;
-            const cost = s.shares * s.avgCost;
-            const pnl = value - cost;
-            const pnlPct = cost > 0 ? (pnl / cost) * 100 : 0;
-            const alloc = totalValue > 0 ? (value / totalValue) * 100 : 0;
+            const cost = s.totalCost || 0;
+            const alloc = totalInvested > 0 ? (cost / totalInvested) * 100 : 0;
             return `<div class="stock-item" onclick='openStockModal(${JSON.stringify(s).replace(/'/g, "&#39;")})'>
         <div class="stock-item-inner" style="flex:1">
           <div class="stock-icon">${s.ticker.slice(0, 2)}</div>
@@ -2560,8 +2514,8 @@ create policy "Users can manage own data"
           </div>
         </div>
         <div class="stock-right">
-          <div class="stock-price">${fmtUSD(value)}</div>
-          <div class="stock-pnl ${pnlClass(pnl)}">${fmtPct(pnlPct)}</div>
+          <div class="stock-price">${fmtUSD(cost)}</div>
+          <div class="stock-pnl" style="color:var(--text-secondary)">${s.currentPrice > 0 ? "@$" + s.currentPrice.toFixed(2) : ""}</div>
           <div class="stock-alloc-bar"><div class="stock-alloc-fill" style="width:${alloc}%"></div></div>
         </div>
       </div>`;
@@ -2681,16 +2635,27 @@ create policy "Users can manage own data"
           list.innerHTML =
             '<div class="empty-state"><div class="empty-icon">&#128176;</div><p>No transactions yet</p><p class="empty-sub">Track your THB to USD transfers</p></div>';
         } else {
-          list.innerHTML = data.flows
-            .sort((a, b) => b.date.localeCompare(a.date))
-            .map((f) => {
-              const isDep = f.type === "deposit";
-              return `<div class="list-item" onclick='openFlowModal(${JSON.stringify(f).replace(/'/g, "&#39;")})'>
+          const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+          const sorted = [...data.flows].sort((a, b) => b.date.localeCompare(a.date));
+          let html = "";
+          let lastMonth = "";
+          sorted.forEach((f) => {
+            const parts = f.date.split("-");
+            const monthKey = parts[0] + "-" + parts[1];
+            if (monthKey !== lastMonth) {
+              const mIdx = parseInt(parts[1], 10) - 1;
+              html += `<div style="padding:12px 4px 6px;font-size:13px;font-weight:700;color:var(--text-secondary);letter-spacing:0.3px">${MONTH_NAMES[mIdx]} ${parts[0]}</div>`;
+              lastMonth = monthKey;
+            }
+            const isDep = f.type === "deposit";
+            const dd = parts[2], mm = parts[1], yyyy = parts[0];
+            const displayDate = dd + "/" + mm + "/" + yyyy;
+            html += `<div class="list-item" onclick='openFlowModal(${JSON.stringify(f).replace(/'/g, "&#39;")})'>
         <div class="li-left">
           <div class="li-icon ${isDep ? "li-icon-deposit" : "li-icon-withdraw"}">${isDep ? "&#8593;" : "&#8595;"}</div>
           <div class="li-info">
             <div class="li-title">${isDep ? "Deposit" : "Withdraw"}</div>
-            <div class="li-sub">${f.date}${f.note ? " &middot; " + f.note : ""}</div>
+            <div class="li-sub">${displayDate}${f.note ? " &middot; " + f.note : ""}</div>
           </div>
         </div>
         <div class="li-right">
@@ -2698,8 +2663,8 @@ create policy "Users can manage own data"
           <div class="li-detail">${fmtUSD(f.amountUSD)} @ ${fmt(f.rate, 2)}</div>
         </div>
       </div>`;
-            })
-            .join("");
+          });
+          list.innerHTML = html;
         }
       }
 
@@ -2803,7 +2768,7 @@ create policy "Users can manage own data"
           <div class="li-icon li-icon-dividend">&#128178;</div>
           <div class="li-info">
             <div class="li-title">${d.ticker}</div>
-            <div class="li-sub">${d.date}${d.note ? " &middot; " + d.note : ""}</div>
+            <div class="li-sub">${d.date.split("-").reverse().join("/")}${d.note ? " &middot; " + d.note : ""}</div>
           </div>
         </div>
         <div class="li-right">
@@ -2836,16 +2801,10 @@ create policy "Users can manage own data"
 
       function renderDashboard() {
         renderCloudBanner();
-        const totalValue = data.stocks.reduce(
-          (s, st) => s + st.shares * st.currentPrice,
+        const totalInvested = data.stocks.reduce(
+          (s, st) => s + (st.totalCost || 0),
           0,
         );
-        const totalCost = data.stocks.reduce(
-          (s, st) => s + st.shares * st.avgCost,
-          0,
-        );
-        const totalPnl = totalValue - totalCost;
-        const totalPnlPct = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
         const totalDivNet = data.dividends.reduce(
           (s, d) => s + d.amount - (d.tax || 0),
           0,
@@ -2857,9 +2816,9 @@ create policy "Users can manage own data"
 
         document.getElementById("dashHero").innerHTML = `
     <div class="hero-card">
-      <div class="hero-label">Portfolio Value</div>
-      <div class="hero-value">${fmtUSD(totalValue)}</div>
-      <div class="hero-sub ${pnlClass(totalPnl)}" style="color:${totalPnl >= 0 ? "rgba(255,255,255,0.9)" : "#fca5a5"}">${fmtPct(totalPnlPct)} (${totalPnl >= 0 ? "+" : ""}${fmtUSD(totalPnl)})</div>
+      <div class="hero-label">Total Invested</div>
+      <div class="hero-value">${fmtUSD(totalInvested)}</div>
+      <div class="hero-sub" style="color:rgba(255,255,255,0.8)">${data.stocks.length} stock${data.stocks.length !== 1 ? "s" : ""}</div>
     </div>`;
 
         document.getElementById("dashMini").innerHTML = `
@@ -2894,7 +2853,7 @@ create policy "Users can manage own data"
         canvas.style.display = "block";
         emptyEl.innerHTML = "";
         const sorted = [...data.stocks].sort(
-          (a, b) => b.shares * b.currentPrice - a.shares * a.currentPrice,
+          (a, b) => (b.totalCost || 0) - (a.totalCost || 0),
         );
         pieChart = new Chart(ctx, {
           type: "doughnut",
@@ -2902,7 +2861,7 @@ create policy "Users can manage own data"
             labels: sorted.map((s) => s.ticker),
             datasets: [
               {
-                data: sorted.map((s) => s.shares * s.currentPrice),
+                data: sorted.map((s) => s.totalCost || 0),
                 backgroundColor: sorted.map(
                   (_, i) => COLORS[i % COLORS.length],
                 ),
@@ -2947,19 +2906,15 @@ create policy "Users can manage own data"
         if (data.stocks.length === 0) {
           canvas.style.display = "none";
           emptyEl.innerHTML =
-            '<p style="text-align:center;color:var(--text-tertiary);padding:20px;font-size:14px">Add stocks to see P&L</p>';
+            '<p style="text-align:center;color:var(--text-tertiary);padding:20px;font-size:14px">Add stocks to see cost breakdown</p>';
           return;
         }
         canvas.style.display = "block";
         emptyEl.innerHTML = "";
         const sorted = [...data.stocks].sort(
-          (a, b) =>
-            (b.currentPrice - b.avgCost) * b.shares -
-            (a.currentPrice - a.avgCost) * a.shares,
+          (a, b) => (b.totalCost || 0) - (a.totalCost || 0),
         );
-        const values = sorted.map(
-          (s) => (s.currentPrice - s.avgCost) * s.shares,
-        );
+        const values = sorted.map((s) => s.totalCost || 0);
         pnlChart = new Chart(ctx, {
           type: "bar",
           data: {
@@ -2967,8 +2922,8 @@ create policy "Users can manage own data"
             datasets: [
               {
                 data: values,
-                backgroundColor: values.map((v) =>
-                  v >= 0 ? "#10B981" : "#EF4444",
+                backgroundColor: sorted.map(
+                  (_, i) => COLORS[i % COLORS.length],
                 ),
                 borderRadius: 8,
                 barThickness: "flex",
@@ -2982,7 +2937,7 @@ create policy "Users can manage own data"
             plugins: {
               legend: { display: false },
               tooltip: {
-                callbacks: { label: (c) => `P&L: $${c.parsed.y.toFixed(2)}` },
+                callbacks: { label: (c) => `Cost: $${c.parsed.y.toFixed(2)}` },
               },
             },
             scales: {
