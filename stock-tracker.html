@@ -1077,7 +1077,6 @@
 
     <!-- Dashboard Page -->
     <div id="page-dashboard" class="page active">
-      <div id="cloudBanner"></div>
       <div id="dashHero"></div>
       <div class="mini-cards" id="dashMini"></div>
       <div class="card">
@@ -1111,7 +1110,10 @@
     <div id="page-flow" class="page">
       <div id="flowHero"></div>
       <div class="fx-row" id="fxRow"></div>
-      <div class="section-title">Transactions</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="section-title" style="margin-bottom:0">Transactions</div>
+        <select id="flowYearFilter" onchange="renderFlows()" style="padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:var(--card);font-family:inherit;font-size:13px;font-weight:600;color:var(--text);cursor:pointer"></select>
+      </div>
       <div id="flowList"></div>
     </div>
 
@@ -2125,16 +2127,21 @@ create policy "Users can manage own data"
         }
         // Listen for auth state changes (e.g. password recovery redirect)
         sb.auth.onAuthStateChange((event, session) => {
-          if (event === "PASSWORD_RECOVERY") {
-            const newPass = prompt("Enter your new password (min 6 characters):");
-            if (newPass && newPass.length >= 6) {
-              sb.auth.updateUser({ password: newPass }).then(({ error }) => {
-                if (error) showToast("Failed: " + error.message);
-                else showToast("Password updated!");
-              });
-            }
-          }
-          if (event === "SIGNED_IN" && session) {
+          if (event === "PASSWORD_RECOVERY" && session) {
+            currentUser = session.user;
+            updateUserChip();
+            // Show password reset UI
+            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+            document.getElementById("page-settings").classList.add("active");
+            document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
+            document.querySelector('[data-page="settings"]').classList.add("active");
+            renderSettings();
+            setTimeout(() => {
+              const el = document.getElementById("changePwSection");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+              showToast("Set your new password below");
+            }, 300);
+          } else if (event === "SIGNED_IN" && session) {
             currentUser = session.user;
             updateUserChip();
             renderCloudBanner();
@@ -2701,8 +2708,20 @@ create policy "Users can manage own data"
       }
 
       function renderFlows() {
-        const deposits = data.flows.filter((f) => f.type === "deposit");
-        const withdraws = data.flows.filter((f) => f.type === "withdraw");
+        // Build year options
+        const years = [...new Set(data.flows.map(f => f.date.split("-")[0]))].sort((a, b) => b.localeCompare(a));
+        const yearSel = document.getElementById("flowYearFilter");
+        const prevYear = yearSel.value;
+        yearSel.innerHTML = `<option value="all">All Years</option>` + years.map(y => `<option value="${y}">${y}</option>`).join("");
+        if (prevYear && years.includes(prevYear)) yearSel.value = prevYear;
+        else if (years.length > 0 && !prevYear) yearSel.value = years[0];
+        const selectedYear = yearSel.value;
+
+        // Filter flows by year
+        const filtered = selectedYear === "all" ? data.flows : data.flows.filter(f => f.date.startsWith(selectedYear));
+
+        const deposits = filtered.filter((f) => f.type === "deposit");
+        const withdraws = filtered.filter((f) => f.type === "withdraw");
         const totalDepTHB = deposits.reduce((s, f) => s + f.amountTHB, 0);
         const totalDepUSD = deposits.reduce((s, f) => s + f.amountUSD, 0);
         const totalWdTHB = withdraws.reduce((s, f) => s + f.amountTHB, 0);
@@ -2728,15 +2747,15 @@ create policy "Users can manage own data"
         document.getElementById("fxRow").innerHTML = `
     <div class="fx-card"><div class="fx-label">Avg FX Rate</div><div class="fx-value">${avgRate > 0 ? fmt(avgRate, 2) : "-"}</div></div>
     <div class="fx-card"><div class="fx-label">Total USD</div><div class="fx-value">${fmtUSD(totalDepUSD)}</div></div>
-    <div class="fx-card"><div class="fx-label">Transactions</div><div class="fx-value">${data.flows.length}</div></div>`;
+    <div class="fx-card"><div class="fx-label">Transactions</div><div class="fx-value">${filtered.length}</div></div>`;
 
         const list = document.getElementById("flowList");
-        if (data.flows.length === 0) {
+        if (filtered.length === 0) {
           list.innerHTML =
             '<div class="empty-state"><div class="empty-icon">&#128176;</div><p>No transactions yet</p><p class="empty-sub">Track your THB to USD transfers</p></div>';
         } else {
           const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-          const sorted = [...data.flows].sort((a, b) => b.date.localeCompare(a.date));
+          const sorted = [...filtered].sort((a, b) => b.date.localeCompare(a.date));
           let html = "";
           let lastMonth = "";
           sorted.forEach((f) => {
@@ -2988,7 +3007,7 @@ create policy "Users can manage own data"
                   padding: 14,
                   font: { size: 12, family: "Inter", weight: "500" },
                   usePointStyle: true,
-                  pointStyleWidth: 8,
+                  pointStyle: "circle",
                 },
               },
               tooltip: {
