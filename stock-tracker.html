@@ -309,6 +309,11 @@
         border-radius: var(--radius-sm);
         padding: 16px;
         box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        transition: transform 0.15s;
+      }
+      .mini-card:active {
+        transform: scale(0.97);
       }
       .mini-card .mc-icon {
         width: 36px;
@@ -980,6 +985,103 @@
       }
 
       /* ─── Settings Page ─── */
+      /* ─── Widget Tap ─── */
+      .widget-tap {
+        cursor: pointer;
+        transition: transform 0.15s;
+      }
+      .widget-tap:active {
+        transform: scale(0.98);
+      }
+      .widget-chevron {
+        float: right;
+        color: var(--text-tertiary);
+        font-size: 18px;
+        line-height: 1;
+      }
+
+      /* ─── News Widget ─── */
+      .news-btn-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .news-btn-row .btn {
+        flex: 1;
+        padding: 10px;
+        font-size: 13px;
+      }
+      .news-summary-card {
+        background: linear-gradient(135deg, #f0f9ff 0%, #ede9fe 100%);
+        border-radius: var(--radius-sm);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .news-summary-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .news-summary-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text);
+      }
+      .news-summary-time {
+        font-size: 11px;
+        color: var(--text-tertiary);
+      }
+      .news-summary-body {
+        font-size: 12px;
+        line-height: 1.7;
+        color: var(--text-secondary);
+        white-space: pre-wrap;
+      }
+      .news-item {
+        display: block;
+        background: var(--card);
+        border-radius: var(--radius-sm);
+        padding: 12px 14px;
+        margin-bottom: 8px;
+        box-shadow: var(--shadow-sm);
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.15s;
+      }
+      .news-item:active {
+        transform: scale(0.985);
+      }
+      .news-item-headline {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+        margin-bottom: 4px;
+      }
+      .news-item-meta {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .news-ticker-badge {
+        display: inline-block;
+        background: var(--accent-bg);
+        color: var(--accent);
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .news-loading {
+        text-align: center;
+        padding: 20px;
+        color: var(--text-tertiary);
+        font-size: 13px;
+      }
+
       .settings-section {
         background: var(--card);
         border-radius: var(--radius);
@@ -1085,19 +1187,30 @@
 
     <!-- Dashboard Page -->
     <div id="page-dashboard" class="page active">
-      <div id="dashHero"></div>
+      <div id="dashHero" onclick="navigateTo('stocks')" class="widget-tap"></div>
       <div class="mini-cards" id="dashMini"></div>
-      <div class="card">
-        <div class="section-title">Allocation</div>
+      <div class="card widget-tap" onclick="navigateTo('stocks')">
+        <div class="section-title">Allocation <span class="widget-chevron">&#8250;</span></div>
         <div class="chart-container"><canvas id="pieChart"></canvas></div>
         <div id="pieEmpty"></div>
       </div>
-      <div class="card">
-        <div class="section-title">P&L by Stock</div>
+      <div class="card widget-tap" onclick="navigateTo('stocks')">
+        <div class="section-title">P&L by Stock <span class="widget-chevron">&#8250;</span></div>
         <div style="position: relative; width: 100%; height: 200px">
           <canvas id="pnlChart"></canvas>
         </div>
         <div id="pnlEmpty"></div>
+      </div>
+
+      <!-- News Widget -->
+      <div class="card">
+        <div class="section-title">&#128240; Stock News</div>
+        <div class="news-btn-row">
+          <button class="btn btn-primary" onclick="event.stopPropagation(); fetchAllNews()">&#8635; Fetch News</button>
+          <button class="btn btn-outline" onclick="event.stopPropagation(); generateAiSummary()">&#10024; AI Summary</button>
+        </div>
+        <div id="aiSummaryCard" style="display:none"></div>
+        <div id="newsWidgetList"></div>
       </div>
     </div>
 
@@ -1175,6 +1288,21 @@
         <div class="settings-btn-row">
           <button class="btn btn-primary" onclick="saveSettingsFinnhub()">Save</button>
           <button class="btn btn-ghost" onclick="removeSettingsFinnhub()" style="margin:0; color:var(--red)">Remove</button>
+        </div>
+      </div>
+
+      <!-- Gemini AI Config -->
+      <div class="settings-section">
+        <div class="settings-section-title"><span class="ss-icon">&#129302;</span> Gemini AI</div>
+        <div id="settingsGeminiStatus"></div>
+        <div class="settings-item">
+          <label>API Key</label>
+          <input type="text" id="settingGeminiKey" placeholder="Your Gemini API key" />
+          <div class="si-hint">Free key at <b>aistudio.google.com</b></div>
+        </div>
+        <div class="settings-btn-row">
+          <button class="btn btn-primary" onclick="saveSettingsGemini()">Save</button>
+          <button class="btn btn-ghost" onclick="removeSettingsGemini()" style="margin:0; color:var(--red)">Remove</button>
         </div>
       </div>
 
@@ -2282,6 +2410,178 @@ create policy "Users can manage own data"
         }
       }
 
+      // ─── Gemini AI API ───
+      const GEMINI_KEY_STORAGE = "dime_gemini_key";
+      function getGeminiKey() {
+        return localStorage.getItem(GEMINI_KEY_STORAGE) || "";
+      }
+      function saveSettingsGemini() {
+        const key = document.getElementById("settingGeminiKey").value.trim();
+        if (!key) { showToast("Enter a Gemini API key"); return; }
+        localStorage.setItem(GEMINI_KEY_STORAGE, key);
+        showToast("Gemini key saved!");
+        renderSettings();
+      }
+      function removeSettingsGemini() {
+        localStorage.removeItem(GEMINI_KEY_STORAGE);
+        showToast("Gemini key removed");
+        renderSettings();
+      }
+
+      // ─── Stock News ───
+      let newsCache = {};
+      let aiSummaryCache = null;
+      const NEWS_CACHE_TTL = 30 * 60 * 1000;
+      const NEWS_DAYS = 7;
+
+      function getNewsDateRange() {
+        const to = new Date();
+        const from = new Date();
+        from.setDate(from.getDate() - NEWS_DAYS);
+        return { from: from.toISOString().slice(0, 10), to: to.toISOString().slice(0, 10) };
+      }
+
+      async function fetchCompanyNews(ticker) {
+        const key = getApiKey();
+        if (!key) return [];
+        const { from, to } = getNewsDateRange();
+        try {
+          const resp = await fetch(
+            `https://finnhub.io/api/v1/company-news?symbol=${encodeURIComponent(ticker)}&from=${from}&to=${to}&token=${encodeURIComponent(key)}`
+          );
+          if (!resp.ok) return [];
+          const articles = await resp.json();
+          return Array.isArray(articles) ? articles.slice(0, 5) : [];
+        } catch (e) {
+          console.warn("News fetch error for", ticker, e);
+          return [];
+        }
+      }
+
+      async function fetchAllNews() {
+        const key = getApiKey();
+        if (!key) { showToast("Set up Finnhub API key first"); return; }
+        if (data.stocks.length === 0) { showToast("Add stocks first"); return; }
+
+        const listEl = document.getElementById("newsWidgetList");
+        if (listEl) listEl.innerHTML = '<div class="news-loading">&#8987; Fetching news...</div>';
+
+        let fetched = 0;
+        for (let i = 0; i < data.stocks.length; i++) {
+          const ticker = data.stocks[i].ticker;
+          if (newsCache[ticker] && (Date.now() - newsCache[ticker].fetchedAt) < NEWS_CACHE_TTL) continue;
+          const articles = await fetchCompanyNews(ticker);
+          newsCache[ticker] = { articles, fetchedAt: Date.now() };
+          fetched++;
+          if (i < data.stocks.length - 1) await new Promise(r => setTimeout(r, 300));
+        }
+
+        showToast(fetched > 0 ? `News updated for ${fetched} stock${fetched > 1 ? "s" : ""}` : "News is up to date");
+        renderNewsWidget();
+      }
+
+      async function generateAiSummary() {
+        const geminiKey = getGeminiKey();
+        if (!geminiKey) { showToast("Set up Gemini API key in Settings"); return; }
+
+        const allNews = [];
+        for (const ticker of Object.keys(newsCache)) {
+          const cached = newsCache[ticker];
+          if (!cached || !cached.articles.length) continue;
+          cached.articles.forEach(a => {
+            allNews.push({ ticker, headline: a.headline, summary: a.summary || "",
+              date: new Date(a.datetime * 1000).toISOString().slice(0, 10) });
+          });
+        }
+        if (allNews.length === 0) { showToast("Fetch news first"); return; }
+
+        const card = document.getElementById("aiSummaryCard");
+        card.style.display = "block";
+        card.innerHTML = '<div class="news-loading">&#9203; Generating AI summary...</div>';
+
+        const newsText = allNews.slice(0, 50).map(n =>
+          `[${n.ticker}] ${n.date} - ${n.headline}: ${n.summary}`
+        ).join("\n");
+
+        const prompt = `You are a concise financial analyst. Based on these recent news headlines for stocks in my portfolio, provide:
+1. Key investment insights (3-5 bullet points)
+2. Notable risks or concerns
+3. Overall market sentiment
+
+Keep it under 300 words. Use - for bullets.
+
+Portfolio news (last 7 days):
+${newsText}`;
+
+        try {
+          const resp = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(geminiKey)}`,
+            { method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }
+          );
+          if (!resp.ok) throw new Error("API error " + resp.status);
+          const result = await resp.json();
+          const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "No summary generated.";
+          aiSummaryCache = { text, generatedAt: Date.now() };
+          renderNewsWidget();
+          showToast("AI summary generated!");
+        } catch (e) {
+          card.innerHTML = `<div class="news-summary-card"><div class="news-summary-body">Failed: ${e.message}. Check your API key in Settings.</div></div>`;
+          showToast("AI summary failed");
+        }
+      }
+
+      function renderNewsWidget() {
+        const card = document.getElementById("aiSummaryCard");
+        const listEl = document.getElementById("newsWidgetList");
+
+        // AI Summary
+        if (aiSummaryCache) {
+          const d = new Date(aiSummaryCache.generatedAt);
+          const timeStr = d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+          card.style.display = "block";
+          card.innerHTML = `<div class="news-summary-card">
+            <div class="news-summary-header">
+              <div class="news-summary-title">&#129302; AI Insights</div>
+              <span class="news-summary-time">${timeStr}</span>
+            </div>
+            <div class="news-summary-body">${aiSummaryCache.text.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>
+          </div>`;
+        }
+
+        // News articles
+        if (!listEl) return;
+        const hasNews = Object.values(newsCache).some(c => c.articles && c.articles.length > 0);
+        if (!hasNews) {
+          if (data.stocks.length === 0) {
+            listEl.innerHTML = '<div class="news-loading">Add stocks to see news</div>';
+          } else {
+            listEl.innerHTML = '<div class="news-loading">Tap "Fetch News" to load headlines</div>';
+          }
+          return;
+        }
+
+        let html = "";
+        for (const stock of data.stocks) {
+          const cached = newsCache[stock.ticker];
+          if (!cached || !cached.articles.length) continue;
+          cached.articles.slice(0, 3).forEach(a => {
+            const date = new Date(a.datetime * 1000);
+            const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+            html += `<a class="news-item" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+              <div class="news-item-headline">${a.headline}</div>
+              <div class="news-item-meta">
+                <span class="news-ticker-badge">${stock.ticker}</span>
+                <span>${a.source}</span>
+                <span>&middot;</span>
+                <span>${dateStr}</span>
+              </div>
+            </a>`;
+          });
+        }
+        listEl.innerHTML = html || '<div class="news-loading">No recent news found</div>';
+      }
+
       async function fetchQuote(ticker) {
         const key = getApiKey();
         if (!key) return null;
@@ -2432,10 +2732,23 @@ create policy "Users can manage own data"
             .classList.add("active");
           // Hide FAB on settings page
           document.getElementById("fab").style.display =
-            currentPage === "settings" ? "none" : "flex";
+            (currentPage === "settings") ? "none" : "flex";
           renderAll();
         });
       });
+
+      function navigateTo(page) {
+        currentPage = page;
+        document.querySelectorAll(".nav-item").forEach(b => {
+          b.classList.toggle("active", b.dataset.page === page);
+        });
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        document.getElementById("page-" + page).classList.add("active");
+        document.getElementById("fab").style.display =
+          (page === "settings") ? "none" : "flex";
+        renderAll();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
 
       // ─── Modal Helpers ───
       function openModal(id) {
@@ -2955,21 +3268,22 @@ create policy "Users can manage own data"
     </div>`;
 
         document.getElementById("dashMini").innerHTML = `
-    <div class="mini-card">
+    <div class="mini-card" onclick="navigateTo('dividends')">
       <div class="mc-icon" style="background:var(--green-bg)">&#128178;</div>
-      <div class="mc-label">Dividends</div>
+      <div class="mc-label">Dividends <span class="widget-chevron">&#8250;</span></div>
       <div class="mc-value positive">${fmtUSD(totalDivNet)}</div>
       <div class="mc-sub">${data.dividends.length} payments</div>
     </div>
-    <div class="mini-card">
+    <div class="mini-card" onclick="navigateTo('flow')">
       <div class="mc-icon" style="background:var(--accent-bg)">&#128177;</div>
-      <div class="mc-label">Avg FX Rate</div>
+      <div class="mc-label">Avg FX Rate <span class="widget-chevron">&#8250;</span></div>
       <div class="mc-value">${avgRate > 0 ? fmt(avgRate, 2) : "-"}</div>
       <div class="mc-sub">Invested ${fmtTHB(totalDepTHB)}</div>
     </div>`;
 
         renderPieChart();
         renderPnlChart();
+        renderNewsWidget();
       }
 
       function renderPieChart() {
@@ -3146,6 +3460,17 @@ create policy "Users can manage own data"
           ? `<div class="settings-status status-ok">&#9679; Connected</div>`
           : `<div class="settings-status status-off">&#9679; Not configured</div>`;
         document.getElementById("settingFinnhubKey").value = fKey;
+
+        // Gemini status + key
+        const gKey = getGeminiKey();
+        const gEl = document.getElementById("settingsGeminiStatus");
+        if (gEl) {
+          gEl.innerHTML = gKey
+            ? `<div class="settings-status status-ok">&#9679; Connected</div>`
+            : `<div class="settings-status status-off">&#9679; Not configured</div>`;
+        }
+        const gInput = document.getElementById("settingGeminiKey");
+        if (gInput) gInput.value = gKey;
       }
 
       function saveSettingsSupabase() {
