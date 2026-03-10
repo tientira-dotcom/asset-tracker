@@ -3018,6 +3018,14 @@ create policy "Users can manage own data"
               <label>Email</label>
               <div class="si-value">${currentUser.email}</div>
             </div>
+            <div class="settings-item" id="changePwSection">
+              <label>Change Password</label>
+              <input type="password" id="settingsNewPass" placeholder="New password (min 6 chars)" />
+              <input type="password" id="settingsNewPassConfirm" placeholder="Confirm new password" style="margin-top:8px" />
+            </div>
+            <div class="settings-btn-row">
+              <button class="btn btn-primary" onclick="changePassword()" style="margin:0">Update Password</button>
+            </div>
             <div class="settings-btn-row">
               <button class="btn btn-ghost" onclick="cloudSignOut()" style="margin:0;color:var(--red)">Sign Out</button>
             </div>`;
@@ -3117,6 +3125,24 @@ create policy "Users can manage own data"
           }
         } catch (e) {
           showToast("Sign up failed: " + (e.message || e));
+        }
+      }
+
+      async function changePassword() {
+        if (!sb || !currentUser) { showToast("Not signed in"); return; }
+        const newPass = document.getElementById("settingsNewPass").value;
+        const confirm = document.getElementById("settingsNewPassConfirm").value;
+        if (!newPass) { showToast("Enter a new password"); return; }
+        if (newPass.length < 6) { showToast("Password must be at least 6 characters"); return; }
+        if (newPass !== confirm) { showToast("Passwords do not match"); return; }
+        try {
+          const { error } = await sb.auth.updateUser({ password: newPass });
+          if (error) throw error;
+          showToast("Password updated!");
+          document.getElementById("settingsNewPass").value = "";
+          document.getElementById("settingsNewPassConfirm").value = "";
+        } catch (e) {
+          showToast("Failed: " + (e.message || e));
         }
       }
 
