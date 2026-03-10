@@ -175,7 +175,7 @@
         transition: all 0.25s;
         border-radius: 12px;
         font-family: inherit;
-        min-width: 62px;
+        min-width: 52px;
       }
       .nav-item.active {
         color: #fff;
@@ -1011,6 +1011,85 @@
         margin-top: 4px;
       }
 
+      /* ─── Settings Page ─── */
+      .settings-section {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow);
+      }
+      .settings-section-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .settings-section-title .ss-icon {
+        font-size: 18px;
+      }
+      .settings-item {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .settings-item:last-child { border-bottom: none; }
+      .settings-item label {
+        display: block;
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .settings-item input {
+        width: 100%;
+        padding: 10px 12px;
+        background: var(--bg);
+        border: 2px solid transparent;
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 13px;
+        font-family: inherit;
+        font-weight: 500;
+        outline: none;
+        transition: all 0.2s;
+      }
+      .settings-item input:focus {
+        border-color: var(--accent);
+        background: #fff;
+      }
+      .settings-item .si-value {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text);
+        word-break: break-all;
+      }
+      .settings-item .si-hint {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        margin-top: 4px;
+      }
+      .settings-btn-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .settings-btn-row .btn { flex: 1; padding: 12px; font-size: 13px; }
+      .settings-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+      }
+      .status-ok { background: var(--green-bg); color: var(--green); }
+      .status-off { background: var(--red-bg); color: var(--red); }
+
       /* ─── Scrollbar ─── */
       ::-webkit-scrollbar {
         width: 0;
@@ -1130,6 +1209,66 @@
       <div id="divList"></div>
     </div>
 
+    <!-- Settings Page -->
+    <div id="page-settings" class="page">
+      <div class="hero-card" style="background:linear-gradient(135deg, #475569 0%, #64748b 50%, #94a3b8 100%); box-shadow: 0 8px 32px rgba(71,85,105,0.25);">
+        <div class="hero-label">Admin Settings</div>
+        <div class="hero-value" style="font-size:24px">&#9881; Configuration</div>
+      </div>
+
+      <!-- Cloud Account -->
+      <div class="settings-section">
+        <div class="settings-section-title"><span class="ss-icon">&#9729;</span> Cloud Account</div>
+        <div id="settingsCloudStatus"></div>
+        <div id="settingsCloudContent"></div>
+      </div>
+
+      <!-- Supabase Config -->
+      <div class="settings-section">
+        <div class="settings-section-title"><span class="ss-icon">&#128268;</span> Supabase Config</div>
+        <div class="settings-item">
+          <label>Project URL</label>
+          <input type="text" id="settingSbUrl" placeholder="https://xxxxx.supabase.co" />
+        </div>
+        <div class="settings-item">
+          <label>Anon Public Key</label>
+          <input type="text" id="settingSbKey" placeholder="eyJhbGciOiJI..." />
+          <div class="si-hint">&#128274; Safe to embed — protected by Row Level Security</div>
+        </div>
+        <div class="settings-btn-row">
+          <button class="btn btn-primary" onclick="saveSettingsSupabase()">Save</button>
+        </div>
+      </div>
+
+      <!-- Finnhub Config -->
+      <div class="settings-section">
+        <div class="settings-section-title"><span class="ss-icon">&#9889;</span> Finnhub API</div>
+        <div id="settingsFinnhubStatus"></div>
+        <div class="settings-item">
+          <label>API Key</label>
+          <input type="text" id="settingFinnhubKey" placeholder="Your Finnhub API key" />
+          <div class="si-hint">Get free key at finnhub.io</div>
+        </div>
+        <div class="settings-btn-row">
+          <button class="btn btn-primary" onclick="saveSettingsFinnhub()">Save</button>
+          <button class="btn btn-ghost" onclick="removeSettingsFinnhub()" style="margin:0; color:var(--red)">Remove</button>
+        </div>
+      </div>
+
+      <!-- Data Management -->
+      <div class="settings-section">
+        <div class="settings-section-title"><span class="ss-icon">&#128190;</span> Data Management</div>
+        <div class="settings-btn-row">
+          <button class="btn btn-outline" onclick="exportData()" style="margin:0">&#8595; Export JSON</button>
+          <button class="btn btn-outline" onclick="document.getElementById('importFile').click()" style="margin:0">&#8593; Import JSON</button>
+        </div>
+        <div class="settings-btn-row" style="margin-top:8px">
+          <button class="btn btn-primary" onclick="cloudPush()" style="margin:0">&#8593; Push to Cloud</button>
+          <button class="btn btn-outline" onclick="cloudPull()" style="margin:0">&#8595; Pull from Cloud</button>
+        </div>
+      </div>
+    </div>
+
     <!-- FAB -->
     <button class="fab" id="fab" onclick="openAddModal()">+</button>
 
@@ -1186,6 +1325,13 @@
           </svg>
           <span>Dividends</span>
         </button>
+        <button class="nav-item" data-page="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <span>Settings</span>
+        </button>
       </div>
     </nav>
 
@@ -1218,39 +1364,25 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Shares</label>
+              <label>Cost per Share (USD)</label>
               <input
                 type="number"
-                id="stockShares"
-                placeholder="0"
-                step="any"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label>Avg Cost (USD)</label>
-              <input
-                type="number"
-                id="stockAvgCost"
+                id="stockCostPerShare"
                 placeholder="0.00"
                 step="any"
                 required
               />
             </div>
-          </div>
-          <div class="form-group">
-            <label
-              >Current Price (USD)
-              <span style="font-weight: 400; color: var(--text-tertiary)"
-                >- auto-fetched if API key set</span
-              ></label
-            >
-            <input
-              type="number"
-              id="stockCurrentPrice"
-              placeholder="Auto or manual"
-              step="any"
-            />
+            <div class="form-group">
+              <label>Total Cost (USD)</label>
+              <input
+                type="number"
+                id="stockTotalCost"
+                placeholder="0.00"
+                step="any"
+                required
+              />
+            </div>
           </div>
           <div class="form-group">
             <label>Sector</label>
@@ -1714,6 +1846,110 @@ create policy "Users can manage own data"
         { t: "SLB", n: "Schlumberger", s: "Energy" },
         { t: "SO", n: "Southern Company", s: "Utilities" },
         { t: "DUK", n: "Duke Energy", s: "Utilities" },
+        { t: "WM", n: "Waste Management", s: "Industrial" },
+        { t: "RSG", n: "Republic Services", s: "Industrial" },
+        { t: "LOW", n: "Lowe's Companies", s: "Consumer" },
+        { t: "TGT", n: "Target Corp.", s: "Consumer" },
+        { t: "SPGI", n: "S&P Global", s: "Financial" },
+        { t: "MCO", n: "Moody's Corp.", s: "Financial" },
+        { t: "ICE", n: "Intercontinental Exchange", s: "Financial" },
+        { t: "CME", n: "CME Group", s: "Financial" },
+        { t: "AXP", n: "American Express", s: "Financial" },
+        { t: "USB", n: "U.S. Bancorp", s: "Financial" },
+        { t: "PNC", n: "PNC Financial", s: "Financial" },
+        { t: "TFC", n: "Truist Financial", s: "Financial" },
+        { t: "MMM", n: "3M Company", s: "Industrial" },
+        { t: "EMR", n: "Emerson Electric", s: "Industrial" },
+        { t: "ITW", n: "Illinois Tool Works", s: "Industrial" },
+        { t: "ETN", n: "Eaton Corp.", s: "Industrial" },
+        { t: "FDX", n: "FedEx Corp.", s: "Industrial" },
+        { t: "GD", n: "General Dynamics", s: "Industrial" },
+        { t: "NOC", n: "Northrop Grumman", s: "Industrial" },
+        { t: "CARR", n: "Carrier Global", s: "Industrial" },
+        { t: "CSX", n: "CSX Corp.", s: "Industrial" },
+        { t: "UNP", n: "Union Pacific", s: "Industrial" },
+        { t: "NSC", n: "Norfolk Southern", s: "Industrial" },
+        { t: "CL", n: "Colgate-Palmolive", s: "Consumer" },
+        { t: "EL", n: "Estée Lauder", s: "Consumer" },
+        { t: "SYY", n: "Sysco Corp.", s: "Consumer" },
+        { t: "GIS", n: "General Mills", s: "Consumer" },
+        { t: "KHC", n: "Kraft Heinz", s: "Consumer" },
+        { t: "HSY", n: "Hershey Co.", s: "Consumer" },
+        { t: "ADM", n: "Archer-Daniels-Midland", s: "Consumer" },
+        { t: "PM", n: "Philip Morris", s: "Consumer" },
+        { t: "MO", n: "Altria Group", s: "Consumer" },
+        { t: "ZTS", n: "Zoetis Inc.", s: "Healthcare" },
+        { t: "SYK", n: "Stryker Corp.", s: "Healthcare" },
+        { t: "BSX", n: "Boston Scientific", s: "Healthcare" },
+        { t: "MDT", n: "Medtronic plc", s: "Healthcare" },
+        { t: "EW", n: "Edwards Lifesciences", s: "Healthcare" },
+        { t: "CI", n: "Cigna Group", s: "Healthcare" },
+        { t: "HUM", n: "Humana Inc.", s: "Healthcare" },
+        { t: "CVS", n: "CVS Health", s: "Healthcare" },
+        { t: "MCK", n: "McKesson Corp.", s: "Healthcare" },
+        { t: "MRNA", n: "Moderna Inc.", s: "Healthcare" },
+        { t: "BIIB", n: "Biogen Inc.", s: "Healthcare" },
+        { t: "CHTR", n: "Charter Comms.", s: "Communication" },
+        { t: "TMUS", n: "T-Mobile US", s: "Communication" },
+        { t: "ATVI", n: "Activision Blizzard", s: "Communication" },
+        { t: "EA", n: "Electronic Arts", s: "Communication" },
+        { t: "TTWO", n: "Take-Two Interactive", s: "Communication" },
+        { t: "SPOT", n: "Spotify Technology", s: "Communication" },
+        { t: "ROKU", n: "Roku Inc.", s: "Communication" },
+        { t: "AEP", n: "Amer. Electric Power", s: "Utilities" },
+        { t: "D", n: "Dominion Energy", s: "Utilities" },
+        { t: "EXC", n: "Exelon Corp.", s: "Utilities" },
+        { t: "SRE", n: "Sempra Energy", s: "Utilities" },
+        { t: "WEC", n: "WEC Energy Group", s: "Utilities" },
+        { t: "ED", n: "Consolidated Edison", s: "Utilities" },
+        { t: "EOG", n: "EOG Resources", s: "Energy" },
+        { t: "OXY", n: "Occidental Petroleum", s: "Energy" },
+        { t: "PSX", n: "Phillips 66", s: "Energy" },
+        { t: "MPC", n: "Marathon Petroleum", s: "Energy" },
+        { t: "VLO", n: "Valero Energy", s: "Energy" },
+        { t: "PXD", n: "Pioneer Natural Res.", s: "Energy" },
+        { t: "HAL", n: "Halliburton", s: "Energy" },
+        { t: "O", n: "Realty Income", s: "Real Estate" },
+        { t: "AMT", n: "American Tower", s: "Real Estate" },
+        { t: "PLD", n: "Prologis Inc.", s: "Real Estate" },
+        { t: "CCI", n: "Crown Castle", s: "Real Estate" },
+        { t: "EQIX", n: "Equinix Inc.", s: "Real Estate" },
+        { t: "SPG", n: "Simon Property", s: "Real Estate" },
+        { t: "PSA", n: "Public Storage", s: "Real Estate" },
+        { t: "WELL", n: "Welltower Inc.", s: "Real Estate" },
+        { t: "MRVL", n: "Marvell Technology", s: "Technology" },
+        { t: "MU", n: "Micron Technology", s: "Technology" },
+        { t: "ON", n: "ON Semiconductor", s: "Technology" },
+        { t: "CDNS", n: "Cadence Design", s: "Technology" },
+        { t: "FTNT", n: "Fortinet Inc.", s: "Technology" },
+        { t: "WDAY", n: "Workday Inc.", s: "Technology" },
+        { t: "TEAM", n: "Atlassian Corp.", s: "Technology" },
+        { t: "HUBS", n: "HubSpot Inc.", s: "Technology" },
+        { t: "TTD", n: "Trade Desk Inc.", s: "Technology" },
+        { t: "DASH", n: "DoorDash Inc.", s: "Technology" },
+        { t: "RBLX", n: "Roblox Corp.", s: "Communication" },
+        { t: "U", n: "Unity Software", s: "Technology" },
+        { t: "PATH", n: "UiPath Inc.", s: "Technology" },
+        { t: "RIVN", n: "Rivian Automotive", s: "Consumer" },
+        { t: "LCID", n: "Lucid Group", s: "Consumer" },
+        { t: "F", n: "Ford Motor Co.", s: "Consumer" },
+        { t: "GM", n: "General Motors", s: "Consumer" },
+        { t: "SOFI", n: "SoFi Technologies", s: "Financial" },
+        { t: "HOOD", n: "Robinhood Markets", s: "Financial" },
+        { t: "AFRM", n: "Affirm Holdings", s: "Financial" },
+        { t: "NU", n: "Nu Holdings", s: "Financial" },
+        { t: "SE", n: "Sea Limited", s: "Technology" },
+        { t: "GRAB", n: "Grab Holdings", s: "Technology" },
+        { t: "BABA", n: "Alibaba Group", s: "Consumer" },
+        { t: "JD", n: "JD.com Inc.", s: "Consumer" },
+        { t: "PDD", n: "PDD Holdings", s: "Consumer" },
+        { t: "TSM", n: "Taiwan Semiconductor", s: "Technology" },
+        { t: "ASML", n: "ASML Holding", s: "Technology" },
+        { t: "TM", n: "Toyota Motor", s: "Consumer" },
+        { t: "NVO", n: "Novo Nordisk", s: "Healthcare" },
+        { t: "LI", n: "Li Auto Inc.", s: "Consumer" },
+        { t: "NIO", n: "NIO Inc.", s: "Consumer" },
+        { t: "XPEV", n: "XPeng Inc.", s: "Consumer" },
         // Popular ETFs
         { t: "SPY", n: "S&P 500 ETF", s: "ETF" },
         { t: "QQQ", n: "Nasdaq 100 ETF", s: "ETF" },
@@ -1735,7 +1971,58 @@ create policy "Users can manage own data"
         { t: "VNQ", n: "Vanguard REIT ETF", s: "ETF" },
         { t: "SOXX", n: "Semiconductor ETF", s: "ETF" },
         { t: "SMH", n: "VanEck Semicon. ETF", s: "ETF" },
+        { t: "SGOV", n: "iShares 0-3M Treasury", s: "ETF" },
+        { t: "BIL", n: "SPDR 1-3M T-Bill", s: "ETF" },
+        { t: "SHY", n: "iShares 1-3Y Treasury", s: "ETF" },
+        { t: "IEF", n: "iShares 7-10Y Treasury", s: "ETF" },
+        { t: "AGG", n: "iShares Core US Agg Bond", s: "ETF" },
+        { t: "BND", n: "Vanguard Total Bond", s: "ETF" },
+        { t: "LQD", n: "iShares IG Corporate Bond", s: "ETF" },
+        { t: "HYG", n: "iShares High Yield Bond", s: "ETF" },
+        { t: "JNK", n: "SPDR High Yield Bond", s: "ETF" },
+        { t: "TIP", n: "iShares TIPS Bond", s: "ETF" },
+        { t: "VCIT", n: "Vanguard IT Corp Bond", s: "ETF" },
+        { t: "VXUS", n: "Vanguard Total Int'l Stock", s: "ETF" },
+        { t: "VEA", n: "Vanguard Developed Markets", s: "ETF" },
+        { t: "VWO", n: "Vanguard Emerging Markets", s: "ETF" },
+        { t: "EFA", n: "iShares MSCI EAFE", s: "ETF" },
+        { t: "EEM", n: "iShares MSCI Emerging", s: "ETF" },
+        { t: "IEMG", n: "iShares Core EM", s: "ETF" },
+        { t: "VIG", n: "Vanguard Div. Appreciation", s: "ETF" },
+        { t: "DVY", n: "iShares Select Dividend", s: "ETF" },
+        { t: "JEPI", n: "JPMorgan Equity Premium", s: "ETF" },
+        { t: "JEPQ", n: "JPMorgan Nasdaq Premium", s: "ETF" },
+        { t: "QYLD", n: "Global X Nasdaq Covered Call", s: "ETF" },
+        { t: "XYLD", n: "Global X S&P Covered Call", s: "ETF" },
+        { t: "SPLG", n: "SPDR Portfolio S&P 500", s: "ETF" },
+        { t: "VTV", n: "Vanguard Value ETF", s: "ETF" },
+        { t: "VUG", n: "Vanguard Growth ETF", s: "ETF" },
+        { t: "RSP", n: "Invesco Equal Weight S&P", s: "ETF" },
+        { t: "XLC", n: "Communication Services ETF", s: "ETF" },
+        { t: "XLI", n: "Industrial Select ETF", s: "ETF" },
+        { t: "XLP", n: "Consumer Staples ETF", s: "ETF" },
+        { t: "XLU", n: "Utilities Select ETF", s: "ETF" },
+        { t: "XLY", n: "Consumer Disc. ETF", s: "ETF" },
+        { t: "XLRE", n: "Real Estate Select ETF", s: "ETF" },
+        { t: "XLB", n: "Materials Select ETF", s: "ETF" },
+        { t: "KWEB", n: "KraneShares China Internet", s: "ETF" },
+        { t: "SOXL", n: "Direxion Semicon. Bull 3x", s: "ETF" },
+        { t: "TQQQ", n: "ProShares UltraPro QQQ 3x", s: "ETF" },
+        { t: "UPRO", n: "ProShares UltraPro S&P 3x", s: "ETF" },
+        { t: "SQQQ", n: "ProShares UltraPro Short QQQ", s: "ETF" },
+        { t: "UVXY", n: "ProShares Ultra VIX", s: "ETF" },
+        { t: "USO", n: "United States Oil Fund", s: "ETF" },
+        { t: "UNG", n: "United States Natural Gas", s: "ETF" },
+        { t: "IAU", n: "iShares Gold Trust", s: "ETF" },
+        { t: "IBIT", n: "iShares Bitcoin Trust", s: "ETF" },
+        { t: "FBTC", n: "Fidelity Bitcoin Fund", s: "ETF" },
+        { t: "ETHE", n: "Grayscale Ethereum Trust", s: "ETF" },
       ];
+
+      // ─── Default Credentials (embedded) ───
+      const DEFAULT_SB_URL = "https://vohwhrvfnqmdegtwvgqu.supabase.co";
+      const DEFAULT_SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvaHdocnZmbnFtZGVndHd2Z3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMzgxMzgsImV4cCI6MjA4ODYxNDEzOH0.MSVz8i1pg2anVWNsb95iY9xvCRlX6UxPPAbx6tIUNzc";
+      const DEFAULT_FINNHUB_KEY = "d6n59e9r01qir35j7t4gd6n59e9r01qir35j7t50";
 
       // ─── Data Store ───
       const STORAGE_KEY = "dime_stock_tracker";
@@ -1768,9 +2055,12 @@ create policy "Users can manage own data"
       let sb = null;
       let currentUser = null;
 
+      function getSbUrl() { return localStorage.getItem(SB_URL_KEY) || DEFAULT_SB_URL; }
+      function getSbAnon() { return localStorage.getItem(SB_ANON_KEY) || DEFAULT_SB_ANON; }
+
       function initSupabase() {
-        const url = localStorage.getItem(SB_URL_KEY);
-        const anon = localStorage.getItem(SB_ANON_KEY);
+        const url = getSbUrl();
+        const anon = getSbAnon();
         if (url && anon) {
           try {
             sb = supabase.createClient(url, anon);
@@ -1926,16 +2216,15 @@ create policy "Users can manage own data"
       }
 
       function openCloudModal() {
-        const hasConfig = localStorage.getItem(SB_URL_KEY) && localStorage.getItem(SB_ANON_KEY);
         if (currentUser) {
           showCloudSection("cloudSignedIn");
-        } else if (hasConfig) {
+        } else if (getSbUrl() && getSbAnon()) {
+          // Defaults or saved config exist → go straight to login
           showCloudSection("cloudLogin");
-          // Pre-fill config
-          document.getElementById("sbUrl").value = localStorage.getItem(SB_URL_KEY) || "";
-          document.getElementById("sbKey").value = localStorage.getItem(SB_ANON_KEY) || "";
         } else {
           showCloudSection("cloudSetup");
+          document.getElementById("sbUrl").value = localStorage.getItem(SB_URL_KEY) || "";
+          document.getElementById("sbKey").value = localStorage.getItem(SB_ANON_KEY) || "";
         }
         openModal("modalCloud");
       }
@@ -1975,7 +2264,7 @@ create policy "Users can manage own data"
       const LAST_UPDATE_STORAGE = "dime_last_price_update";
 
       function getApiKey() {
-        return localStorage.getItem(API_KEY_STORAGE) || "";
+        return localStorage.getItem(API_KEY_STORAGE) || DEFAULT_FINNHUB_KEY || "";
       }
       function saveApiKey() {
         const key = document.getElementById("apiKeyInput").value.trim();
@@ -2204,6 +2493,9 @@ create policy "Users can manage own data"
           document
             .getElementById("page-" + currentPage)
             .classList.add("active");
+          // Hide FAB on settings page
+          document.getElementById("fab").style.display =
+            currentPage === "settings" ? "none" : "flex";
           renderAll();
         });
       });
@@ -2281,10 +2573,8 @@ create policy "Users can manage own data"
           document.getElementById("stockEditId").value = stock.id;
           document.getElementById("stockTicker").value = stock.ticker;
           document.getElementById("stockNameInput").value = stock.name || "";
-          document.getElementById("stockShares").value = stock.shares;
-          document.getElementById("stockAvgCost").value = stock.avgCost;
-          document.getElementById("stockCurrentPrice").value =
-            stock.currentPrice;
+          document.getElementById("stockCostPerShare").value = stock.costPerShare || 0;
+          document.getElementById("stockTotalCost").value = stock.totalCost || 0;
           document.getElementById("stockSector").value = stock.sector || "";
         } else {
           document.getElementById("modalStockTitle").textContent = "Add Stock";
@@ -2302,28 +2592,26 @@ create policy "Users can manage own data"
           .getElementById("stockTicker")
           .value.toUpperCase()
           .trim();
-        const priceInput = document.getElementById("stockCurrentPrice").value;
-        let currentPrice = parseFloat(priceInput) || 0;
 
-        if (!priceInput && getApiKey()) {
+        let currentPrice = 0;
+        if (getApiKey()) {
           showToast("Fetching price for " + ticker + "...");
           const fetched = await fetchSinglePrice(ticker);
           if (fetched !== null) {
             currentPrice = fetched;
-          } else {
-            showToast("Could not fetch price. Please enter manually.");
-            return;
           }
-        } else if (!priceInput && !getApiKey()) {
-          currentPrice =
-            parseFloat(document.getElementById("stockAvgCost").value) || 0;
         }
+
+        const costPerShare = parseFloat(document.getElementById("stockCostPerShare").value) || 0;
+        const totalCost = parseFloat(document.getElementById("stockTotalCost").value) || 0;
+        const shares = costPerShare > 0 ? totalCost / costPerShare : 0;
 
         const sd = {
           ticker,
           name: document.getElementById("stockNameInput").value.trim(),
-          shares: parseFloat(document.getElementById("stockShares").value),
-          avgCost: parseFloat(document.getElementById("stockAvgCost").value),
+          costPerShare,
+          totalCost,
+          shares,
           currentPrice,
           sector: document.getElementById("stockSector").value,
         };
@@ -2356,11 +2644,11 @@ create policy "Users can manage own data"
         renderLastUpdated();
         const list = document.getElementById("stockList");
         const totalValue = data.stocks.reduce(
-          (s, st) => s + st.shares * st.currentPrice,
+          (s, st) => s + (st.shares || 0) * (st.currentPrice || 0),
           0,
         );
         const totalCost = data.stocks.reduce(
-          (s, st) => s + st.shares * st.avgCost,
+          (s, st) => s + (st.totalCost || 0),
           0,
         );
         const totalPnl = totalValue - totalCost;
@@ -2388,10 +2676,10 @@ create policy "Users can manage own data"
           return;
         }
         list.innerHTML = data.stocks
-          .sort((a, b) => b.shares * b.currentPrice - a.shares * a.currentPrice)
+          .sort((a, b) => (b.shares || 0) * (b.currentPrice || 0) - (a.shares || 0) * (a.currentPrice || 0))
           .map((s) => {
-            const value = s.shares * s.currentPrice;
-            const cost = s.shares * s.avgCost;
+            const value = (s.shares || 0) * (s.currentPrice || 0);
+            const cost = s.totalCost || 0;
             const pnl = value - cost;
             const pnlPct = cost > 0 ? (pnl / cost) * 100 : 0;
             const alloc = totalValue > 0 ? (value / totalValue) * 100 : 0;
@@ -2525,16 +2813,27 @@ create policy "Users can manage own data"
           list.innerHTML =
             '<div class="empty-state"><div class="empty-icon">&#128176;</div><p>No transactions yet</p><p class="empty-sub">Track your THB to USD transfers</p></div>';
         } else {
-          list.innerHTML = data.flows
-            .sort((a, b) => b.date.localeCompare(a.date))
-            .map((f) => {
-              const isDep = f.type === "deposit";
-              return `<div class="list-item" onclick='openFlowModal(${JSON.stringify(f).replace(/'/g, "&#39;")})'>
+          const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+          const sorted = [...data.flows].sort((a, b) => b.date.localeCompare(a.date));
+          let html = "";
+          let lastMonth = "";
+          sorted.forEach((f) => {
+            const parts = f.date.split("-");
+            const monthKey = parts[0] + "-" + parts[1];
+            if (monthKey !== lastMonth) {
+              const mIdx = parseInt(parts[1], 10) - 1;
+              html += `<div style="padding:12px 4px 6px;font-size:13px;font-weight:700;color:var(--text-secondary);letter-spacing:0.3px">${MONTH_NAMES[mIdx]} ${parts[0]}</div>`;
+              lastMonth = monthKey;
+            }
+            const isDep = f.type === "deposit";
+            const dd = parts[2], mm = parts[1], yyyy = parts[0];
+            const displayDate = dd + "/" + mm + "/" + yyyy;
+            html += `<div class="list-item" onclick='openFlowModal(${JSON.stringify(f).replace(/'/g, "&#39;")})'>
         <div class="li-left">
           <div class="li-icon ${isDep ? "li-icon-deposit" : "li-icon-withdraw"}">${isDep ? "&#8593;" : "&#8595;"}</div>
           <div class="li-info">
             <div class="li-title">${isDep ? "Deposit" : "Withdraw"}</div>
-            <div class="li-sub">${f.date}${f.note ? " &middot; " + f.note : ""}</div>
+            <div class="li-sub">${displayDate}${f.note ? " &middot; " + f.note : ""}</div>
           </div>
         </div>
         <div class="li-right">
@@ -2542,8 +2841,8 @@ create policy "Users can manage own data"
           <div class="li-detail">${fmtUSD(f.amountUSD)} @ ${fmt(f.rate, 2)}</div>
         </div>
       </div>`;
-            })
-            .join("");
+          });
+          list.innerHTML = html;
         }
       }
 
@@ -2647,7 +2946,7 @@ create policy "Users can manage own data"
           <div class="li-icon li-icon-dividend">&#128178;</div>
           <div class="li-info">
             <div class="li-title">${d.ticker}</div>
-            <div class="li-sub">${d.date}${d.note ? " &middot; " + d.note : ""}</div>
+            <div class="li-sub">${d.date.split("-").reverse().join("/")}${d.note ? " &middot; " + d.note : ""}</div>
           </div>
         </div>
         <div class="li-right">
@@ -2681,11 +2980,11 @@ create policy "Users can manage own data"
       function renderDashboard() {
         renderCloudBanner();
         const totalValue = data.stocks.reduce(
-          (s, st) => s + st.shares * st.currentPrice,
+          (s, st) => s + (st.shares || 0) * (st.currentPrice || 0),
           0,
         );
         const totalCost = data.stocks.reduce(
-          (s, st) => s + st.shares * st.avgCost,
+          (s, st) => s + (st.totalCost || 0),
           0,
         );
         const totalPnl = totalValue - totalCost;
@@ -2738,7 +3037,7 @@ create policy "Users can manage own data"
         canvas.style.display = "block";
         emptyEl.innerHTML = "";
         const sorted = [...data.stocks].sort(
-          (a, b) => b.shares * b.currentPrice - a.shares * a.currentPrice,
+          (a, b) => (b.shares || 0) * (b.currentPrice || 0) - (a.shares || 0) * (a.currentPrice || 0),
         );
         pieChart = new Chart(ctx, {
           type: "doughnut",
@@ -2746,7 +3045,7 @@ create policy "Users can manage own data"
             labels: sorted.map((s) => s.ticker),
             datasets: [
               {
-                data: sorted.map((s) => s.shares * s.currentPrice),
+                data: sorted.map((s) => (s.shares || 0) * (s.currentPrice || 0)),
                 backgroundColor: sorted.map(
                   (_, i) => COLORS[i % COLORS.length],
                 ),
@@ -2798,11 +3097,11 @@ create policy "Users can manage own data"
         emptyEl.innerHTML = "";
         const sorted = [...data.stocks].sort(
           (a, b) =>
-            (b.currentPrice - b.avgCost) * b.shares -
-            (a.currentPrice - a.avgCost) * a.shares,
+            ((b.shares || 0) * (b.currentPrice || 0) - (b.totalCost || 0)) -
+            ((a.shares || 0) * (a.currentPrice || 0) - (a.totalCost || 0)),
         );
         const values = sorted.map(
-          (s) => (s.currentPrice - s.avgCost) * s.shares,
+          (s) => (s.shares || 0) * (s.currentPrice || 0) - (s.totalCost || 0),
         );
         pnlChart = new Chart(ctx, {
           type: "bar",
@@ -2850,12 +3149,153 @@ create policy "Users can manage own data"
         });
       }
 
+      // ─── SETTINGS ───
+      function renderSettings() {
+        // Cloud status
+        const csEl = document.getElementById("settingsCloudStatus");
+        const ccEl = document.getElementById("settingsCloudContent");
+        if (currentUser) {
+          csEl.innerHTML = `<div class="settings-status status-ok">&#9679; Signed in</div>`;
+          ccEl.innerHTML = `
+            <div class="settings-item">
+              <label>Email</label>
+              <div class="si-value">${currentUser.email}</div>
+            </div>
+            <div class="settings-item" id="changePwSection">
+              <label>Change Password</label>
+              <input type="password" id="settingsNewPass" placeholder="New password (min 6 chars)" />
+              <input type="password" id="settingsNewPassConfirm" placeholder="Confirm new password" style="margin-top:8px" />
+            </div>
+            <div class="settings-btn-row">
+              <button class="btn btn-primary" onclick="changePassword()" style="margin:0">Update Password</button>
+            </div>
+            <div class="settings-btn-row">
+              <button class="btn btn-ghost" onclick="cloudSignOut()" style="margin:0;color:var(--red)">Sign Out</button>
+            </div>`;
+        } else {
+          csEl.innerHTML = `<div class="settings-status status-off">&#9679; Not signed in</div>`;
+          ccEl.innerHTML = `
+            <div class="form-group"><label>Email</label><input type="email" id="settingsEmail" placeholder="you@email.com"/></div>
+            <div class="form-group"><label>Password</label><input type="password" id="settingsPass" placeholder="Min 6 characters"/></div>
+            <div class="settings-btn-row">
+              <button class="btn btn-primary" onclick="settingsSignIn()" style="margin:0">Sign In</button>
+              <button class="btn btn-outline" onclick="settingsSignUp()" style="margin:0">Sign Up</button>
+            </div>`;
+        }
+
+        // Supabase config
+        document.getElementById("settingSbUrl").value = getSbUrl();
+        document.getElementById("settingSbKey").value = getSbAnon();
+
+        // Finnhub status + key
+        const fKey = getApiKey();
+        const fEl = document.getElementById("settingsFinnhubStatus");
+        fEl.innerHTML = fKey
+          ? `<div class="settings-status status-ok">&#9679; Connected</div>`
+          : `<div class="settings-status status-off">&#9679; Not configured</div>`;
+        document.getElementById("settingFinnhubKey").value = fKey;
+      }
+
+      function saveSettingsSupabase() {
+        const url = document.getElementById("settingSbUrl").value.trim().replace(/\/+$/, "");
+        const key = document.getElementById("settingSbKey").value.trim();
+        if (!url || !key) { showToast("Fill in both fields"); return; }
+        localStorage.setItem(SB_URL_KEY, url);
+        localStorage.setItem(SB_ANON_KEY, key);
+        if (initSupabase()) {
+          showToast("Supabase config saved!");
+        } else {
+          showToast("Failed to connect");
+        }
+        renderSettings();
+      }
+
+      function saveSettingsFinnhub() {
+        const key = document.getElementById("settingFinnhubKey").value.trim();
+        if (!key) { showToast("Enter an API key"); return; }
+        localStorage.setItem(API_KEY_STORAGE, key);
+        showToast("Finnhub key saved!");
+        renderSettings();
+        renderApiBanner();
+      }
+
+      function removeSettingsFinnhub() {
+        localStorage.removeItem(API_KEY_STORAGE);
+        showToast("Finnhub key removed (using default)");
+        renderSettings();
+        renderApiBanner();
+      }
+
+      async function settingsSignIn() {
+        if (!sb) initSupabase();
+        if (!sb) { showToast("Supabase not configured"); return; }
+        const email = document.getElementById("settingsEmail").value.trim();
+        const pass = document.getElementById("settingsPass").value;
+        if (!email || !pass) { showToast("Enter email and password"); return; }
+        try {
+          const { data: authData, error } = await sb.auth.signInWithPassword({ email, password: pass });
+          if (error) throw error;
+          currentUser = authData.user;
+          showToast("Signed in!");
+          updateUserChip();
+          renderCloudBanner();
+          renderSettings();
+          await cloudPull();
+        } catch (e) {
+          showToast("Sign in failed: " + (e.message || e));
+        }
+      }
+
+      async function settingsSignUp() {
+        if (!sb) initSupabase();
+        if (!sb) { showToast("Supabase not configured"); return; }
+        const email = document.getElementById("settingsEmail").value.trim();
+        const pass = document.getElementById("settingsPass").value;
+        if (!email || !pass) { showToast("Enter email and password"); return; }
+        if (pass.length < 6) { showToast("Password min 6 characters"); return; }
+        try {
+          const { data: authData, error } = await sb.auth.signUp({ email, password: pass });
+          if (error) throw error;
+          if (authData.user) {
+            currentUser = authData.user;
+            showToast("Account created & signed in!");
+            updateUserChip();
+            renderCloudBanner();
+            renderSettings();
+            await cloudPush();
+          } else {
+            showToast("Check your email to confirm");
+          }
+        } catch (e) {
+          showToast("Sign up failed: " + (e.message || e));
+        }
+      }
+
+      async function changePassword() {
+        if (!sb || !currentUser) { showToast("Not signed in"); return; }
+        const newPass = document.getElementById("settingsNewPass").value;
+        const confirm = document.getElementById("settingsNewPassConfirm").value;
+        if (!newPass) { showToast("Enter a new password"); return; }
+        if (newPass.length < 6) { showToast("Password must be at least 6 characters"); return; }
+        if (newPass !== confirm) { showToast("Passwords do not match"); return; }
+        try {
+          const { error } = await sb.auth.updateUser({ password: newPass });
+          if (error) throw error;
+          showToast("Password updated!");
+          document.getElementById("settingsNewPass").value = "";
+          document.getElementById("settingsNewPassConfirm").value = "";
+        } catch (e) {
+          showToast("Failed: " + (e.message || e));
+        }
+      }
+
       // ─── Render All ───
       function renderAll() {
         renderDashboard();
         renderStocks();
         renderFlows();
         renderDividends();
+        renderSettings();
       }
 
       // ─── Export / Import ───
