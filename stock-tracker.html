@@ -175,7 +175,7 @@
         transition: all 0.25s;
         border-radius: 12px;
         font-family: inherit;
-        min-width: 62px;
+        min-width: 52px;
       }
       .nav-item.active {
         color: #fff;
@@ -1011,6 +1011,85 @@
         margin-top: 4px;
       }
 
+      /* ─── Settings Page ─── */
+      .settings-section {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow);
+      }
+      .settings-section-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .settings-section-title .ss-icon {
+        font-size: 18px;
+      }
+      .settings-item {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .settings-item:last-child { border-bottom: none; }
+      .settings-item label {
+        display: block;
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .settings-item input {
+        width: 100%;
+        padding: 10px 12px;
+        background: var(--bg);
+        border: 2px solid transparent;
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 13px;
+        font-family: inherit;
+        font-weight: 500;
+        outline: none;
+        transition: all 0.2s;
+      }
+      .settings-item input:focus {
+        border-color: var(--accent);
+        background: #fff;
+      }
+      .settings-item .si-value {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text);
+        word-break: break-all;
+      }
+      .settings-item .si-hint {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        margin-top: 4px;
+      }
+      .settings-btn-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .settings-btn-row .btn { flex: 1; padding: 12px; font-size: 13px; }
+      .settings-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+      }
+      .status-ok { background: var(--green-bg); color: var(--green); }
+      .status-off { background: var(--red-bg); color: var(--red); }
+
       /* ─── Scrollbar ─── */
       ::-webkit-scrollbar {
         width: 0;
@@ -1130,6 +1209,66 @@
       <div id="divList"></div>
     </div>
 
+    <!-- Settings Page -->
+    <div id="page-settings" class="page">
+      <div class="hero-card" style="background:linear-gradient(135deg, #475569 0%, #64748b 50%, #94a3b8 100%); box-shadow: 0 8px 32px rgba(71,85,105,0.25);">
+        <div class="hero-label">Admin Settings</div>
+        <div class="hero-value" style="font-size:24px">&#9881; Configuration</div>
+      </div>
+
+      <!-- Cloud Account -->
+      <div class="settings-section">
+        <div class="settings-section-title"><span class="ss-icon">&#9729;</span> Cloud Account</div>
+        <div id="settingsCloudStatus"></div>
+        <div id="settingsCloudContent"></div>
+      </div>
+
+      <!-- Supabase Config -->
+      <div class="settings-section">
+        <div class="settings-section-title"><span class="ss-icon">&#128268;</span> Supabase Config</div>
+        <div class="settings-item">
+          <label>Project URL</label>
+          <input type="text" id="settingSbUrl" placeholder="https://xxxxx.supabase.co" />
+        </div>
+        <div class="settings-item">
+          <label>Anon Public Key</label>
+          <input type="text" id="settingSbKey" placeholder="eyJhbGciOiJI..." />
+          <div class="si-hint">&#128274; Safe to embed — protected by Row Level Security</div>
+        </div>
+        <div class="settings-btn-row">
+          <button class="btn btn-primary" onclick="saveSettingsSupabase()">Save</button>
+        </div>
+      </div>
+
+      <!-- Finnhub Config -->
+      <div class="settings-section">
+        <div class="settings-section-title"><span class="ss-icon">&#9889;</span> Finnhub API</div>
+        <div id="settingsFinnhubStatus"></div>
+        <div class="settings-item">
+          <label>API Key</label>
+          <input type="text" id="settingFinnhubKey" placeholder="Your Finnhub API key" />
+          <div class="si-hint">Get free key at finnhub.io</div>
+        </div>
+        <div class="settings-btn-row">
+          <button class="btn btn-primary" onclick="saveSettingsFinnhub()">Save</button>
+          <button class="btn btn-ghost" onclick="removeSettingsFinnhub()" style="margin:0; color:var(--red)">Remove</button>
+        </div>
+      </div>
+
+      <!-- Data Management -->
+      <div class="settings-section">
+        <div class="settings-section-title"><span class="ss-icon">&#128190;</span> Data Management</div>
+        <div class="settings-btn-row">
+          <button class="btn btn-outline" onclick="exportData()" style="margin:0">&#8595; Export JSON</button>
+          <button class="btn btn-outline" onclick="document.getElementById('importFile').click()" style="margin:0">&#8593; Import JSON</button>
+        </div>
+        <div class="settings-btn-row" style="margin-top:8px">
+          <button class="btn btn-primary" onclick="cloudPush()" style="margin:0">&#8593; Push to Cloud</button>
+          <button class="btn btn-outline" onclick="cloudPull()" style="margin:0">&#8595; Pull from Cloud</button>
+        </div>
+      </div>
+    </div>
+
     <!-- FAB -->
     <button class="fab" id="fab" onclick="openAddModal()">+</button>
 
@@ -1185,6 +1324,13 @@
             <path d="M16 12l-4 4-4-4" />
           </svg>
           <span>Dividends</span>
+        </button>
+        <button class="nav-item" data-page="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <span>Settings</span>
         </button>
       </div>
     </nav>
@@ -1737,6 +1883,11 @@ create policy "Users can manage own data"
         { t: "SMH", n: "VanEck Semicon. ETF", s: "ETF" },
       ];
 
+      // ─── Default Credentials (embedded) ───
+      const DEFAULT_SB_URL = "https://vohwhrvfnqmdegtwvgqu.supabase.co";
+      const DEFAULT_SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvaHdocnZmbnFtZGVndHd2Z3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMzgxMzgsImV4cCI6MjA4ODYxNDEzOH0.MSVz8i1pg2anVWNsb95iY9xvCRlX6UxPPAbx6tIUNzc";
+      const DEFAULT_FINNHUB_KEY = "d6n59e9r01qir35j7t4gd6n59e9r01qir35j7t50";
+
       // ─── Data Store ───
       const STORAGE_KEY = "dime_stock_tracker";
       let data = loadData();
@@ -1768,9 +1919,12 @@ create policy "Users can manage own data"
       let sb = null;
       let currentUser = null;
 
+      function getSbUrl() { return localStorage.getItem(SB_URL_KEY) || DEFAULT_SB_URL; }
+      function getSbAnon() { return localStorage.getItem(SB_ANON_KEY) || DEFAULT_SB_ANON; }
+
       function initSupabase() {
-        const url = localStorage.getItem(SB_URL_KEY);
-        const anon = localStorage.getItem(SB_ANON_KEY);
+        const url = getSbUrl();
+        const anon = getSbAnon();
         if (url && anon) {
           try {
             sb = supabase.createClient(url, anon);
@@ -1926,16 +2080,15 @@ create policy "Users can manage own data"
       }
 
       function openCloudModal() {
-        const hasConfig = localStorage.getItem(SB_URL_KEY) && localStorage.getItem(SB_ANON_KEY);
         if (currentUser) {
           showCloudSection("cloudSignedIn");
-        } else if (hasConfig) {
+        } else if (getSbUrl() && getSbAnon()) {
+          // Defaults or saved config exist → go straight to login
           showCloudSection("cloudLogin");
-          // Pre-fill config
-          document.getElementById("sbUrl").value = localStorage.getItem(SB_URL_KEY) || "";
-          document.getElementById("sbKey").value = localStorage.getItem(SB_ANON_KEY) || "";
         } else {
           showCloudSection("cloudSetup");
+          document.getElementById("sbUrl").value = localStorage.getItem(SB_URL_KEY) || "";
+          document.getElementById("sbKey").value = localStorage.getItem(SB_ANON_KEY) || "";
         }
         openModal("modalCloud");
       }
@@ -1975,7 +2128,7 @@ create policy "Users can manage own data"
       const LAST_UPDATE_STORAGE = "dime_last_price_update";
 
       function getApiKey() {
-        return localStorage.getItem(API_KEY_STORAGE) || "";
+        return localStorage.getItem(API_KEY_STORAGE) || DEFAULT_FINNHUB_KEY || "";
       }
       function saveApiKey() {
         const key = document.getElementById("apiKeyInput").value.trim();
@@ -2204,6 +2357,9 @@ create policy "Users can manage own data"
           document
             .getElementById("page-" + currentPage)
             .classList.add("active");
+          // Hide FAB on settings page
+          document.getElementById("fab").style.display =
+            currentPage === "settings" ? "none" : "flex";
           renderAll();
         });
       });
@@ -2850,12 +3006,127 @@ create policy "Users can manage own data"
         });
       }
 
+      // ─── SETTINGS ───
+      function renderSettings() {
+        // Cloud status
+        const csEl = document.getElementById("settingsCloudStatus");
+        const ccEl = document.getElementById("settingsCloudContent");
+        if (currentUser) {
+          csEl.innerHTML = `<div class="settings-status status-ok">&#9679; Signed in</div>`;
+          ccEl.innerHTML = `
+            <div class="settings-item">
+              <label>Email</label>
+              <div class="si-value">${currentUser.email}</div>
+            </div>
+            <div class="settings-btn-row">
+              <button class="btn btn-ghost" onclick="cloudSignOut()" style="margin:0;color:var(--red)">Sign Out</button>
+            </div>`;
+        } else {
+          csEl.innerHTML = `<div class="settings-status status-off">&#9679; Not signed in</div>`;
+          ccEl.innerHTML = `
+            <div class="form-group"><label>Email</label><input type="email" id="settingsEmail" placeholder="you@email.com"/></div>
+            <div class="form-group"><label>Password</label><input type="password" id="settingsPass" placeholder="Min 6 characters"/></div>
+            <div class="settings-btn-row">
+              <button class="btn btn-primary" onclick="settingsSignIn()" style="margin:0">Sign In</button>
+              <button class="btn btn-outline" onclick="settingsSignUp()" style="margin:0">Sign Up</button>
+            </div>`;
+        }
+
+        // Supabase config
+        document.getElementById("settingSbUrl").value = getSbUrl();
+        document.getElementById("settingSbKey").value = getSbAnon();
+
+        // Finnhub status + key
+        const fKey = getApiKey();
+        const fEl = document.getElementById("settingsFinnhubStatus");
+        fEl.innerHTML = fKey
+          ? `<div class="settings-status status-ok">&#9679; Connected</div>`
+          : `<div class="settings-status status-off">&#9679; Not configured</div>`;
+        document.getElementById("settingFinnhubKey").value = fKey;
+      }
+
+      function saveSettingsSupabase() {
+        const url = document.getElementById("settingSbUrl").value.trim().replace(/\/+$/, "");
+        const key = document.getElementById("settingSbKey").value.trim();
+        if (!url || !key) { showToast("Fill in both fields"); return; }
+        localStorage.setItem(SB_URL_KEY, url);
+        localStorage.setItem(SB_ANON_KEY, key);
+        if (initSupabase()) {
+          showToast("Supabase config saved!");
+        } else {
+          showToast("Failed to connect");
+        }
+        renderSettings();
+      }
+
+      function saveSettingsFinnhub() {
+        const key = document.getElementById("settingFinnhubKey").value.trim();
+        if (!key) { showToast("Enter an API key"); return; }
+        localStorage.setItem(API_KEY_STORAGE, key);
+        showToast("Finnhub key saved!");
+        renderSettings();
+        renderApiBanner();
+      }
+
+      function removeSettingsFinnhub() {
+        localStorage.removeItem(API_KEY_STORAGE);
+        showToast("Finnhub key removed (using default)");
+        renderSettings();
+        renderApiBanner();
+      }
+
+      async function settingsSignIn() {
+        if (!sb) initSupabase();
+        if (!sb) { showToast("Supabase not configured"); return; }
+        const email = document.getElementById("settingsEmail").value.trim();
+        const pass = document.getElementById("settingsPass").value;
+        if (!email || !pass) { showToast("Enter email and password"); return; }
+        try {
+          const { data: authData, error } = await sb.auth.signInWithPassword({ email, password: pass });
+          if (error) throw error;
+          currentUser = authData.user;
+          showToast("Signed in!");
+          updateUserChip();
+          renderCloudBanner();
+          renderSettings();
+          await cloudPull();
+        } catch (e) {
+          showToast("Sign in failed: " + (e.message || e));
+        }
+      }
+
+      async function settingsSignUp() {
+        if (!sb) initSupabase();
+        if (!sb) { showToast("Supabase not configured"); return; }
+        const email = document.getElementById("settingsEmail").value.trim();
+        const pass = document.getElementById("settingsPass").value;
+        if (!email || !pass) { showToast("Enter email and password"); return; }
+        if (pass.length < 6) { showToast("Password min 6 characters"); return; }
+        try {
+          const { data: authData, error } = await sb.auth.signUp({ email, password: pass });
+          if (error) throw error;
+          if (authData.user) {
+            currentUser = authData.user;
+            showToast("Account created & signed in!");
+            updateUserChip();
+            renderCloudBanner();
+            renderSettings();
+            await cloudPush();
+          } else {
+            showToast("Check your email to confirm");
+          }
+        } catch (e) {
+          showToast("Sign up failed: " + (e.message || e));
+        }
+      }
+
       // ─── Render All ───
       function renderAll() {
         renderDashboard();
         renderStocks();
         renderFlows();
         renderDividends();
+        renderSettings();
       }
 
       // ─── Export / Import ───
