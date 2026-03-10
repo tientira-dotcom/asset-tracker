@@ -905,47 +905,7 @@
       .cloud-banner.cloud-on .cb-text,
       .cloud-banner.cloud-on .cb-arrow { color: var(--green); }
 
-      /* ─── Refresh Button ─── */
-      .refresh-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 14px;
-      }
-      .refresh-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 16px;
-        border-radius: 10px;
-        background: var(--accent);
-        color: #fff;
-        border: none;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        font-family: inherit;
-        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
-      }
-      .refresh-btn:active {
-        transform: scale(0.95);
-      }
-      .refresh-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .refresh-btn svg {
-        width: 16px;
-        height: 16px;
-      }
-      .refresh-btn.loading svg {
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
+      /* ─── Last Updated ─── */
       .last-updated {
         font-size: 11px;
         color: var(--text-tertiary);
@@ -1105,34 +1065,6 @@
           <span class="chip-dot"></span>
           <span id="userChipLabel">Cloud</span>
         </button>
-        <button class="icon-btn" onclick="exportData()" title="Export">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-        </button>
-        <button
-          class="icon-btn"
-          onclick="document.getElementById('importFile').click()"
-          title="Import"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" y1="3" x2="12" y2="15" />
-          </svg>
-        </button>
         <input
           type="file"
           id="importFile"
@@ -1166,26 +1098,7 @@
     <div id="page-stocks" class="page">
       <div id="stocksHero"></div>
       <div id="apiBanner"></div>
-      <div class="refresh-row">
-        <div class="section-title" style="margin-bottom: 0">Holdings</div>
-        <button
-          class="refresh-btn"
-          id="refreshBtn"
-          onclick="refreshAllPrices()"
-          title="Refresh prices"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-          >
-            <polyline points="23 4 23 10 17 10" />
-            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-          </svg>
-          <span id="refreshLabel">Refresh</span>
-        </button>
-      </div>
+      <div class="section-title">Holdings</div>
       <div
         class="last-updated"
         id="lastUpdated"
@@ -2050,6 +1963,7 @@ create policy "Users can manage own data"
       }
 
       // ─── Supabase Cloud Sync ───
+      const SITE_URL = "https://files-seven-kappa.vercel.app";
       const SB_URL_KEY = "dime_sb_url";
       const SB_ANON_KEY = "dime_sb_anon";
       let sb = null;
@@ -2116,7 +2030,10 @@ create policy "Users can manage own data"
         if (!email || !pass) { showToast("Enter email and password"); return; }
         if (pass.length < 6) { showToast("Password must be at least 6 characters"); return; }
         try {
-          const { data: authData, error } = await sb.auth.signUp({ email, password: pass });
+          const { data: authData, error } = await sb.auth.signUp({
+            email, password: pass,
+            options: { emailRedirectTo: SITE_URL }
+          });
           if (error) throw error;
           if (authData.user) {
             currentUser = authData.user;
@@ -2201,10 +2118,29 @@ create policy "Users can manage own data"
             currentUser = sessionData.session.user;
             updateUserChip();
             renderCloudBanner();
+            await cloudPull();
           }
         } catch (e) {
           console.warn("Auth init error:", e);
         }
+        // Listen for auth state changes (e.g. password recovery redirect)
+        sb.auth.onAuthStateChange((event, session) => {
+          if (event === "PASSWORD_RECOVERY") {
+            const newPass = prompt("Enter your new password (min 6 characters):");
+            if (newPass && newPass.length >= 6) {
+              sb.auth.updateUser({ password: newPass }).then(({ error }) => {
+                if (error) showToast("Failed: " + error.message);
+                else showToast("Password updated!");
+              });
+            }
+          }
+          if (event === "SIGNED_IN" && session) {
+            currentUser = session.user;
+            updateUserChip();
+            renderCloudBanner();
+            renderSettings();
+          }
+        });
       }
 
       function showCloudSection(id) {
@@ -2348,53 +2284,39 @@ create policy "Users can manage own data"
         }
       }
 
-      async function refreshAllPrices() {
-        const key = getApiKey();
-        if (!key) {
-          openApiSettings();
-          return;
-        }
-        if (data.stocks.length === 0) {
-          showToast("No stocks to refresh");
-          return;
-        }
+      let priceRefreshTimer = null;
+      const PRICE_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
-        const btn = document.getElementById("refreshBtn");
-        const label = document.getElementById("refreshLabel");
-        btn.disabled = true;
-        btn.classList.add("loading");
-        label.textContent = "Updating...";
+      async function refreshAllPrices(silent = false) {
+        const key = getApiKey();
+        if (!key || data.stocks.length === 0) return;
 
         let updated = 0;
-        let failed = 0;
         for (let i = 0; i < data.stocks.length; i++) {
           const stock = data.stocks[i];
-          label.textContent = `${i + 1}/${data.stocks.length}`;
           const price = await fetchQuote(stock.ticker);
           if (price !== null) {
             stock.currentPrice = price;
             updated++;
-          } else {
-            failed++;
           }
           if (i < data.stocks.length - 1) {
             await new Promise((r) => setTimeout(r, 250));
           }
         }
 
-        save();
-        localStorage.setItem(LAST_UPDATE_STORAGE, Date.now().toString());
-        renderAll();
-
-        btn.disabled = false;
-        btn.classList.remove("loading");
-        label.textContent = "Refresh";
-
-        if (failed > 0) {
-          showToast(`Updated ${updated}, failed ${failed}`);
-        } else {
-          showToast(`All ${updated} prices updated`);
+        if (updated > 0) {
+          save();
+          localStorage.setItem(LAST_UPDATE_STORAGE, Date.now().toString());
+          renderAll();
         }
+      }
+
+      function startPriceAutoRefresh() {
+        if (priceRefreshTimer) clearInterval(priceRefreshTimer);
+        // Initial refresh after 3 seconds
+        setTimeout(() => refreshAllPrices(true), 3000);
+        // Then every 10 minutes
+        priceRefreshTimer = setInterval(() => refreshAllPrices(true), PRICE_REFRESH_INTERVAL);
       }
 
       async function fetchSinglePrice(ticker) {
@@ -3180,6 +3102,9 @@ create policy "Users can manage own data"
             <div class="settings-btn-row">
               <button class="btn btn-primary" onclick="settingsSignIn()" style="margin:0">Sign In</button>
               <button class="btn btn-outline" onclick="settingsSignUp()" style="margin:0">Sign Up</button>
+            </div>
+            <div style="text-align:center;margin-top:8px">
+              <a href="#" onclick="resetPassword();return false" style="color:var(--accent);font-size:13px;text-decoration:none">Forgot Password?</a>
             </div>`;
         }
 
@@ -3254,7 +3179,10 @@ create policy "Users can manage own data"
         if (!email || !pass) { showToast("Enter email and password"); return; }
         if (pass.length < 6) { showToast("Password min 6 characters"); return; }
         try {
-          const { data: authData, error } = await sb.auth.signUp({ email, password: pass });
+          const { data: authData, error } = await sb.auth.signUp({
+            email, password: pass,
+            options: { emailRedirectTo: SITE_URL }
+          });
           if (error) throw error;
           if (authData.user) {
             currentUser = authData.user;
@@ -3284,6 +3212,22 @@ create policy "Users can manage own data"
           showToast("Password updated!");
           document.getElementById("settingsNewPass").value = "";
           document.getElementById("settingsNewPassConfirm").value = "";
+        } catch (e) {
+          showToast("Failed: " + (e.message || e));
+        }
+      }
+
+      async function resetPassword() {
+        if (!sb) initSupabase();
+        if (!sb) { showToast("Supabase not configured"); return; }
+        const email = document.getElementById("settingsEmail").value.trim();
+        if (!email) { showToast("Enter your email first"); return; }
+        try {
+          const { error } = await sb.auth.resetPasswordForEmail(email, {
+            redirectTo: SITE_URL
+          });
+          if (error) throw error;
+          showToast("Reset link sent! Check your email.");
         } catch (e) {
           showToast("Failed: " + (e.message || e));
         }
@@ -3336,6 +3280,7 @@ create policy "Users can manage own data"
       setupAutocomplete("divTicker", "divTickerAC");
       renderAll();
       initAuth();
+      startPriceAutoRefresh();
     </script>
   </body>
 </html>
