@@ -73,6 +73,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        max-width: 680px;
+        margin: 0 auto;
       }
       .top-header h1 {
         font-size: 22px;
@@ -191,6 +193,8 @@
         display: none;
         padding: 16px 20px;
         animation: fadeIn 0.3s ease;
+        max-width: 640px;
+        margin: 0 auto;
       }
       .page.active {
         display: block;
@@ -1039,6 +1043,69 @@
         color: #fff;
         border-color: var(--accent);
       }
+      /* Swipeable Chart */
+      .chart-swipe {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .chart-swipe::-webkit-scrollbar { display: none; }
+      .chart-swipe-page {
+        min-width: 100%;
+        scroll-snap-align: start;
+        flex-shrink: 0;
+      }
+      .chart-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .chart-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: var(--border);
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .chart-dot.active {
+        background: var(--accent);
+        width: 20px;
+        border-radius: 4px;
+      }
+      /* Dividend Calendar */
+      .div-projected-card {
+        background: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
+        color: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .div-projected-card .dp-label { font-size: 12px; opacity: 0.85; margin-bottom: 4px; }
+      .div-projected-card .dp-value { font-size: 28px; font-weight: 700; }
+      .div-projected-card .dp-stats { display: flex; gap: 20px; margin-top: 12px; }
+      .div-projected-card .dp-stat-label { font-size: 11px; opacity: 0.8; }
+      .div-projected-card .dp-stat-value { font-size: 15px; font-weight: 600; }
+      .div-calendar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .div-cal-month {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 8px;
+        text-align: center;
+      }
+      .div-cal-month .dcm-name { font-size: 11px; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; }
+      .div-cal-month .dcm-amount { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-top: 4px; }
+      .div-cal-month.has-div { border-color: #10B981; background: rgba(16,185,129,0.06); }
+      .div-cal-month.has-div .dcm-amount { color: #059669; }
+      .div-cal-month.current { box-shadow: 0 0 0 2px var(--accent); }
       .news-summary-card {
         background: linear-gradient(135deg, #f0f9ff 0%, #ede9fe 100%);
         border-radius: var(--radius-sm);
@@ -1217,17 +1284,23 @@
     <div id="page-dashboard" class="page active">
       <div id="dashHero" onclick="navigateTo('stocks')" class="widget-tap"></div>
       <div class="mini-cards" id="dashMini"></div>
-      <div class="card widget-tap" onclick="navigateTo('stocks')">
-        <div class="section-title">Allocation <span class="widget-chevron">&#8250;</span></div>
-        <div class="chart-container"><canvas id="pieChart"></canvas></div>
-        <div id="pieEmpty"></div>
-      </div>
-      <div class="card widget-tap" onclick="navigateTo('stocks')">
-        <div class="section-title">P&L by Stock <span class="widget-chevron">&#8250;</span></div>
-        <div style="position: relative; width: 100%; height: 200px">
-          <canvas id="pnlChart"></canvas>
+      <div class="card">
+        <div class="chart-swipe" id="chartSwipe">
+          <div class="chart-swipe-page">
+            <div class="section-title">Allocation</div>
+            <div class="chart-container"><canvas id="pieChart"></canvas></div>
+            <div id="pieEmpty"></div>
+          </div>
+          <div class="chart-swipe-page">
+            <div class="section-title">P&L by Stock</div>
+            <div style="position:relative;width:100%;height:200px"><canvas id="pnlChart"></canvas></div>
+            <div id="pnlEmpty"></div>
+          </div>
         </div>
-        <div id="pnlEmpty"></div>
+        <div class="chart-dots" id="chartDots">
+          <span class="chart-dot active" onclick="scrollChartTo(0)"></span>
+          <span class="chart-dot" onclick="scrollChartTo(1)"></span>
+        </div>
       </div>
 
       <!-- News Widget -->
@@ -1269,6 +1342,9 @@
     <!-- Dividends Page -->
     <div id="page-dividends" class="page">
       <div id="divHero"></div>
+      <div id="divProjectedIncome"></div>
+      <div class="section-title">Dividend Calendar</div>
+      <div id="divCalendar" class="div-calendar"></div>
       <div class="section-title">Dividend Records</div>
       <div id="divList"></div>
     </div>
@@ -2622,12 +2698,16 @@ Keep it under 300 words. Use - for bullets.
 Portfolio news (last 7 days):
 ${newsText}`;
 
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${encodeURIComponent(geminiKey)}`;
+        const geminiBody = { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) };
         try {
-          const resp = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(geminiKey)}`,
-            { method: "POST", headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) }
-          );
+          let resp = await fetch(geminiUrl, geminiBody);
+          if (resp.status === 429) {
+            card.innerHTML = '<div class="news-loading">&#9203; Rate limited, retrying in 3s...</div>';
+            await new Promise(r => setTimeout(r, 3000));
+            resp = await fetch(geminiUrl, geminiBody);
+          }
           if (!resp.ok) throw new Error("API error " + resp.status);
           const result = await resp.json();
           const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "No summary generated.";
@@ -3231,6 +3311,51 @@ ${newsText}`;
         });
       }
 
+      function renderDivProjectedIncome() {
+        const el = document.getElementById("divProjectedIncome");
+        if (!el) return;
+        if (data.dividends.length === 0) { el.innerHTML = ""; return; }
+        const now = new Date();
+        const oneYearAgo = new Date(now);
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        const last12 = data.dividends.filter(d => new Date(d.date) >= oneYearAgo);
+        const totalNet12 = last12.reduce((s, d) => s + d.amount - (d.tax || 0), 0);
+        const monthlyAvg = totalNet12 / 12;
+        const totalCost = data.stocks.reduce((s, st) => s + (st.totalCost || 0), 0);
+        const yieldOnCost = totalCost > 0 ? ((totalNet12 / totalCost) * 100).toFixed(2) : "N/A";
+        el.innerHTML = `<div class="div-projected-card">
+          <div class="dp-label">Projected Annual Income</div>
+          <div class="dp-value">${fmtUSD(totalNet12)}</div>
+          <div class="dp-stats">
+            <div><div class="dp-stat-label">Monthly Avg</div><div class="dp-stat-value">${fmtUSD(monthlyAvg)}</div></div>
+            <div><div class="dp-stat-label">Yield on Cost</div><div class="dp-stat-value">${yieldOnCost === "N/A" ? "N/A" : yieldOnCost + "%"}</div></div>
+          </div>
+        </div>`;
+      }
+
+      function renderDivCalendar() {
+        const el = document.getElementById("divCalendar");
+        if (!el) return;
+        const year = new Date().getFullYear();
+        const currentMonth = new Date().getMonth();
+        const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        const monthTotals = new Array(12).fill(0);
+        data.dividends.forEach(d => {
+          const dt = new Date(d.date);
+          if (dt.getFullYear() === year) {
+            monthTotals[dt.getMonth()] += d.amount - (d.tax || 0);
+          }
+        });
+        el.innerHTML = months.map((m, i) => {
+          const has = monthTotals[i] > 0;
+          const isCurrent = i === currentMonth;
+          return `<div class="div-cal-month${has ? " has-div" : ""}${isCurrent ? " current" : ""}">
+            <div class="dcm-name">${m}</div>
+            <div class="dcm-amount">${has ? fmtUSD(monthTotals[i]) : "—"}</div>
+          </div>`;
+        }).join("");
+      }
+
       function renderDividends() {
         const totalGross = data.dividends.reduce((s, d) => s + d.amount, 0);
         const totalTax = data.dividends.reduce((s, d) => s + (d.tax || 0), 0);
@@ -3277,6 +3402,8 @@ ${newsText}`;
             })
             .join("");
         }
+        renderDivProjectedIncome();
+        renderDivCalendar();
       }
 
       // ─── DASHBOARD ───
@@ -3469,6 +3596,22 @@ ${newsText}`;
           },
         });
       }
+
+      // ─── Chart Swipe ───
+      function initChartSwipe() {
+        const el = document.getElementById("chartSwipe");
+        if (!el) return;
+        el.addEventListener("scroll", () => {
+          const page = Math.round(el.scrollLeft / el.offsetWidth);
+          const dots = document.querySelectorAll("#chartDots .chart-dot");
+          dots.forEach((d, i) => d.classList.toggle("active", i === page));
+        });
+      }
+      function scrollChartTo(page) {
+        const el = document.getElementById("chartSwipe");
+        if (el) el.scrollTo({ left: page * el.offsetWidth, behavior: "smooth" });
+      }
+      document.addEventListener("DOMContentLoaded", initChartSwipe);
 
       // ─── SETTINGS ───
       function renderSettings() {
