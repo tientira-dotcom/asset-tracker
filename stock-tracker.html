@@ -1011,6 +1011,34 @@
         padding: 10px;
         font-size: 13px;
       }
+      .news-pills {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .news-pills::-webkit-scrollbar { display: none; }
+      .news-pill {
+        flex-shrink: 0;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+      .news-pill.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
       .news-summary-card {
         background: linear-gradient(135deg, #f0f9ff 0%, #ede9fe 100%);
         border-radius: var(--radius-sm);
@@ -1205,12 +1233,12 @@
       <!-- News Widget -->
       <div class="card">
         <div class="section-title">&#128240; Stock News</div>
-        <div class="news-btn-row">
-          <button class="btn btn-primary" onclick="event.stopPropagation(); fetchAllNews()">&#8635; Fetch News</button>
-          <button class="btn btn-outline" onclick="event.stopPropagation(); generateAiSummary()">&#10024; AI Summary</button>
-        </div>
+        <div class="news-pills" id="newsPills"></div>
         <div id="aiSummaryCard" style="display:none"></div>
         <div id="newsWidgetList"></div>
+        <div class="news-btn-row" style="margin-top:12px;margin-bottom:0">
+          <button class="btn btn-outline" onclick="event.stopPropagation(); generateAiSummary()">&#10024; AI Summary</button>
+        </div>
       </div>
     </div>
 
@@ -2431,7 +2459,8 @@ create policy "Users can manage own data"
       // ─── Stock News ───
       let newsCache = {};
       let aiSummaryCache = null;
-      const NEWS_CACHE_TTL = 30 * 60 * 1000;
+      let activeNewsPill = "__market__";
+      let newsFetchInProgress = false;
       const NEWS_DAYS = 7;
 
       function getNewsDateRange() {
@@ -2439,6 +2468,22 @@ create policy "Users can manage own data"
         const from = new Date();
         from.setDate(from.getDate() - NEWS_DAYS);
         return { from: from.toISOString().slice(0, 10), to: to.toISOString().slice(0, 10) };
+      }
+
+      async function fetchMarketNews() {
+        const key = getApiKey();
+        if (!key) return [];
+        try {
+          const resp = await fetch(
+            `https://finnhub.io/api/v1/news?category=general&token=${encodeURIComponent(key)}`
+          );
+          if (!resp.ok) return [];
+          const articles = await resp.json();
+          return Array.isArray(articles) ? articles.slice(0, 8) : [];
+        } catch (e) {
+          console.warn("Market news fetch error", e);
+          return [];
+        }
       }
 
       async function fetchCompanyNews(ticker) {
@@ -2451,33 +2496,96 @@ create policy "Users can manage own data"
           );
           if (!resp.ok) return [];
           const articles = await resp.json();
-          return Array.isArray(articles) ? articles.slice(0, 5) : [];
+          return Array.isArray(articles) ? articles.slice(0, 8) : [];
         } catch (e) {
           console.warn("News fetch error for", ticker, e);
           return [];
         }
       }
 
-      async function fetchAllNews() {
-        const key = getApiKey();
-        if (!key) { showToast("Set up Finnhub API key first"); return; }
-        if (data.stocks.length === 0) { showToast("Add stocks first"); return; }
+      async function selectNewsPill(pill) {
+        if (newsFetchInProgress) return;
+        activeNewsPill = pill;
+        renderNewsPills();
 
         const listEl = document.getElementById("newsWidgetList");
-        if (listEl) listEl.innerHTML = '<div class="news-loading">&#8987; Fetching news...</div>';
+        if (!listEl) return;
+        listEl.innerHTML = '<div class="news-loading">&#8987; Loading news...</div>';
 
-        let fetched = 0;
-        for (let i = 0; i < data.stocks.length; i++) {
-          const ticker = data.stocks[i].ticker;
-          if (newsCache[ticker] && (Date.now() - newsCache[ticker].fetchedAt) < NEWS_CACHE_TTL) continue;
-          const articles = await fetchCompanyNews(ticker);
-          newsCache[ticker] = { articles, fetchedAt: Date.now() };
-          fetched++;
-          if (i < data.stocks.length - 1) await new Promise(r => setTimeout(r, 300));
+        newsFetchInProgress = true;
+        try {
+          const articles = pill === "__market__"
+            ? await fetchMarketNews()
+            : await fetchCompanyNews(pill);
+          newsCache[pill] = { articles, fetchedAt: Date.now() };
+        } catch (e) {
+          console.warn("News fetch failed", e);
+        }
+        newsFetchInProgress = false;
+        renderNewsArticles();
+      }
+
+      function renderNewsPills() {
+        const el = document.getElementById("newsPills");
+        if (!el) return;
+        let html = `<button class="news-pill${activeNewsPill === "__market__" ? " active" : ""}" onclick="event.stopPropagation(); selectNewsPill('__market__')">&#127758; US Market</button>`;
+        data.stocks.forEach(s => {
+          html += `<button class="news-pill${activeNewsPill === s.ticker ? " active" : ""}" onclick="event.stopPropagation(); selectNewsPill('${s.ticker}')">${s.ticker}</button>`;
+        });
+        el.innerHTML = html;
+      }
+
+      function renderNewsArticles() {
+        const listEl = document.getElementById("newsWidgetList");
+        if (!listEl) return;
+        const cached = newsCache[activeNewsPill];
+        if (!cached || !cached.articles.length) {
+          listEl.innerHTML = '<div class="news-loading">No recent news found</div>';
+          return;
+        }
+        let html = "";
+        cached.articles.forEach(a => {
+          const date = new Date(a.datetime * 1000);
+          const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+          const badge = activeNewsPill === "__market__" ? "" : `<span class="news-ticker-badge">${activeNewsPill}</span>`;
+          html += `<a class="news-item" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+            <div class="news-item-headline">${a.headline}</div>
+            <div class="news-item-meta">
+              ${badge}
+              <span>${a.source}</span>
+              <span>&middot;</span>
+              <span>${dateStr}</span>
+            </div>
+          </a>`;
+        });
+        listEl.innerHTML = html;
+      }
+
+      function renderNewsWidget() {
+        renderNewsPills();
+
+        // AI Summary
+        const card = document.getElementById("aiSummaryCard");
+        if (card && aiSummaryCache) {
+          const d = new Date(aiSummaryCache.generatedAt);
+          const timeStr = d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+          card.style.display = "block";
+          card.innerHTML = `<div class="news-summary-card">
+            <div class="news-summary-header">
+              <div class="news-summary-title">&#129302; AI Insights</div>
+              <span class="news-summary-time">${timeStr}</span>
+            </div>
+            <div class="news-summary-body">${aiSummaryCache.text.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>
+          </div>`;
         }
 
-        showToast(fetched > 0 ? `News updated for ${fetched} stock${fetched > 1 ? "s" : ""}` : "News is up to date");
-        renderNewsWidget();
+        // Show cached articles or trigger fetch
+        const cached = newsCache[activeNewsPill];
+        if (cached) {
+          renderNewsArticles();
+        } else if (currentPage === "dashboard") {
+          selectNewsPill(activeNewsPill);
+        }
       }
 
       async function generateAiSummary() {
@@ -2488,12 +2596,13 @@ create policy "Users can manage own data"
         for (const ticker of Object.keys(newsCache)) {
           const cached = newsCache[ticker];
           if (!cached || !cached.articles.length) continue;
+          const label = ticker === "__market__" ? "US Market" : ticker;
           cached.articles.forEach(a => {
-            allNews.push({ ticker, headline: a.headline, summary: a.summary || "",
+            allNews.push({ ticker: label, headline: a.headline, summary: a.summary || "",
               date: new Date(a.datetime * 1000).toISOString().slice(0, 10) });
           });
         }
-        if (allNews.length === 0) { showToast("Fetch news first"); return; }
+        if (allNews.length === 0) { showToast("No news loaded yet"); return; }
 
         const card = document.getElementById("aiSummaryCard");
         card.style.display = "block";
@@ -2529,57 +2638,6 @@ ${newsText}`;
           card.innerHTML = `<div class="news-summary-card"><div class="news-summary-body">Failed: ${e.message}. Check your API key in Settings.</div></div>`;
           showToast("AI summary failed");
         }
-      }
-
-      function renderNewsWidget() {
-        const card = document.getElementById("aiSummaryCard");
-        const listEl = document.getElementById("newsWidgetList");
-
-        // AI Summary
-        if (aiSummaryCache) {
-          const d = new Date(aiSummaryCache.generatedAt);
-          const timeStr = d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
-          card.style.display = "block";
-          card.innerHTML = `<div class="news-summary-card">
-            <div class="news-summary-header">
-              <div class="news-summary-title">&#129302; AI Insights</div>
-              <span class="news-summary-time">${timeStr}</span>
-            </div>
-            <div class="news-summary-body">${aiSummaryCache.text.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>
-          </div>`;
-        }
-
-        // News articles
-        if (!listEl) return;
-        const hasNews = Object.values(newsCache).some(c => c.articles && c.articles.length > 0);
-        if (!hasNews) {
-          if (data.stocks.length === 0) {
-            listEl.innerHTML = '<div class="news-loading">Add stocks to see news</div>';
-          } else {
-            listEl.innerHTML = '<div class="news-loading">Tap "Fetch News" to load headlines</div>';
-          }
-          return;
-        }
-
-        let html = "";
-        for (const stock of data.stocks) {
-          const cached = newsCache[stock.ticker];
-          if (!cached || !cached.articles.length) continue;
-          cached.articles.slice(0, 3).forEach(a => {
-            const date = new Date(a.datetime * 1000);
-            const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-            html += `<a class="news-item" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-              <div class="news-item-headline">${a.headline}</div>
-              <div class="news-item-meta">
-                <span class="news-ticker-badge">${stock.ticker}</span>
-                <span>${a.source}</span>
-                <span>&middot;</span>
-                <span>${dateStr}</span>
-              </div>
-            </a>`;
-          });
-        }
-        listEl.innerHTML = html || '<div class="news-loading">No recent news found</div>';
       }
 
       async function fetchQuote(ticker) {
