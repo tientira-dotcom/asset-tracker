@@ -1070,8 +1070,8 @@
         text-align: center;
         padding: 10px 0 4px;
         border-top: 1px solid var(--border);
-        font-size: 13px;
-        font-weight: 600;
+        font-size: 12px;
+        font-weight: 500;
       }
       /* Swipeable Chart */
       .chart-swipe {
@@ -1319,7 +1319,6 @@
     <!-- Stocks Page -->
     <div id="page-stocks" class="page">
       <div id="stocksHero"></div>
-      <div id="apiBanner"></div>
       <div class="section-title">Holdings</div>
       <div
         class="last-updated"
@@ -2688,8 +2687,8 @@ create policy "Users can manage own data"
             <div class="benchmark-label">S&P 500 (Today)</div>
             <div class="benchmark-value" style="color:${spyColor}">${spyDailyPct >= 0 ? "+" : ""}${spyDailyPct.toFixed(2)}%</div>
           </div>
-          <div class="benchmark-result" style="color:${diffColor}">
-            ${beating ? "&#128640; Beating" : "&#128308; Trailing"} the market by ${Math.abs(diff).toFixed(2)}%
+          <div class="benchmark-result" style="color:var(--text-tertiary);font-weight:500">
+            ${beating ? "Beating" : "Trailing"} the market by <span style="color:${diffColor};font-weight:700">${Math.abs(diff).toFixed(2)}%</span>
           </div>
         </div>`;
       }
