@@ -220,11 +220,11 @@
       .hero-card {
         background: linear-gradient(
           135deg,
-          #1e4a1e 0%,
-          #1a3d1f 50%,
-          #122a15 100%
+          #2a4a0a 0%,
+          #1f3d08 50%,
+          #152c06 100%
         );
-        border: 1px solid rgba(132, 204, 22, 0.2);
+        border: 1px solid rgba(132, 204, 22, 0.22);
         border-radius: 20px;
         padding: 24px;
         color: #fff;
@@ -4193,7 +4193,7 @@
         const monthlyAvg = filtered.length > 0 ? totalNet / monthCount : 0;
 
         document.getElementById("divHero").innerHTML = `
-    <div class="hero-card" style="background:linear-gradient(135deg, #352808 0%, #4a360c 50%, #261c06 100%); border:1px solid rgba(245,158,11,0.22); box-shadow: 0 8px 32px rgba(245,158,11,0.15);">
+    <div class="hero-card" style="background:linear-gradient(135deg, #3d3006 0%, #4f3e08 50%, #2c2204 100%); border:1px solid rgba(250,204,21,0.22); box-shadow: 0 8px 32px rgba(250,204,21,0.12);">
       <div class="hero-label">Total Dividends${selectedYear !== "all" ? " &middot; " + selectedYear : ""}</div>
       <div class="hero-value">${fmtUSD(totalNet)}</div>
       <div class="hero-stats">
@@ -4303,13 +4303,13 @@
 
         document.getElementById("dashMini").innerHTML = `
     <div class="mini-card" onclick="navigateTo('dividends')">
-      <div class="mc-icon" style="background:var(--green-bg);color:var(--green);font-size:20px;font-weight:800">$</div>
+      <div class="mc-icon" style="background:rgba(250,204,21,0.12);color:#facc15;font-size:20px;font-weight:800">$</div>
       <div class="mc-label">Dividends <span class="widget-chevron">&#8250;</span></div>
       <div class="mc-value positive">${fmtUSD(totalDivNet)}</div>
       <div class="mc-sub">${data.dividends.length} payments</div>
     </div>
     <div class="mini-card" onclick="navigateTo('flow')">
-      <div class="mc-icon" style="background:var(--accent-bg)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+      <div class="mc-icon" style="background:rgba(34,197,94,0.12)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
       <div class="mc-label">Avg FX Rate <span class="widget-chevron">&#8250;</span></div>
       <div class="mc-value">${avgRate > 0 ? fmt(avgRate, 2) : "-"}</div>
       <div class="mc-sub">Invested ${fmtTHB(totalDepTHB)}</div>
