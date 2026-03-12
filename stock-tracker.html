@@ -408,7 +408,7 @@
       .stock-right {
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-end;
         min-width: 90px;
       }
       .stock-price {
@@ -2730,6 +2730,7 @@ create policy "Users can manage own data"
           save();
           localStorage.setItem(LAST_UPDATE_STORAGE, Date.now().toString());
           renderAll();
+          renderBenchmark();
         }
       }
 
