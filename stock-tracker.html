@@ -18,26 +18,26 @@
       :root {
         --bg: #0a0f0a;
         --bg-secondary: #111a11;
-        --card: rgba(255,255,255,0.04);
-        --card-hover: rgba(255,255,255,0.07);
-        --card-border: rgba(255,255,255,0.08);
+        --card: rgba(255, 255, 255, 0.04);
+        --card-hover: rgba(255, 255, 255, 0.07);
+        --card-border: rgba(255, 255, 255, 0.08);
         --text: #f0f0f0;
-        --text-secondary: rgba(255,255,255,0.55);
-        --text-tertiary: rgba(255,255,255,0.35);
-        --border: rgba(255,255,255,0.08);
+        --text-secondary: rgba(255, 255, 255, 0.55);
+        --text-tertiary: rgba(255, 255, 255, 0.35);
+        --border: rgba(255, 255, 255, 0.08);
         --accent: #84cc16;
         --accent-light: #a3e635;
-        --accent-bg: rgba(132,204,22,0.12);
+        --accent-bg: rgba(132, 204, 22, 0.12);
         --green: #22c55e;
-        --green-bg: rgba(34,197,94,0.12);
+        --green-bg: rgba(34, 197, 94, 0.12);
         --red: #ef4444;
-        --red-bg: rgba(239,68,68,0.12);
+        --red-bg: rgba(239, 68, 68, 0.12);
         --yellow: #f59e0b;
         --radius: 16px;
         --radius-sm: 12px;
-        --shadow-sm: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
-        --shadow: 0 4px 16px rgba(0,0,0,0.3);
-        --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+        --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
         --nav-bg: #0d1210;
       }
       * {
@@ -124,7 +124,9 @@
         border: none;
         font-family: inherit;
       }
-      .user-chip:active { transform: scale(0.95); }
+      .user-chip:active {
+        transform: scale(0.95);
+      }
       .user-chip.signed-out {
         background: var(--accent-bg);
         color: var(--accent);
@@ -138,8 +140,12 @@
         height: 8px;
         border-radius: 50%;
       }
-      .user-chip.signed-out .chip-dot { background: var(--accent); }
-      .user-chip.signed-in .chip-dot { background: var(--green); }
+      .user-chip.signed-out .chip-dot {
+        background: var(--accent);
+      }
+      .user-chip.signed-in .chip-dot {
+        background: var(--green);
+      }
 
       /* ─── Bottom Nav ─── */
       .bottom-nav {
@@ -218,12 +224,12 @@
           #15301a 50%,
           #0d2010 100%
         );
-        border: 1px solid rgba(132,204,22,0.15);
+        border: 1px solid rgba(132, 204, 22, 0.15);
         border-radius: 20px;
         padding: 24px;
         color: #fff;
         margin-bottom: 20px;
-        box-shadow: 0 8px 32px rgba(132,204,22,0.1);
+        box-shadow: 0 8px 32px rgba(132, 204, 22, 0.1);
         position: relative;
         overflow: hidden;
       }
@@ -921,20 +927,35 @@
         cursor: pointer;
         transition: background 0.2s;
       }
-      .cloud-banner:active { opacity: 0.8; }
-      .cloud-banner .cb-icon { font-size: 18px; flex-shrink: 0; }
-      .cloud-banner .cb-text { flex: 1; font-size: 13px; font-weight: 500; }
-      .cloud-banner .cb-arrow { font-size: 16px; }
+      .cloud-banner:active {
+        opacity: 0.8;
+      }
+      .cloud-banner .cb-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      .cloud-banner .cb-text {
+        flex: 1;
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .cloud-banner .cb-arrow {
+        font-size: 16px;
+      }
       .cloud-banner.cloud-off {
         background: rgba(245, 158, 11, 0.1);
       }
       .cloud-banner.cloud-off .cb-text,
-      .cloud-banner.cloud-off .cb-arrow { color: var(--yellow); }
+      .cloud-banner.cloud-off .cb-arrow {
+        color: var(--yellow);
+      }
       .cloud-banner.cloud-on {
         background: var(--green-bg);
       }
       .cloud-banner.cloud-on .cb-text,
-      .cloud-banner.cloud-on .cb-arrow { color: var(--green); }
+      .cloud-banner.cloud-on .cb-arrow {
+        color: var(--green);
+      }
 
       /* ─── Last Updated ─── */
       .last-updated {
@@ -943,14 +964,18 @@
       }
 
       /* ─── Cloud Modal Sections ─── */
-      .cloud-section { display: none; }
-      .cloud-section.active { display: block; }
+      .cloud-section {
+        display: none;
+      }
+      .cloud-section.active {
+        display: block;
+      }
       .sql-box {
-        background: rgba(0,0,0,0.3);
+        background: rgba(0, 0, 0, 0.3);
         color: #a5b4fc;
         border-radius: 12px;
         padding: 14px;
-        font-family: 'Courier New', monospace;
+        font-family: "Courier New", monospace;
         font-size: 11px;
         line-height: 1.5;
         overflow-x: auto;
@@ -1038,7 +1063,9 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
-      .news-pills::-webkit-scrollbar { display: none; }
+      .news-pills::-webkit-scrollbar {
+        display: none;
+      }
       .news-pill {
         flex-shrink: 0;
         padding: 6px 14px;
@@ -1091,6 +1118,22 @@
         font-size: 12px;
         font-weight: 500;
       }
+      .benchmark-divider {
+        height: 1px;
+        background: var(--accent-bg);
+        margin: 12px 0 10px;
+      }
+      .benchmark-indices-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+      .benchmark-index-row {
+        padding: 7px 0;
+      }
       /* Swipeable Chart */
       .chart-swipe {
         display: flex;
@@ -1099,7 +1142,9 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
-      .chart-swipe::-webkit-scrollbar { display: none; }
+      .chart-swipe::-webkit-scrollbar {
+        display: none;
+      }
       .chart-swipe-page {
         min-width: 100%;
         scroll-snap-align: start;
@@ -1112,7 +1157,8 @@
         margin-top: 10px;
       }
       .chart-dot {
-        width: 8px; height: 8px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         background: var(--border);
         transition: all 0.2s;
@@ -1125,18 +1171,40 @@
       }
       /* Dividend Calendar */
       .div-projected-card {
-        background: linear-gradient(135deg, #0a2a18 0%, #0d3520 50%, #052810 100%);
-        border: 1px solid rgba(34,197,94,0.15);
+        background: linear-gradient(
+          135deg,
+          #0a2a18 0%,
+          #0d3520 50%,
+          #052810 100%
+        );
+        border: 1px solid rgba(34, 197, 94, 0.15);
         color: #fff;
         border-radius: 16px;
         padding: 20px;
         margin-bottom: 16px;
       }
-      .div-projected-card .dp-label { font-size: 12px; opacity: 0.85; margin-bottom: 4px; }
-      .div-projected-card .dp-value { font-size: 28px; font-weight: 700; }
-      .div-projected-card .dp-stats { display: flex; gap: 20px; margin-top: 12px; }
-      .div-projected-card .dp-stat-label { font-size: 11px; opacity: 0.8; }
-      .div-projected-card .dp-stat-value { font-size: 15px; font-weight: 600; }
+      .div-projected-card .dp-label {
+        font-size: 12px;
+        opacity: 0.85;
+        margin-bottom: 4px;
+      }
+      .div-projected-card .dp-value {
+        font-size: 28px;
+        font-weight: 700;
+      }
+      .div-projected-card .dp-stats {
+        display: flex;
+        gap: 20px;
+        margin-top: 12px;
+      }
+      .div-projected-card .dp-stat-label {
+        font-size: 11px;
+        opacity: 0.8;
+      }
+      .div-projected-card .dp-stat-value {
+        font-size: 15px;
+        font-weight: 600;
+      }
       .div-calendar {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -1150,11 +1218,28 @@
         padding: 10px 8px;
         text-align: center;
       }
-      .div-cal-month .dcm-name { font-size: 11px; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; }
-      .div-cal-month .dcm-amount { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-top: 4px; }
-      .div-cal-month.has-div { border-color: #22c55e; background: rgba(34,197,94,0.08); }
-      .div-cal-month.has-div .dcm-amount { color: #22c55e; }
-      .div-cal-month.current { box-shadow: 0 0 0 2px var(--accent); }
+      .div-cal-month .dcm-name {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      .div-cal-month .dcm-amount {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        margin-top: 4px;
+      }
+      .div-cal-month.has-div {
+        border-color: #22c55e;
+        background: rgba(34, 197, 94, 0.08);
+      }
+      .div-cal-month.has-div .dcm-amount {
+        color: #22c55e;
+      }
+      .div-cal-month.current {
+        box-shadow: 0 0 0 2px var(--accent);
+      }
       .news-item {
         display: block;
         background: var(--card);
@@ -1223,7 +1308,9 @@
         padding: 12px 0;
         border-bottom: 1px solid var(--border);
       }
-      .settings-item:last-child { border-bottom: none; }
+      .settings-item:last-child {
+        border-bottom: none;
+      }
       .settings-item label {
         display: block;
         font-size: 12px;
@@ -1264,7 +1351,11 @@
         gap: 10px;
         margin-top: 12px;
       }
-      .settings-btn-row .btn { flex: 1; padding: 12px; font-size: 13px; }
+      .settings-btn-row .btn {
+        flex: 1;
+        padding: 12px;
+        font-size: 13px;
+      }
       .settings-status {
         display: inline-flex;
         align-items: center;
@@ -1275,8 +1366,14 @@
         border-radius: 20px;
         margin-bottom: 12px;
       }
-      .status-ok { background: var(--green-bg); color: var(--green); }
-      .status-off { background: var(--red-bg); color: var(--red); }
+      .status-ok {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .status-off {
+        background: var(--red-bg);
+        color: var(--red);
+      }
 
       /* ─── Scrollbar ─── */
       ::-webkit-scrollbar {
@@ -1284,57 +1381,135 @@
       }
 
       /* ─── Sidebar (hidden on mobile) ─── */
-      .sidebar { display: none; }
+      .sidebar {
+        display: none;
+      }
       .sidebar-brand {
-        display: flex; align-items: center; gap: 10px;
-        padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 20px 24px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 16px;
       }
       .sidebar-logo {
-        width: 36px; height: 36px; border-radius: 10px;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
         background: linear-gradient(135deg, var(--accent), var(--accent-light));
-        display: flex; align-items: center; justify-content: center;
-        color: #0a0f0a; font-weight: 800; font-size: 14px; flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0a0f0a;
+        font-weight: 800;
+        font-size: 14px;
+        flex-shrink: 0;
       }
-      .sidebar-title { font-size: 17px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
-      .sidebar-nav { display: flex; flex-direction: column; gap: 4px; padding: 0 12px; }
+      .sidebar-title {
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--accent);
+        letter-spacing: -0.5px;
+      }
+      .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 0 12px;
+      }
       .sidebar-nav-item {
-        display: flex; align-items: center; gap: 12px;
-        padding: 11px 14px; border-radius: 12px; border: none; background: none;
-        color: rgba(255,255,255,0.4); font-size: 14px; font-weight: 500;
-        cursor: pointer; transition: all 0.2s; font-family: inherit; width: 100%; text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 14px;
+        border-radius: 12px;
+        border: none;
+        background: none;
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+        width: 100%;
+        text-align: left;
       }
-      .sidebar-nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); }
-      .sidebar-nav-item.active { background: rgba(132,204,22,0.12); color: #fff; }
-      .sidebar-nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+      .sidebar-nav-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .sidebar-nav-item.active {
+        background: rgba(132, 204, 22, 0.12);
+        color: #fff;
+      }
+      .sidebar-nav-item svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+      }
 
       /* ─── Desktop Layout ─── */
       @media (min-width: 768px) {
         .sidebar {
-          display: flex; flex-direction: column; position: fixed;
-          top: 0; left: 0; bottom: 0; width: 220px;
-          background: var(--nav-bg); border-right: 1px solid var(--border);
-          z-index: 60; padding: 24px 0; overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          width: 220px;
+          background: var(--nav-bg);
+          border-right: 1px solid var(--border);
+          z-index: 60;
+          padding: 24px 0;
+          overflow-y: auto;
         }
-        .main-content { margin-left: 220px; }
-        .bottom-nav { display: none !important; }
-        body { padding-bottom: 0; }
-        .top-header { max-width: 960px; }
-        .page { max-width: 960px; }
+        .main-content {
+          margin-left: 220px;
+        }
+        .bottom-nav {
+          display: none !important;
+        }
+        body {
+          padding-bottom: 0;
+        }
+        .top-header {
+          max-width: 960px;
+        }
+        .page {
+          max-width: 960px;
+        }
         .dashboard-grid {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
           margin-bottom: 16px;
         }
-        .dashboard-grid > * { min-width: 0; margin-bottom: 0; overflow: hidden; }
-        .dashboard-grid > .card { margin-bottom: 0; }
-        #stockList {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+        .dashboard-grid > * {
+          min-width: 0;
+          margin-bottom: 0;
+          overflow: hidden;
         }
-        #stockList .stock-item { margin-bottom: 0; }
+        .dashboard-grid > .card {
+          margin-bottom: 0;
+        }
+        #stockList {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+        #stockList .stock-item {
+          margin-bottom: 0;
+        }
         .fab {
           right: max(20px, calc((100vw - 220px - 960px) / 2 + 20px));
         }
-        .div-calendar { grid-template-columns: repeat(6, 1fr); }
-        .toast { left: calc(220px + (100vw - 220px) / 2); }
+        .div-calendar {
+          grid-template-columns: repeat(6, 1fr);
+        }
+        .toast {
+          left: calc(220px + (100vw - 220px) / 2);
+        }
       }
     </style>
   </head>
@@ -1347,173 +1522,350 @@
       </div>
       <nav class="sidebar-nav">
         <button class="sidebar-nav-item active" data-page="dashboard">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" />
+          </svg>
           <span>Dashboard</span>
         </button>
         <button class="sidebar-nav-item" data-page="stocks">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
           <span>Stocks</span>
         </button>
         <button class="sidebar-nav-item" data-page="flow">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
           <span>Money</span>
         </button>
         <button class="sidebar-nav-item" data-page="dividends">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="16" />
+            <line x1="8" y1="12" x2="16" y2="12" />
+          </svg>
           <span>Dividends</span>
         </button>
         <button class="sidebar-nav-item" data-page="settings">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+            />
+          </svg>
           <span>Settings</span>
         </button>
       </nav>
     </aside>
 
     <main class="main-content">
-    <!-- Top Header -->
-    <div class="top-header">
-      <h1>Asset Tracker</h1>
-      <div class="header-actions">
-        <button class="user-chip signed-out" id="userChip" onclick="openCloudModal()">
-          <span class="chip-dot"></span>
-          <span id="userChipLabel">Cloud</span>
-        </button>
-        <input
-          type="file"
-          id="importFile"
-          accept=".json"
-          style="display: none"
-          onchange="importData(event)"
-        />
+      <!-- Top Header -->
+      <div class="top-header">
+        <h1>Asset Tracker</h1>
+        <div class="header-actions">
+          <button
+            class="user-chip signed-out"
+            id="userChip"
+            onclick="openCloudModal()"
+          >
+            <span class="chip-dot"></span>
+            <span id="userChipLabel">Cloud</span>
+          </button>
+          <input
+            type="file"
+            id="importFile"
+            accept=".json"
+            style="display: none"
+            onchange="importData(event)"
+          />
+        </div>
       </div>
-    </div>
 
-    <!-- Dashboard Page -->
-    <div id="page-dashboard" class="page active">
-      <div id="dashHero" onclick="navigateTo('stocks')" class="widget-tap"></div>
-      <div class="mini-cards" id="dashMini"></div>
-      <div class="dashboard-grid">
-        <!-- Benchmark vs S&P 500 -->
-        <div id="benchmarkCard"></div>
-        <!-- Allocation Pie -->
+      <!-- Dashboard Page -->
+      <div id="page-dashboard" class="page active">
+        <div
+          id="dashHero"
+          onclick="navigateTo('stocks')"
+          class="widget-tap"
+        ></div>
+        <div class="mini-cards" id="dashMini"></div>
+        <div class="dashboard-grid">
+          <!-- Benchmark vs S&P 500 -->
+          <div id="benchmarkCard"></div>
+          <!-- Allocation Pie -->
+          <div class="card">
+            <div class="section-title">Allocation</div>
+            <div class="chart-container"><canvas id="pieChart"></canvas></div>
+            <div id="pieEmpty"></div>
+          </div>
+        </div>
+        <!-- P&L by Stock (full width) -->
         <div class="card">
-          <div class="section-title">Allocation</div>
-          <div class="chart-container"><canvas id="pieChart"></canvas></div>
-          <div id="pieEmpty"></div>
+          <div class="section-title">P&L by Stock</div>
+          <div style="position: relative; width: 100%; height: 220px">
+            <canvas id="pnlChart"></canvas>
+          </div>
+          <div id="pnlEmpty"></div>
         </div>
-      </div>
-      <!-- P&L by Stock (full width) -->
-      <div class="card">
-        <div class="section-title">P&L by Stock</div>
-        <div style="position:relative;width:100%;height:220px"><canvas id="pnlChart"></canvas></div>
-        <div id="pnlEmpty"></div>
-      </div>
 
-      <!-- News Widget -->
-      <div class="card">
-        <div class="section-title">&#128240; Stock News</div>
-        <div class="news-pills" id="newsPills"></div>
-        <div id="newsWidgetList"></div>
-      </div>
-    </div>
-
-    <!-- Stocks Page -->
-    <div id="page-stocks" class="page">
-      <div id="stocksHero"></div>
-      <div class="section-title">Holdings</div>
-      <div
-        class="last-updated"
-        id="lastUpdated"
-        style="margin-bottom: 12px"
-      ></div>
-      <div id="stockList"></div>
-    </div>
-
-    <!-- Money Flow Page -->
-    <div id="page-flow" class="page">
-      <div id="flowHero"></div>
-      <div class="fx-row" id="fxRow"></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div class="section-title" style="margin-bottom:0">Transactions</div>
-        <select id="flowYearFilter" onchange="renderFlows()" style="padding:6px 32px 6px 12px;border-radius:10px;border:1px solid var(--border);background-color:var(--card);font-family:inherit;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ffffff55' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 10px center"></select>
-      </div>
-      <div id="flowList"></div>
-    </div>
-
-    <!-- Dividends Page -->
-    <div id="page-dividends" class="page">
-      <div id="divHero"></div>
-      <div id="divCalendarBanner"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div class="section-title" style="margin-bottom:0">Dividend Records</div>
-        <select id="divYearFilter" onchange="renderDividends()" style="padding:6px 32px 6px 12px;border-radius:10px;border:1px solid var(--border);background-color:var(--card);font-family:inherit;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ffffff55' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 10px center"></select>
-      </div>
-      <div id="divList"></div>
-    </div>
-
-    <!-- Settings Page -->
-    <div id="page-settings" class="page">
-      <div class="hero-card" style="background:linear-gradient(135deg, #1a2420 0%, #1e2e25 50%, #0d1a10 100%); border:1px solid rgba(255,255,255,0.08); box-shadow: none;">
-        <div class="hero-label">Admin Settings</div>
-        <div class="hero-value" style="font-size:24px">&#9881; Configuration</div>
-      </div>
-
-      <!-- Cloud Account -->
-      <div class="settings-section">
-        <div class="settings-section-title"><span class="ss-icon">&#9729;</span> Cloud Account</div>
-        <div id="settingsCloudStatus"></div>
-        <div id="settingsCloudContent"></div>
-      </div>
-
-      <!-- Supabase Config -->
-      <div class="settings-section">
-        <div class="settings-section-title"><span class="ss-icon">&#128268;</span> Supabase Config</div>
-        <div class="settings-item">
-          <label>Project URL</label>
-          <input type="text" id="settingSbUrl" placeholder="https://xxxxx.supabase.co" />
-        </div>
-        <div class="settings-item">
-          <label>Anon Public Key</label>
-          <input type="text" id="settingSbKey" placeholder="eyJhbGciOiJI..." />
-          <div class="si-hint">&#128274; Safe to embed — protected by Row Level Security</div>
-        </div>
-        <div class="settings-btn-row">
-          <button class="btn btn-primary" onclick="saveSettingsSupabase()">Save</button>
+        <!-- News Widget -->
+        <div class="card">
+          <div class="section-title">&#128240; Stock News</div>
+          <div class="news-pills" id="newsPills"></div>
+          <div id="newsWidgetList"></div>
         </div>
       </div>
 
-      <!-- Finnhub Config -->
-      <div class="settings-section">
-        <div class="settings-section-title"><span class="ss-icon">&#9889;</span> Finnhub API</div>
-        <div id="settingsFinnhubStatus"></div>
-        <div class="settings-item">
-          <label>API Key</label>
-          <input type="text" id="settingFinnhubKey" placeholder="Your Finnhub API key" />
-          <div class="si-hint">Get free key at finnhub.io</div>
+      <!-- Stocks Page -->
+      <div id="page-stocks" class="page">
+        <div id="stocksHero"></div>
+        <div class="section-title">Holdings</div>
+        <div
+          class="last-updated"
+          id="lastUpdated"
+          style="margin-bottom: 12px"
+        ></div>
+        <div id="stockList"></div>
+      </div>
+
+      <!-- Money Flow Page -->
+      <div id="page-flow" class="page">
+        <div id="flowHero"></div>
+        <div class="fx-row" id="fxRow"></div>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+          "
+        >
+          <div class="section-title" style="margin-bottom: 0">Transactions</div>
+          <select
+            id="flowYearFilter"
+            onchange="renderFlows()"
+            style="
+              padding: 6px 32px 6px 12px;
+              border-radius: 10px;
+              border: 1px solid var(--border);
+              background-color: var(--card);
+              font-family: inherit;
+              font-size: 13px;
+              font-weight: 600;
+              color: var(--text);
+              cursor: pointer;
+              appearance: none;
+              -webkit-appearance: none;
+              background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ffffff55' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);
+              background-repeat: no-repeat;
+              background-position: right 10px center;
+            "
+          ></select>
         </div>
-        <div class="settings-btn-row">
-          <button class="btn btn-primary" onclick="saveSettingsFinnhub()">Save</button>
-          <button class="btn btn-ghost" onclick="removeSettingsFinnhub()" style="margin:0; color:var(--red)">Remove</button>
+        <div id="flowList"></div>
+      </div>
+
+      <!-- Dividends Page -->
+      <div id="page-dividends" class="page">
+        <div id="divHero"></div>
+        <div id="divCalendarBanner"></div>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+          "
+        >
+          <div class="section-title" style="margin-bottom: 0">
+            Dividend Records
+          </div>
+          <select
+            id="divYearFilter"
+            onchange="renderDividends()"
+            style="
+              padding: 6px 32px 6px 12px;
+              border-radius: 10px;
+              border: 1px solid var(--border);
+              background-color: var(--card);
+              font-family: inherit;
+              font-size: 13px;
+              font-weight: 600;
+              color: var(--text);
+              cursor: pointer;
+              appearance: none;
+              -webkit-appearance: none;
+              background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ffffff55' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);
+              background-repeat: no-repeat;
+              background-position: right 10px center;
+            "
+          ></select>
+        </div>
+        <div id="divList"></div>
+      </div>
+
+      <!-- Settings Page -->
+      <div id="page-settings" class="page">
+        <div
+          class="hero-card"
+          style="
+            background: linear-gradient(
+              135deg,
+              #1a2420 0%,
+              #1e2e25 50%,
+              #0d1a10 100%
+            );
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: none;
+          "
+        >
+          <div class="hero-label">Admin Settings</div>
+          <div class="hero-value" style="font-size: 24px">
+            &#9881; Configuration
+          </div>
+        </div>
+
+        <!-- Cloud Account -->
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <span class="ss-icon">&#9729;</span> Cloud Account
+          </div>
+          <div id="settingsCloudStatus"></div>
+          <div id="settingsCloudContent"></div>
+        </div>
+
+        <!-- Supabase Config -->
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <span class="ss-icon">&#128268;</span> Supabase Config
+          </div>
+          <div class="settings-item">
+            <label>Project URL</label>
+            <input
+              type="text"
+              id="settingSbUrl"
+              placeholder="https://xxxxx.supabase.co"
+            />
+          </div>
+          <div class="settings-item">
+            <label>Anon Public Key</label>
+            <input
+              type="text"
+              id="settingSbKey"
+              placeholder="eyJhbGciOiJI..."
+            />
+            <div class="si-hint">
+              &#128274; Safe to embed — protected by Row Level Security
+            </div>
+          </div>
+          <div class="settings-btn-row">
+            <button class="btn btn-primary" onclick="saveSettingsSupabase()">
+              Save
+            </button>
+          </div>
+        </div>
+
+        <!-- Finnhub Config -->
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <span class="ss-icon">&#9889;</span> Finnhub API
+          </div>
+          <div id="settingsFinnhubStatus"></div>
+          <div class="settings-item">
+            <label>API Key</label>
+            <input
+              type="text"
+              id="settingFinnhubKey"
+              placeholder="Your Finnhub API key"
+            />
+            <div class="si-hint">Get free key at finnhub.io</div>
+          </div>
+          <div class="settings-btn-row">
+            <button class="btn btn-primary" onclick="saveSettingsFinnhub()">
+              Save
+            </button>
+            <button
+              class="btn btn-ghost"
+              onclick="removeSettingsFinnhub()"
+              style="margin: 0; color: var(--red)"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+
+        <!-- Data Management -->
+        <div class="settings-section">
+          <div class="settings-section-title">
+            <span class="ss-icon">&#128190;</span> Data Management
+          </div>
+          <div class="settings-btn-row">
+            <button
+              class="btn btn-outline"
+              onclick="exportData()"
+              style="margin: 0"
+            >
+              &#8595; Export JSON
+            </button>
+            <button
+              class="btn btn-outline"
+              onclick="document.getElementById('importFile').click()"
+              style="margin: 0"
+            >
+              &#8593; Import JSON
+            </button>
+          </div>
+          <div class="settings-btn-row" style="margin-top: 8px">
+            <button
+              class="btn btn-primary"
+              onclick="cloudPush()"
+              style="margin: 0"
+            >
+              &#8593; Push to Cloud
+            </button>
+            <button
+              class="btn btn-outline"
+              onclick="cloudPull()"
+              style="margin: 0"
+            >
+              &#8595; Pull from Cloud
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Data Management -->
-      <div class="settings-section">
-        <div class="settings-section-title"><span class="ss-icon">&#128190;</span> Data Management</div>
-        <div class="settings-btn-row">
-          <button class="btn btn-outline" onclick="exportData()" style="margin:0">&#8595; Export JSON</button>
-          <button class="btn btn-outline" onclick="document.getElementById('importFile').click()" style="margin:0">&#8593; Import JSON</button>
-        </div>
-        <div class="settings-btn-row" style="margin-top:8px">
-          <button class="btn btn-primary" onclick="cloudPush()" style="margin:0">&#8593; Push to Cloud</button>
-          <button class="btn btn-outline" onclick="cloudPull()" style="margin:0">&#8595; Pull from Cloud</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- FAB -->
-    <button class="fab" id="fab" onclick="openAddModal()">+</button>
-
+      <!-- FAB -->
+      <button class="fab" id="fab" onclick="openAddModal()">+</button>
     </main>
 
     <!-- Bottom Navigation -->
@@ -1570,9 +1922,16 @@
           <span>Dividends</span>
         </button>
         <button class="nav-item" data-page="settings">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+            />
           </svg>
           <span>Settings</span>
         </button>
@@ -1650,10 +2009,27 @@
           <button type="submit" class="btn btn-primary" id="stockSubmitBtn">
             Add Stock
           </button>
-          <div id="stockEditActions" style="display:none;text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+          <div
+            id="stockEditActions"
+            style="
+              display: none;
+              text-align: center;
+              margin-top: 16px;
+              padding-top: 16px;
+              border-top: 1px solid var(--border);
+            "
+          >
             <button
               type="button"
-              style="background:none;border:none;color:#EF4444;font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline"
+              style="
+                background: none;
+                border: none;
+                color: #ef4444;
+                font-size: 12px;
+                cursor: pointer;
+                font-family: inherit;
+                text-decoration: underline;
+              "
               onclick="confirmDeleteStock()"
             >
               Delete this stock
@@ -1731,10 +2107,27 @@
           <button type="submit" class="btn btn-primary" id="flowSubmitBtn">
             Add Transaction
           </button>
-          <div id="flowEditActions" style="display:none;text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+          <div
+            id="flowEditActions"
+            style="
+              display: none;
+              text-align: center;
+              margin-top: 16px;
+              padding-top: 16px;
+              border-top: 1px solid var(--border);
+            "
+          >
             <button
               type="button"
-              style="background:none;border:none;color:#EF4444;font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline"
+              style="
+                background: none;
+                border: none;
+                color: #ef4444;
+                font-size: 12px;
+                cursor: pointer;
+                font-family: inherit;
+                text-decoration: underline;
+              "
               onclick="confirmDeleteFlow()"
             >
               Delete this record
@@ -1798,10 +2191,27 @@
           <button type="submit" class="btn btn-primary" id="divSubmitBtn">
             Add Dividend
           </button>
-          <div id="divEditActions" style="display:none;text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+          <div
+            id="divEditActions"
+            style="
+              display: none;
+              text-align: center;
+              margin-top: 16px;
+              padding-top: 16px;
+              border-top: 1px solid var(--border);
+            "
+          >
             <button
               type="button"
-              style="background:none;border:none;color:#EF4444;font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline"
+              style="
+                background: none;
+                border: none;
+                color: #ef4444;
+                font-size: 12px;
+                cursor: pointer;
+                font-family: inherit;
+                text-decoration: underline;
+              "
               onclick="confirmDeleteDiv()"
             >
               Delete this dividend
@@ -1906,46 +2316,56 @@
           <div class="cloud-step">
             <div class="cloud-step-num">2</div>
             <div class="cloud-step-text">
-              In <strong>SQL Editor</strong>, run this query to create the table:
+              In <strong>SQL Editor</strong>, run this query to create the
+              table:
             </div>
           </div>
-          <div class="sql-box">create table user_data (
-  id uuid default gen_random_uuid() primary key,
-  user_id uuid references auth.users(id) on delete cascade not null,
-  data jsonb default '{}'::jsonb,
-  updated_at timestamptz default now(),
-  unique(user_id)
-);
-
-alter table user_data enable row level security;
-
-create policy "Users can manage own data"
-  on user_data for all
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);</div>
+          <div class="sql-box">
+            create table user_data ( id uuid default gen_random_uuid() primary
+            key, user_id uuid references auth.users(id) on delete cascade not
+            null, data jsonb default '{}'::jsonb, updated_at timestamptz default
+            now(), unique(user_id) ); alter table user_data enable row level
+            security; create policy "Users can manage own data" on user_data for
+            all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+          </div>
           <div class="cloud-step">
             <div class="cloud-step-num">3</div>
             <div class="cloud-step-text">
-              Go to <strong>Settings &rarr; API</strong> and copy your <strong>Project URL</strong> and <strong>anon public key</strong>
+              Go to <strong>Settings &rarr; API</strong> and copy your
+              <strong>Project URL</strong> and <strong>anon public key</strong>
             </div>
           </div>
           <div class="form-group">
             <label>Supabase Project URL</label>
-            <input type="text" id="sbUrl" placeholder="https://xxxxx.supabase.co" />
+            <input
+              type="text"
+              id="sbUrl"
+              placeholder="https://xxxxx.supabase.co"
+            />
           </div>
           <div class="form-group">
             <label>Anon Public Key</label>
-            <input type="text" id="sbKey" placeholder="eyJhbGciOiJIUzI1NiIs..." />
+            <input
+              type="text"
+              id="sbKey"
+              placeholder="eyJhbGciOiJIUzI1NiIs..."
+            />
           </div>
-          <button class="btn btn-primary" onclick="saveSupabaseConfig()">Save &amp; Continue</button>
-          <button class="btn btn-ghost" onclick="closeModal('modalCloud')">Cancel</button>
+          <button class="btn btn-primary" onclick="saveSupabaseConfig()">
+            Save &amp; Continue
+          </button>
+          <button class="btn btn-ghost" onclick="closeModal('modalCloud')">
+            Cancel
+          </button>
         </div>
 
         <!-- Section: Login -->
         <div class="cloud-section" id="cloudLogin">
-          <div style="text-align:center;margin-bottom:20px">
-            <div style="font-size:40px;margin-bottom:8px">&#9729;</div>
-            <p style="font-size:14px;color:var(--text-secondary)">Sign in to sync your data across devices</p>
+          <div style="text-align: center; margin-bottom: 20px">
+            <div style="font-size: 40px; margin-bottom: 8px">&#9729;</div>
+            <p style="font-size: 14px; color: var(--text-secondary)">
+              Sign in to sync your data across devices
+            </p>
           </div>
           <div class="form-group">
             <label>Email</label>
@@ -1953,29 +2373,61 @@ create policy "Users can manage own data"
           </div>
           <div class="form-group">
             <label>Password</label>
-            <input type="password" id="cloudPass" placeholder="Min 6 characters" />
+            <input
+              type="password"
+              id="cloudPass"
+              placeholder="Min 6 characters"
+            />
           </div>
-          <button class="btn btn-primary" onclick="cloudSignIn()">Sign In</button>
-          <button class="btn btn-outline" onclick="cloudSignUp()">Create Account</button>
-          <button class="btn btn-ghost" onclick="showCloudSection('cloudSetup')" style="font-size:12px">&#9881; Change Supabase Config</button>
-          <button class="btn btn-ghost" onclick="closeModal('modalCloud')">Cancel</button>
+          <button class="btn btn-primary" onclick="cloudSignIn()">
+            Sign In
+          </button>
+          <button class="btn btn-outline" onclick="cloudSignUp()">
+            Create Account
+          </button>
+          <button
+            class="btn btn-ghost"
+            onclick="showCloudSection('cloudSetup')"
+            style="font-size: 12px"
+          >
+            &#9881; Change Supabase Config
+          </button>
+          <button class="btn btn-ghost" onclick="closeModal('modalCloud')">
+            Cancel
+          </button>
         </div>
 
         <!-- Section: Signed In -->
         <div class="cloud-section" id="cloudSignedIn">
           <div class="cloud-user-info">
-            <div style="font-size:36px;margin-bottom:8px">&#9989;</div>
+            <div style="font-size: 36px; margin-bottom: 8px">&#9989;</div>
             <div class="cui-email" id="cloudUserEmail">user@email.com</div>
             <div class="cui-status">&#9679; Synced to cloud</div>
           </div>
-          <button class="btn btn-primary" onclick="cloudPush()" style="margin-bottom:8px">
+          <button
+            class="btn btn-primary"
+            onclick="cloudPush()"
+            style="margin-bottom: 8px"
+          >
             &#8593; Push Data to Cloud
           </button>
-          <button class="btn btn-outline" onclick="cloudPull()" style="margin-top:0">
+          <button
+            class="btn btn-outline"
+            onclick="cloudPull()"
+            style="margin-top: 0"
+          >
             &#8595; Pull Data from Cloud
           </button>
-          <button class="btn btn-ghost" onclick="cloudSignOut()" style="color:var(--red)">Sign Out</button>
-          <button class="btn btn-ghost" onclick="closeModal('modalCloud')">Close</button>
+          <button
+            class="btn btn-ghost"
+            onclick="cloudSignOut()"
+            style="color: var(--red)"
+          >
+            Sign Out
+          </button>
+          <button class="btn btn-ghost" onclick="closeModal('modalCloud')">
+            Close
+          </button>
         </div>
       </div>
     </div>
@@ -2259,7 +2711,8 @@ create policy "Users can manage own data"
 
       // ─── Default Credentials (embedded) ───
       const DEFAULT_SB_URL = "https://vohwhrvfnqmdegtwvgqu.supabase.co";
-      const DEFAULT_SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvaHdocnZmbnFtZGVndHd2Z3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMzgxMzgsImV4cCI6MjA4ODYxNDEzOH0.MSVz8i1pg2anVWNsb95iY9xvCRlX6UxPPAbx6tIUNzc";
+      const DEFAULT_SB_ANON =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZvaHdocnZmbnFtZGVndHd2Z3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMzgxMzgsImV4cCI6MjA4ODYxNDEzOH0.MSVz8i1pg2anVWNsb95iY9xvCRlX6UxPPAbx6tIUNzc";
       const DEFAULT_FINNHUB_KEY = "d6n59e9r01qir35j7t4gd6n59e9r01qir35j7t50";
 
       // ─── Data Store ───
@@ -2294,8 +2747,12 @@ create policy "Users can manage own data"
       let sb = null;
       let currentUser = null;
 
-      function getSbUrl() { return localStorage.getItem(SB_URL_KEY) || DEFAULT_SB_URL; }
-      function getSbAnon() { return localStorage.getItem(SB_ANON_KEY) || DEFAULT_SB_ANON; }
+      function getSbUrl() {
+        return localStorage.getItem(SB_URL_KEY) || DEFAULT_SB_URL;
+      }
+      function getSbAnon() {
+        return localStorage.getItem(SB_ANON_KEY) || DEFAULT_SB_ANON;
+      }
 
       function initSupabase() {
         const url = getSbUrl();
@@ -2313,7 +2770,10 @@ create policy "Users can manage own data"
       }
 
       function saveSupabaseConfig() {
-        const url = document.getElementById("sbUrl").value.trim().replace(/\/+$/, "");
+        const url = document
+          .getElementById("sbUrl")
+          .value.trim()
+          .replace(/\/+$/, "");
         const key = document.getElementById("sbKey").value.trim();
         if (!url || !key) {
           showToast("Please fill in both fields");
@@ -2330,12 +2790,21 @@ create policy "Users can manage own data"
       }
 
       async function cloudSignIn() {
-        if (!sb) { showToast("Set up Supabase first"); return; }
+        if (!sb) {
+          showToast("Set up Supabase first");
+          return;
+        }
         const email = document.getElementById("cloudEmail").value.trim();
         const pass = document.getElementById("cloudPass").value;
-        if (!email || !pass) { showToast("Enter email and password"); return; }
+        if (!email || !pass) {
+          showToast("Enter email and password");
+          return;
+        }
         try {
-          const { data: authData, error } = await sb.auth.signInWithPassword({ email, password: pass });
+          const { data: authData, error } = await sb.auth.signInWithPassword({
+            email,
+            password: pass,
+          });
           if (error) throw error;
           currentUser = authData.user;
           showToast("Signed in!");
@@ -2349,15 +2818,25 @@ create policy "Users can manage own data"
       }
 
       async function cloudSignUp() {
-        if (!sb) { showToast("Set up Supabase first"); return; }
+        if (!sb) {
+          showToast("Set up Supabase first");
+          return;
+        }
         const email = document.getElementById("cloudEmail").value.trim();
         const pass = document.getElementById("cloudPass").value;
-        if (!email || !pass) { showToast("Enter email and password"); return; }
-        if (pass.length < 6) { showToast("Password must be at least 6 characters"); return; }
+        if (!email || !pass) {
+          showToast("Enter email and password");
+          return;
+        }
+        if (pass.length < 6) {
+          showToast("Password must be at least 6 characters");
+          return;
+        }
         try {
           const { data: authData, error } = await sb.auth.signUp({
-            email, password: pass,
-            options: { emailRedirectTo: SITE_URL }
+            email,
+            password: pass,
+            options: { emailRedirectTo: SITE_URL },
           });
           if (error) throw error;
           if (authData.user) {
@@ -2386,13 +2865,19 @@ create policy "Users can manage own data"
       }
 
       async function cloudPush() {
-        if (!sb || !currentUser) { showToast("Sign in first"); return; }
+        if (!sb || !currentUser) {
+          showToast("Sign in first");
+          return;
+        }
         try {
-          const { error } = await sb.from("user_data").upsert({
-            user_id: currentUser.id,
-            data: data,
-            updated_at: new Date().toISOString()
-          }, { onConflict: "user_id" });
+          const { error } = await sb.from("user_data").upsert(
+            {
+              user_id: currentUser.id,
+              data: data,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id" },
+          );
           if (error) throw error;
           showToast("Data pushed to cloud!");
         } catch (e) {
@@ -2403,20 +2888,27 @@ create policy "Users can manage own data"
       async function cloudPushSilent() {
         if (!sb || !currentUser) return;
         try {
-          await sb.from("user_data").upsert({
-            user_id: currentUser.id,
-            data: data,
-            updated_at: new Date().toISOString()
-          }, { onConflict: "user_id" });
+          await sb.from("user_data").upsert(
+            {
+              user_id: currentUser.id,
+              data: data,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id" },
+          );
         } catch (e) {
           console.warn("Silent push failed:", e);
         }
       }
 
       async function cloudPull() {
-        if (!sb || !currentUser) { showToast("Sign in first"); return; }
+        if (!sb || !currentUser) {
+          showToast("Sign in first");
+          return;
+        }
         try {
-          const { data: rows, error } = await sb.from("user_data")
+          const { data: rows, error } = await sb
+            .from("user_data")
             .select("data")
             .eq("user_id", currentUser.id)
             .maybeSingle();
@@ -2454,10 +2946,16 @@ create policy "Users can manage own data"
             currentUser = session.user;
             updateUserChip();
             // Show password reset UI
-            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+            document
+              .querySelectorAll(".page")
+              .forEach((p) => p.classList.remove("active"));
             document.getElementById("page-settings").classList.add("active");
-            document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
-            document.querySelector('[data-page="settings"]').classList.add("active");
+            document
+              .querySelectorAll(".nav-item")
+              .forEach((b) => b.classList.remove("active"));
+            document
+              .querySelector('[data-page="settings"]')
+              .classList.add("active");
             renderSettings();
             setTimeout(() => {
               const el = document.getElementById("changePwSection");
@@ -2474,10 +2972,13 @@ create policy "Users can manage own data"
       }
 
       function showCloudSection(id) {
-        document.querySelectorAll(".cloud-section").forEach(s => s.classList.remove("active"));
+        document
+          .querySelectorAll(".cloud-section")
+          .forEach((s) => s.classList.remove("active"));
         document.getElementById(id).classList.add("active");
         if (id === "cloudSignedIn" && currentUser) {
-          document.getElementById("cloudUserEmail").textContent = currentUser.email || "User";
+          document.getElementById("cloudUserEmail").textContent =
+            currentUser.email || "User";
         }
       }
 
@@ -2489,8 +2990,10 @@ create policy "Users can manage own data"
           showCloudSection("cloudLogin");
         } else {
           showCloudSection("cloudSetup");
-          document.getElementById("sbUrl").value = localStorage.getItem(SB_URL_KEY) || "";
-          document.getElementById("sbKey").value = localStorage.getItem(SB_ANON_KEY) || "";
+          document.getElementById("sbUrl").value =
+            localStorage.getItem(SB_URL_KEY) || "";
+          document.getElementById("sbKey").value =
+            localStorage.getItem(SB_ANON_KEY) || "";
         }
         openModal("modalCloud");
       }
@@ -2530,7 +3033,9 @@ create policy "Users can manage own data"
       const LAST_UPDATE_STORAGE = "dime_last_price_update";
 
       function getApiKey() {
-        return localStorage.getItem(API_KEY_STORAGE) || DEFAULT_FINNHUB_KEY || "";
+        return (
+          localStorage.getItem(API_KEY_STORAGE) || DEFAULT_FINNHUB_KEY || ""
+        );
       }
       function saveApiKey() {
         const key = document.getElementById("apiKeyInput").value.trim();
@@ -2607,7 +3112,10 @@ create policy "Users can manage own data"
         const to = new Date();
         const from = new Date();
         from.setDate(from.getDate() - NEWS_DAYS);
-        return { from: from.toISOString().slice(0, 10), to: to.toISOString().slice(0, 10) };
+        return {
+          from: from.toISOString().slice(0, 10),
+          to: to.toISOString().slice(0, 10),
+        };
       }
 
       async function fetchMarketNews() {
@@ -2615,7 +3123,7 @@ create policy "Users can manage own data"
         if (!key) return [];
         try {
           const resp = await fetch(
-            `https://finnhub.io/api/v1/news?category=general&token=${encodeURIComponent(key)}`
+            `https://finnhub.io/api/v1/news?category=general&token=${encodeURIComponent(key)}`,
           );
           if (!resp.ok) return [];
           const articles = await resp.json();
@@ -2632,7 +3140,7 @@ create policy "Users can manage own data"
         const { from, to } = getNewsDateRange();
         try {
           const resp = await fetch(
-            `https://finnhub.io/api/v1/company-news?symbol=${encodeURIComponent(ticker)}&from=${from}&to=${to}&token=${encodeURIComponent(key)}`
+            `https://finnhub.io/api/v1/company-news?symbol=${encodeURIComponent(ticker)}&from=${from}&to=${to}&token=${encodeURIComponent(key)}`,
           );
           if (!resp.ok) return [];
           const articles = await resp.json();
@@ -2650,13 +3158,15 @@ create policy "Users can manage own data"
 
         const listEl = document.getElementById("newsWidgetList");
         if (!listEl) return;
-        listEl.innerHTML = '<div class="news-loading">&#8987; Loading news...</div>';
+        listEl.innerHTML =
+          '<div class="news-loading">&#8987; Loading news...</div>';
 
         newsFetchInProgress = true;
         try {
-          const articles = pill === "__market__"
-            ? await fetchMarketNews()
-            : await fetchCompanyNews(pill);
+          const articles =
+            pill === "__market__"
+              ? await fetchMarketNews()
+              : await fetchCompanyNews(pill);
           newsCache[pill] = { articles, fetchedAt: Date.now() };
         } catch (e) {
           console.warn("News fetch failed", e);
@@ -2669,7 +3179,7 @@ create policy "Users can manage own data"
         const el = document.getElementById("newsPills");
         if (!el) return;
         let html = `<button class="news-pill${activeNewsPill === "__market__" ? " active" : ""}" onclick="event.stopPropagation(); selectNewsPill('__market__')">&#127758; US Market</button>`;
-        data.stocks.forEach(s => {
+        data.stocks.forEach((s) => {
           html += `<button class="news-pill${activeNewsPill === s.ticker ? " active" : ""}" onclick="event.stopPropagation(); selectNewsPill('${s.ticker}')">${s.ticker}</button>`;
         });
         el.innerHTML = html;
@@ -2680,14 +3190,21 @@ create policy "Users can manage own data"
         if (!listEl) return;
         const cached = newsCache[activeNewsPill];
         if (!cached || !cached.articles.length) {
-          listEl.innerHTML = '<div class="news-loading">No recent news found</div>';
+          listEl.innerHTML =
+            '<div class="news-loading">No recent news found</div>';
           return;
         }
         let html = "";
-        cached.articles.forEach(a => {
+        cached.articles.forEach((a) => {
           const date = new Date(a.datetime * 1000);
-          const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-          const badge = activeNewsPill === "__market__" ? "" : `<span class="news-ticker-badge">${activeNewsPill}</span>`;
+          const dateStr = date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          });
+          const badge =
+            activeNewsPill === "__market__"
+              ? ""
+              : `<span class="news-ticker-badge">${activeNewsPill}</span>`;
           html += `<a class="news-item" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
             <div class="news-item-headline">${a.headline}</div>
             <div class="news-item-meta">
@@ -2730,7 +3247,6 @@ create policy "Users can manage own data"
         }
       }
 
-
       // ─── Market Indices ───
       let marketCache = { SPY: null, QQQ: null, fetchedAt: 0 };
       const MARKET_CACHE_TTL = 10 * 60 * 1000;
@@ -2740,11 +3256,12 @@ create policy "Users can manage own data"
         if (!key) return null;
         try {
           const resp = await fetch(
-            `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${encodeURIComponent(key)}`
+            `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${encodeURIComponent(key)}`,
           );
           if (!resp.ok) return null;
           const json = await resp.json();
-          if (json.c && json.c > 0) return { c: json.c, pc: json.pc, d: json.d, dp: json.dp };
+          if (json.c && json.c > 0)
+            return { c: json.c, pc: json.pc, d: json.d, dp: json.dp };
           return null;
         } catch (e) {
           console.warn("Quote fetch error for", ticker, e);
@@ -2752,10 +3269,28 @@ create policy "Users can manage own data"
         }
       }
 
+      const GLOBAL_INDICES = [
+        { ticker: "THD",  label: "SET (Thailand)",  flag: "🇹🇭" },
+        { ticker: "EWJ",  label: "Nikkei (Japan)",  flag: "🇯🇵" },
+        { ticker: "MCHI", label: "CSI (China)",      flag: "🇨🇳" },
+        { ticker: "INDA", label: "Sensex (India)",   flag: "🇮🇳" },
+      ];
+
       async function fetchMarketIndices() {
-        if (Date.now() - marketCache.fetchedAt < MARKET_CACHE_TTL && marketCache.SPY) return;
+        if (
+          Date.now() - marketCache.fetchedAt < MARKET_CACHE_TTL &&
+          marketCache.SPY
+        )
+          return;
+        // Fetch SPY first
         const spy = await fetchFullQuote("SPY");
         if (spy) marketCache.SPY = spy;
+        // Fetch global indices (ETF proxies)
+        for (const idx of GLOBAL_INDICES) {
+          const q = await fetchFullQuote(idx.ticker);
+          if (q) marketCache[idx.ticker] = q;
+          await new Promise((r) => setTimeout(r, 200));
+        }
         marketCache.fetchedAt = Date.now();
         renderBenchmark();
       }
@@ -2763,23 +3298,34 @@ create policy "Users can manage own data"
       async function renderBenchmark() {
         const el = document.getElementById("benchmarkCard");
         if (!el) return;
-        const totalValue = data.stocks.reduce((s, st) => s + (st.shares || 0) * (st.currentPrice || 0), 0);
+        const totalValue = data.stocks.reduce(
+          (s, st) => s + (st.shares || 0) * (st.currentPrice || 0),
+          0,
+        );
         const spy = marketCache.SPY;
-        if (!spy || totalValue === 0) { el.innerHTML = ""; return; }
+        if (!spy || totalValue === 0) {
+          el.innerHTML = "";
+          return;
+        }
 
         // Fetch fresh dailyPct for all stocks if not yet available
-        let hasDailyData = data.stocks.some(st => st.dailyPct !== undefined && st.dailyPct !== 0);
+        let hasDailyData = data.stocks.some(
+          (st) => st.dailyPct !== undefined && st.dailyPct !== 0,
+        );
         if (!hasDailyData && getApiKey()) {
           for (const st of data.stocks) {
             const q = await fetchFullQuote(st.ticker);
-            if (q) { st.dailyPct = q.dp || 0; st.currentPrice = q.c; }
+            if (q) {
+              st.dailyPct = q.dp || 0;
+              st.currentPrice = q.c;
+            }
           }
           save();
         }
 
         // Weighted 1-day portfolio change
         let portfolioDailyPct = 0;
-        data.stocks.forEach(st => {
+        data.stocks.forEach((st) => {
           const val = (st.shares || 0) * (st.currentPrice || 0);
           const weight = totalValue > 0 ? val / totalValue : 0;
           portfolioDailyPct += weight * (st.dailyPct || 0);
@@ -2790,6 +3336,21 @@ create policy "Users can manage own data"
         const portColor = portfolioDailyPct >= 0 ? "#22c55e" : "#EF4444";
         const spyColor = spyDailyPct >= 0 ? "#22c55e" : "#EF4444";
         const diffColor = beating ? "#22c55e" : "#EF4444";
+
+        // Build global indices rows
+        let indicesHtml = "";
+        for (const idx of GLOBAL_INDICES) {
+          const q = marketCache[idx.ticker];
+          if (q && q.dp !== undefined) {
+            const pct = q.dp || 0;
+            const color = pct >= 0 ? "#22c55e" : "#EF4444";
+            indicesHtml += `<div class="benchmark-row benchmark-index-row">
+              <div class="benchmark-label">${idx.flag} ${idx.label}</div>
+              <div class="benchmark-value" style="color:${color}">${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%</div>
+            </div>`;
+          }
+        }
+
         el.innerHTML = `<div class="benchmark-card">
           <div class="section-title">Benchmark vs S&P 500</div>
           <div class="benchmark-row">
@@ -2797,12 +3358,13 @@ create policy "Users can manage own data"
             <div class="benchmark-value" style="color:${portColor}">${portfolioDailyPct >= 0 ? "+" : ""}${portfolioDailyPct.toFixed(2)}%</div>
           </div>
           <div class="benchmark-row">
-            <div class="benchmark-label">S&P 500 (Today)</div>
+            <div class="benchmark-label">🇺🇸 S&P 500 (Today)</div>
             <div class="benchmark-value" style="color:${spyColor}">${spyDailyPct >= 0 ? "+" : ""}${spyDailyPct.toFixed(2)}%</div>
           </div>
           <div class="benchmark-result" style="color:var(--text-tertiary);font-weight:500">
             ${beating ? "Beating" : "Trailing"} the market by <span style="color:${diffColor};font-weight:700">${Math.abs(diff).toFixed(2)}%</span>
           </div>
+          ${indicesHtml ? `<div class="benchmark-divider"></div><div class="benchmark-indices-title">Global Markets</div>${indicesHtml}` : ""}
         </div>`;
       }
 
@@ -2844,7 +3406,10 @@ create policy "Users can manage own data"
         // Initial refresh after 3 seconds
         setTimeout(() => refreshAllPrices(true), 3000);
         // Then every 10 minutes
-        priceRefreshTimer = setInterval(() => refreshAllPrices(true), PRICE_REFRESH_INTERVAL);
+        priceRefreshTimer = setInterval(
+          () => refreshAllPrices(true),
+          PRICE_REFRESH_INTERVAL,
+        );
       }
 
       async function fetchSinglePrice(ticker) {
@@ -2930,24 +3495,28 @@ create policy "Users can manage own data"
 
       // ─── Navigation ───
       let currentPage = "dashboard";
-      document.querySelectorAll(".nav-item, .sidebar-nav-item").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          navigateTo(btn.dataset.page);
+      document
+        .querySelectorAll(".nav-item, .sidebar-nav-item")
+        .forEach((btn) => {
+          btn.addEventListener("click", () => {
+            navigateTo(btn.dataset.page);
+          });
         });
-      });
 
       function navigateTo(page) {
         currentPage = page;
-        document.querySelectorAll(".nav-item").forEach(b => {
+        document.querySelectorAll(".nav-item").forEach((b) => {
           b.classList.toggle("active", b.dataset.page === page);
         });
-        document.querySelectorAll(".sidebar-nav-item").forEach(b => {
+        document.querySelectorAll(".sidebar-nav-item").forEach((b) => {
           b.classList.toggle("active", b.dataset.page === page);
         });
-        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
         document.getElementById("page-" + page).classList.add("active");
         document.getElementById("fab").style.display =
-          (page === "settings") ? "none" : "flex";
+          page === "settings" ? "none" : "flex";
         renderAll();
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
@@ -3005,13 +3574,15 @@ create policy "Users can manage own data"
         const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         el.value = parts.length > 1 ? intPart + "." + parts[1] : intPart;
       }
-      document.addEventListener("input", e => {
+      document.addEventListener("input", (e) => {
         if (e.target.hasAttribute("data-money")) formatMoneyInput(e.target);
       });
       function setMoneyValue(id, val) {
         const el = document.getElementById(id);
         if (!el) return;
-        el.value = val ? Number(val).toLocaleString("en-US", { maximumFractionDigits: 10 }) : val;
+        el.value = val
+          ? Number(val).toLocaleString("en-US", { maximumFractionDigits: 10 })
+          : val;
       }
 
       function fmt(n, d = 2) {
@@ -3061,11 +3632,15 @@ create policy "Users can manage own data"
         const key = getApiKey();
         if (!key) return "";
         try {
-          const resp = await fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${encodeURIComponent(ticker)}&token=${encodeURIComponent(key)}`);
+          const resp = await fetch(
+            `https://finnhub.io/api/v1/stock/profile2?symbol=${encodeURIComponent(ticker)}&token=${encodeURIComponent(key)}`,
+          );
           if (!resp.ok) return "";
           const json = await resp.json();
           return json.logo || "";
-        } catch (e) { return ""; }
+        } catch (e) {
+          return "";
+        }
       }
 
       async function saveStock(e) {
@@ -3083,7 +3658,7 @@ create policy "Users can manage own data"
           showToast("Fetching price for " + ticker + "...");
           const [quote, logoUrl] = await Promise.all([
             fetchFullQuote(ticker),
-            fetchCompanyLogo(ticker)
+            fetchCompanyLogo(ticker),
           ]);
           if (quote !== null) {
             currentPrice = quote.c;
@@ -3092,8 +3667,10 @@ create policy "Users can manage own data"
           logo = logoUrl;
         }
 
-        const costPerShare = parseMoney(document.getElementById("stockCostPerShare").value) || 0;
-        const totalCost = parseMoney(document.getElementById("stockTotalCost").value) || 0;
+        const costPerShare =
+          parseMoney(document.getElementById("stockCostPerShare").value) || 0;
+        const totalCost =
+          parseMoney(document.getElementById("stockTotalCost").value) || 0;
         const shares = costPerShare > 0 ? totalCost / costPerShare : 0;
 
         const sd = {
@@ -3168,7 +3745,11 @@ create policy "Users can manage own data"
           return;
         }
         list.innerHTML = data.stocks
-          .sort((a, b) => (b.shares || 0) * (b.currentPrice || 0) - (a.shares || 0) * (a.currentPrice || 0))
+          .sort(
+            (a, b) =>
+              (b.shares || 0) * (b.currentPrice || 0) -
+              (a.shares || 0) * (a.currentPrice || 0),
+          )
           .map((s) => {
             const value = (s.shares || 0) * (s.currentPrice || 0);
             const cost = s.totalCost || 0;
@@ -3226,14 +3807,22 @@ create policy "Users can manage own data"
         openModal("modalFlow");
       }
       function toggleFlowFields() {
-        const isDeposit = document.getElementById("flowType").value === "deposit";
-        document.getElementById("flowTHBLabel").textContent = isDeposit ? "Amount (THB)" : "Amount (USD)";
-        document.getElementById("flowTHB").placeholder = isDeposit ? "0.00" : "0.00";
-        document.getElementById("flowUSDLabel").textContent = isDeposit ? "Amount USD (auto)" : "Amount THB (auto)";
+        const isDeposit =
+          document.getElementById("flowType").value === "deposit";
+        document.getElementById("flowTHBLabel").textContent = isDeposit
+          ? "Amount (THB)"
+          : "Amount (USD)";
+        document.getElementById("flowTHB").placeholder = isDeposit
+          ? "0.00"
+          : "0.00";
+        document.getElementById("flowUSDLabel").textContent = isDeposit
+          ? "Amount USD (auto)"
+          : "Amount THB (auto)";
         calcFlowAuto();
       }
       function calcFlowAuto() {
-        const isDeposit = document.getElementById("flowType").value === "deposit";
+        const isDeposit =
+          document.getElementById("flowType").value === "deposit";
         const input = parseMoney(document.getElementById("flowTHB").value) || 0;
         const rate = parseMoney(document.getElementById("flowRate").value) || 0;
         if (rate > 0) {
@@ -3244,7 +3833,9 @@ create policy "Users can manage own data"
           }
         }
       }
-      document.getElementById("flowTHB").addEventListener("input", calcFlowAuto);
+      document
+        .getElementById("flowTHB")
+        .addEventListener("input", calcFlowAuto);
       document
         .getElementById("flowRate")
         .addEventListener("input", calcFlowAuto);
@@ -3290,16 +3881,23 @@ create policy "Users can manage own data"
 
       function renderFlows() {
         // Build year options
-        const years = [...new Set(data.flows.map(f => f.date.split("-")[0]))].sort((a, b) => b.localeCompare(a));
+        const years = [
+          ...new Set(data.flows.map((f) => f.date.split("-")[0])),
+        ].sort((a, b) => b.localeCompare(a));
         const yearSel = document.getElementById("flowYearFilter");
         const prevYear = yearSel.value;
-        yearSel.innerHTML = `<option value="all">All Years</option>` + years.map(y => `<option value="${y}">${y}</option>`).join("");
+        yearSel.innerHTML =
+          `<option value="all">All Years</option>` +
+          years.map((y) => `<option value="${y}">${y}</option>`).join("");
         if (prevYear && years.includes(prevYear)) yearSel.value = prevYear;
         else if (years.length > 0 && !prevYear) yearSel.value = years[0];
         const selectedYear = yearSel.value;
 
         // Filter flows by year
-        const filtered = selectedYear === "all" ? data.flows : data.flows.filter(f => f.date.startsWith(selectedYear));
+        const filtered =
+          selectedYear === "all"
+            ? data.flows
+            : data.flows.filter((f) => f.date.startsWith(selectedYear));
 
         const deposits = filtered.filter((f) => f.type === "deposit");
         const withdraws = filtered.filter((f) => f.type === "withdraw");
@@ -3335,8 +3933,23 @@ create policy "Users can manage own data"
           list.innerHTML =
             '<div class="empty-state"><div class="empty-icon">&#128176;</div><p>No transactions yet</p><p class="empty-sub">Track your THB to USD transfers</p></div>';
         } else {
-          const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-          const sorted = [...filtered].sort((a, b) => b.date.localeCompare(a.date));
+          const MONTH_NAMES = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+          const sorted = [...filtered].sort((a, b) =>
+            b.date.localeCompare(a.date),
+          );
           let html = "";
           let lastMonth = "";
           sorted.forEach((f) => {
@@ -3348,7 +3961,9 @@ create policy "Users can manage own data"
               lastMonth = monthKey;
             }
             const isDep = f.type === "deposit";
-            const dd = parts[2], mm = parts[1], yyyy = parts[0];
+            const dd = parts[2],
+              mm = parts[1],
+              yyyy = parts[0];
             const displayDate = dd + "/" + mm + "/" + yyyy;
             html += `<div class="list-item" onclick='openFlowModal(${JSON.stringify(f).replace(/'/g, "&#39;")})'>
         <div class="li-left">
@@ -3437,27 +4052,58 @@ create policy "Users can manage own data"
       function renderDivCalendarBanner() {
         const el = document.getElementById("divCalendarBanner");
         if (!el) return;
-        if (data.dividends.length === 0) { el.innerHTML = ""; return; }
+        if (data.dividends.length === 0) {
+          el.innerHTML = "";
+          return;
+        }
         const year = divCalYear;
         const nowYear = new Date().getFullYear();
         const currentMonth = year === nowYear ? new Date().getMonth() : -1;
-        const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-        const calYears = [...new Set(data.dividends.map(d => d.date.split("-")[0]).concat([String(nowYear)]))].sort((a, b) => b.localeCompare(a));
+        const months = [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
+        const calYears = [
+          ...new Set(
+            data.dividends
+              .map((d) => d.date.split("-")[0])
+              .concat([String(nowYear)]),
+          ),
+        ].sort((a, b) => b.localeCompare(a));
         const monthTotals = new Array(12).fill(0);
         let activeMonths = 0;
-        data.dividends.forEach(d => {
+        data.dividends.forEach((d) => {
           const dt = new Date(d.date);
           if (dt.getFullYear() === year) {
             monthTotals[dt.getMonth()] += d.amount;
           }
         });
-        monthTotals.forEach(t => { if (t > 0) activeMonths++; });
-        const dots = months.map((m, i) => {
-          const has = monthTotals[i] > 0;
-          const isCurrent = i === currentMonth;
-          return `<span style="width:8px;height:8px;border-radius:50%;background:${has ? "#22c55e" : isCurrent ? "var(--accent)" : "var(--border)"};flex-shrink:0" title="${m}: ${has ? fmtUSD(monthTotals[i]) : '—'}"></span>`;
-        }).join("");
-        const yearOpts = calYears.map(y => `<option value="${y}" ${String(year)===y?"selected":""}>${y}</option>`).join("");
+        monthTotals.forEach((t) => {
+          if (t > 0) activeMonths++;
+        });
+        const dots = months
+          .map((m, i) => {
+            const has = monthTotals[i] > 0;
+            const isCurrent = i === currentMonth;
+            return `<span style="width:8px;height:8px;border-radius:50%;background:${has ? "#22c55e" : isCurrent ? "var(--accent)" : "var(--border)"};flex-shrink:0" title="${m}: ${has ? fmtUSD(monthTotals[i]) : "—"}"></span>`;
+          })
+          .join("");
+        const yearOpts = calYears
+          .map(
+            (y) =>
+              `<option value="${y}" ${String(year) === y ? "selected" : ""}>${y}</option>`,
+          )
+          .join("");
         el.innerHTML = `<div class="card" style="padding:14px 16px;margin-bottom:16px">
           <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleDivCalendarDetail()">
             <div style="font-size:13px;font-weight:700;color:var(--text)">&#128197; Dividend Calendar
@@ -3470,14 +4116,16 @@ create policy "Users can manage own data"
         </div>`;
         const detail = document.getElementById("divCalendarDetail");
         if (detail) {
-          detail.innerHTML = months.map((m, i) => {
-            const has = monthTotals[i] > 0;
-            const isCurrent = i === currentMonth;
-            return `<div class="div-cal-month${has ? " has-div" : ""}${isCurrent ? " current" : ""}">
+          detail.innerHTML = months
+            .map((m, i) => {
+              const has = monthTotals[i] > 0;
+              const isCurrent = i === currentMonth;
+              return `<div class="div-cal-month${has ? " has-div" : ""}${isCurrent ? " current" : ""}">
               <div class="dcm-name">${m}</div>
               <div class="dcm-amount">${has ? fmtUSD(monthTotals[i]) : "—"}</div>
             </div>`;
-          }).join("");
+            })
+            .join("");
         }
       }
       function toggleDivCalendarDetail() {
@@ -3491,19 +4139,30 @@ create policy "Users can manage own data"
 
       function renderDividends() {
         // Year filter
-        const years = [...new Set(data.dividends.map(d => d.date.split("-")[0]))].sort((a, b) => b.localeCompare(a));
+        const years = [
+          ...new Set(data.dividends.map((d) => d.date.split("-")[0])),
+        ].sort((a, b) => b.localeCompare(a));
         const yearSel = document.getElementById("divYearFilter");
         const prevYear = yearSel.value;
-        yearSel.innerHTML = `<option value="all">All Years</option>` + years.map(y => `<option value="${y}">${y}</option>`).join("");
-        if (prevYear && (prevYear === "all" || years.includes(prevYear))) yearSel.value = prevYear;
+        yearSel.innerHTML =
+          `<option value="all">All Years</option>` +
+          years.map((y) => `<option value="${y}">${y}</option>`).join("");
+        if (prevYear && (prevYear === "all" || years.includes(prevYear)))
+          yearSel.value = prevYear;
         else if (years.length > 0 && !prevYear) yearSel.value = years[0];
         const selectedYear = yearSel.value;
 
-        const filtered = selectedYear === "all" ? data.dividends : data.dividends.filter(d => d.date.startsWith(selectedYear));
+        const filtered =
+          selectedYear === "all"
+            ? data.dividends
+            : data.dividends.filter((d) => d.date.startsWith(selectedYear));
 
         const totalNet = filtered.reduce((s, d) => s + d.amount, 0);
 
-        const monthCount = filtered.length > 0 ? new Set(filtered.map(d => d.date.slice(0,7))).size : 1;
+        const monthCount =
+          filtered.length > 0
+            ? new Set(filtered.map((d) => d.date.slice(0, 7))).size
+            : 1;
         const monthlyAvg = filtered.length > 0 ? totalNet / monthCount : 0;
 
         document.getElementById("divHero").innerHTML = `
@@ -3527,11 +4186,26 @@ create policy "Users can manage own data"
           list.innerHTML =
             '<div class="empty-state"><div class="empty-icon">&#128181;</div><p>No dividends yet</p><p class="empty-sub">Record your dividend income</p></div>';
         } else {
-          const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-          const sorted = [...filtered].sort((a, b) => b.date.localeCompare(a.date));
+          const MONTH_NAMES = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+          const sorted = [...filtered].sort((a, b) =>
+            b.date.localeCompare(a.date),
+          );
           let html = "";
           let lastMonth = "";
-          sorted.forEach(d => {
+          sorted.forEach((d) => {
             const parts = d.date.split("-");
             const monthKey = parts[0] + "-" + parts[1];
             if (monthKey !== lastMonth) {
@@ -3587,10 +4261,7 @@ create policy "Users can manage own data"
         );
         const totalPnl = totalValue - totalCost;
         const totalPnlPct = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
-        const totalDivNet = data.dividends.reduce(
-          (s, d) => s + d.amount,
-          0,
-        );
+        const totalDivNet = data.dividends.reduce((s, d) => s + d.amount, 0);
         const deposits = data.flows.filter((f) => f.type === "deposit");
         const totalDepTHB = deposits.reduce((s, f) => s + f.amountTHB, 0);
         const totalDepUSD = deposits.reduce((s, f) => s + f.amountUSD, 0);
@@ -3637,7 +4308,9 @@ create policy "Users can manage own data"
         canvas.style.display = "block";
         emptyEl.innerHTML = "";
         const sorted = [...data.stocks].sort(
-          (a, b) => (b.shares || 0) * (b.currentPrice || 0) - (a.shares || 0) * (a.currentPrice || 0),
+          (a, b) =>
+            (b.shares || 0) * (b.currentPrice || 0) -
+            (a.shares || 0) * (a.currentPrice || 0),
         );
         pieChart = new Chart(ctx, {
           type: "doughnut",
@@ -3645,7 +4318,9 @@ create policy "Users can manage own data"
             labels: sorted.map((s) => s.ticker),
             datasets: [
               {
-                data: sorted.map((s) => (s.shares || 0) * (s.currentPrice || 0)),
+                data: sorted.map(
+                  (s) => (s.shares || 0) * (s.currentPrice || 0),
+                ),
                 backgroundColor: sorted.map(
                   (_, i) => COLORS[i % COLORS.length],
                 ),
@@ -3697,7 +4372,8 @@ create policy "Users can manage own data"
         emptyEl.innerHTML = "";
         const sorted = [...data.stocks].sort(
           (a, b) =>
-            ((b.shares || 0) * (b.currentPrice || 0) - (b.totalCost || 0)) -
+            (b.shares || 0) * (b.currentPrice || 0) -
+            (b.totalCost || 0) -
             ((a.shares || 0) * (a.currentPrice || 0) - (a.totalCost || 0)),
         );
         const values = sorted.map(
@@ -3800,13 +4476,18 @@ create policy "Users can manage own data"
           ? `<div class="settings-status status-ok">&#9679; Connected</div>`
           : `<div class="settings-status status-off">&#9679; Not configured</div>`;
         document.getElementById("settingFinnhubKey").value = fKey;
-
       }
 
       function saveSettingsSupabase() {
-        const url = document.getElementById("settingSbUrl").value.trim().replace(/\/+$/, "");
+        const url = document
+          .getElementById("settingSbUrl")
+          .value.trim()
+          .replace(/\/+$/, "");
         const key = document.getElementById("settingSbKey").value.trim();
-        if (!url || !key) { showToast("Fill in both fields"); return; }
+        if (!url || !key) {
+          showToast("Fill in both fields");
+          return;
+        }
         localStorage.setItem(SB_URL_KEY, url);
         localStorage.setItem(SB_ANON_KEY, key);
         if (initSupabase()) {
@@ -3819,7 +4500,10 @@ create policy "Users can manage own data"
 
       function saveSettingsFinnhub() {
         const key = document.getElementById("settingFinnhubKey").value.trim();
-        if (!key) { showToast("Enter an API key"); return; }
+        if (!key) {
+          showToast("Enter an API key");
+          return;
+        }
         localStorage.setItem(API_KEY_STORAGE, key);
         showToast("Finnhub key saved!");
         renderSettings();
@@ -3835,12 +4519,21 @@ create policy "Users can manage own data"
 
       async function settingsSignIn() {
         if (!sb) initSupabase();
-        if (!sb) { showToast("Supabase not configured"); return; }
+        if (!sb) {
+          showToast("Supabase not configured");
+          return;
+        }
         const email = document.getElementById("settingsEmail").value.trim();
         const pass = document.getElementById("settingsPass").value;
-        if (!email || !pass) { showToast("Enter email and password"); return; }
+        if (!email || !pass) {
+          showToast("Enter email and password");
+          return;
+        }
         try {
-          const { data: authData, error } = await sb.auth.signInWithPassword({ email, password: pass });
+          const { data: authData, error } = await sb.auth.signInWithPassword({
+            email,
+            password: pass,
+          });
           if (error) throw error;
           currentUser = authData.user;
           showToast("Signed in!");
@@ -3855,15 +4548,25 @@ create policy "Users can manage own data"
 
       async function settingsSignUp() {
         if (!sb) initSupabase();
-        if (!sb) { showToast("Supabase not configured"); return; }
+        if (!sb) {
+          showToast("Supabase not configured");
+          return;
+        }
         const email = document.getElementById("settingsEmail").value.trim();
         const pass = document.getElementById("settingsPass").value;
-        if (!email || !pass) { showToast("Enter email and password"); return; }
-        if (pass.length < 6) { showToast("Password min 6 characters"); return; }
+        if (!email || !pass) {
+          showToast("Enter email and password");
+          return;
+        }
+        if (pass.length < 6) {
+          showToast("Password min 6 characters");
+          return;
+        }
         try {
           const { data: authData, error } = await sb.auth.signUp({
-            email, password: pass,
-            options: { emailRedirectTo: SITE_URL }
+            email,
+            password: pass,
+            options: { emailRedirectTo: SITE_URL },
           });
           if (error) throw error;
           if (authData.user) {
@@ -3882,12 +4585,24 @@ create policy "Users can manage own data"
       }
 
       async function changePassword() {
-        if (!sb || !currentUser) { showToast("Not signed in"); return; }
+        if (!sb || !currentUser) {
+          showToast("Not signed in");
+          return;
+        }
         const newPass = document.getElementById("settingsNewPass").value;
         const confirm = document.getElementById("settingsNewPassConfirm").value;
-        if (!newPass) { showToast("Enter a new password"); return; }
-        if (newPass.length < 6) { showToast("Password must be at least 6 characters"); return; }
-        if (newPass !== confirm) { showToast("Passwords do not match"); return; }
+        if (!newPass) {
+          showToast("Enter a new password");
+          return;
+        }
+        if (newPass.length < 6) {
+          showToast("Password must be at least 6 characters");
+          return;
+        }
+        if (newPass !== confirm) {
+          showToast("Passwords do not match");
+          return;
+        }
         try {
           const { error } = await sb.auth.updateUser({ password: newPass });
           if (error) throw error;
@@ -3901,12 +4616,18 @@ create policy "Users can manage own data"
 
       async function resetPassword() {
         if (!sb) initSupabase();
-        if (!sb) { showToast("Supabase not configured"); return; }
+        if (!sb) {
+          showToast("Supabase not configured");
+          return;
+        }
         const email = document.getElementById("settingsEmail").value.trim();
-        if (!email) { showToast("Enter your email first"); return; }
+        if (!email) {
+          showToast("Enter your email first");
+          return;
+        }
         try {
           const { error } = await sb.auth.resetPasswordForEmail(email, {
-            redirectTo: SITE_URL
+            redirectTo: SITE_URL,
           });
           if (error) throw error;
           showToast("Reset link sent! Check your email.");
