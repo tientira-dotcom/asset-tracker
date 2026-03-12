@@ -418,19 +418,19 @@
         font-weight: 600;
         margin-top: 2px;
       }
-      .stock-alloc-bar {
-        width: 100%;
-        height: 4px;
-        background: var(--border);
-        border-radius: 2px;
-        margin-top: 6px;
-        overflow: hidden;
+      .stock-alloc-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 11px;
+        color: var(--text-tertiary);
+        margin-top: 4px;
       }
-      .stock-alloc-fill {
-        height: 100%;
-        background: var(--accent);
-        border-radius: 2px;
-        transition: width 0.3s;
+      .stock-sparkline {
+        margin-top: 6px;
+      }
+      .stock-sparkline svg {
+        display: block;
       }
 
       /* ─── Flow / Dividend List ─── */
@@ -2737,6 +2737,58 @@ ${newsText}`;
         }
       }
 
+      // ─── Sparklines ───
+      let sparklineCache = {};
+      async function fetchSparklineData(ticker) {
+        const key = getApiKey();
+        if (!key) return null;
+        if (sparklineCache[ticker] && (Date.now() - sparklineCache[ticker].fetchedAt) < 30 * 60 * 1000) {
+          return sparklineCache[ticker].data;
+        }
+        try {
+          const to = Math.floor(Date.now() / 1000);
+          const from = to - 7 * 24 * 60 * 60;
+          const resp = await fetch(
+            `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(ticker)}&resolution=D&from=${from}&to=${to}&token=${encodeURIComponent(key)}`
+          );
+          if (!resp.ok) return null;
+          const json = await resp.json();
+          if (json.s !== "ok" || !json.c) return null;
+          sparklineCache[ticker] = { data: json.c, fetchedAt: Date.now() };
+          return json.c;
+        } catch (e) {
+          console.warn("Sparkline fetch error for", ticker, e);
+          return null;
+        }
+      }
+
+      function renderSparklineSvg(prices, color) {
+        if (!prices || prices.length < 2) return "";
+        const w = 80, h = 28;
+        const min = Math.min(...prices), max = Math.max(...prices);
+        const range = max - min || 1;
+        const points = prices.map((p, i) => {
+          const x = (i / (prices.length - 1)) * w;
+          const y = h - ((p - min) / range) * (h - 4) - 2;
+          return `${x.toFixed(1)},${y.toFixed(1)}`;
+        }).join(" ");
+        return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline points="${points}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      }
+
+      async function loadSparklines() {
+        if (data.stocks.length === 0 || !getApiKey()) return;
+        for (let i = 0; i < data.stocks.length; i++) {
+          const ticker = data.stocks[i].ticker;
+          const prices = await fetchSparklineData(ticker);
+          const el = document.getElementById(`spark-${ticker}`);
+          if (el && prices) {
+            const trend = prices[prices.length - 1] >= prices[0] ? "#10B981" : "#EF4444";
+            el.innerHTML = renderSparklineSvg(prices, trend);
+          }
+          if (i < data.stocks.length - 1) await new Promise(r => setTimeout(r, 300));
+        }
+      }
+
       let priceRefreshTimer = null;
       const PRICE_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
@@ -3082,7 +3134,8 @@ ${newsText}`;
         <div class="stock-right">
           <div class="stock-price">${fmtUSD(value)}</div>
           <div class="stock-pnl ${pnlClass(pnl)}">${fmtPct(pnlPct)}</div>
-          <div class="stock-alloc-bar"><div class="stock-alloc-fill" style="width:${alloc}%"></div></div>
+          <div class="stock-alloc-badge">&#127856; ${alloc.toFixed(1)}%</div>
+          <div class="stock-sparkline" id="spark-${s.ticker}"></div>
         </div>
       </div>`;
           })
@@ -3790,6 +3843,7 @@ ${newsText}`;
       function renderAll() {
         renderDashboard();
         renderStocks();
+        loadSparklines();
         renderFlows();
         renderDividends();
         renderSettings();
