@@ -1507,20 +1507,22 @@
             <div class="form-group">
               <label>Cost per Share (USD)</label>
               <input
-                type="number"
+                type="text"
+                inputmode="decimal"
+                data-money
                 id="stockCostPerShare"
                 placeholder="0.00"
-                step="any"
                 required
               />
             </div>
             <div class="form-group">
               <label>Total Cost (USD)</label>
               <input
-                type="number"
+                type="text"
+                inputmode="decimal"
+                data-money
                 id="stockTotalCost"
                 placeholder="0.00"
-                step="any"
                 required
               />
             </div>
@@ -1587,20 +1589,22 @@
             <div class="form-group">
               <label>Amount (THB)</label>
               <input
-                type="number"
+                type="text"
+                inputmode="decimal"
+                data-money
                 id="flowTHB"
                 placeholder="0.00"
-                step="any"
                 required
               />
             </div>
             <div class="form-group">
               <label>FX Rate (THB/USD)</label>
               <input
-                type="number"
+                type="text"
+                inputmode="decimal"
+                data-money
                 id="flowRate"
                 placeholder="e.g. 35.50"
-                step="any"
                 required
               />
             </div>
@@ -1608,10 +1612,11 @@
           <div class="form-group">
             <label>Amount USD (auto)</label>
             <input
-              type="number"
+              type="text"
+              inputmode="decimal"
+              data-money
               id="flowUSD"
               placeholder="0.00"
-              step="any"
               readonly
               style="opacity: 0.6"
             />
@@ -1672,20 +1677,22 @@
             <div class="form-group">
               <label>Amount (USD)</label>
               <input
-                type="number"
+                type="text"
+                inputmode="decimal"
+                data-money
                 id="divAmount"
                 placeholder="0.00"
-                step="any"
                 required
               />
             </div>
             <div class="form-group">
               <label>Tax Withheld (USD)</label>
               <input
-                type="number"
+                type="text"
+                inputmode="decimal"
+                data-money
                 id="divTax"
                 placeholder="0.00"
-                step="any"
                 value="0"
               />
             </div>
@@ -2886,6 +2893,26 @@ create policy "Users can manage own data"
       });
 
       // ─── Format Helpers ───
+      // ─── Money Input Formatter ───
+      function parseMoney(str) {
+        return parseFloat(String(str).replace(/,/g, "")) || 0;
+      }
+      function formatMoneyInput(el) {
+        const raw = el.value.replace(/,/g, "");
+        if (raw === "" || raw === "-" || raw.endsWith(".")) return;
+        const parts = raw.split(".");
+        const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        el.value = parts.length > 1 ? intPart + "." + parts[1] : intPart;
+      }
+      document.addEventListener("input", e => {
+        if (e.target.hasAttribute("data-money")) formatMoneyInput(e.target);
+      });
+      function setMoneyValue(id, val) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = val ? Number(val).toLocaleString("en-US", { maximumFractionDigits: 10 }) : val;
+      }
+
       function fmt(n, d = 2) {
         return Number(n).toLocaleString("en-US", {
           minimumFractionDigits: d,
@@ -2917,8 +2944,8 @@ create policy "Users can manage own data"
           document.getElementById("stockEditId").value = stock.id;
           document.getElementById("stockTicker").value = stock.ticker;
           document.getElementById("stockNameInput").value = stock.name || "";
-          document.getElementById("stockCostPerShare").value = stock.costPerShare || 0;
-          document.getElementById("stockTotalCost").value = stock.totalCost || 0;
+          setMoneyValue("stockCostPerShare", stock.costPerShare || 0);
+          setMoneyValue("stockTotalCost", stock.totalCost || 0);
           document.getElementById("stockSector").value = stock.sector || "";
         } else {
           document.getElementById("modalStockTitle").textContent = "Add Stock";
@@ -2946,8 +2973,8 @@ create policy "Users can manage own data"
           }
         }
 
-        const costPerShare = parseFloat(document.getElementById("stockCostPerShare").value) || 0;
-        const totalCost = parseFloat(document.getElementById("stockTotalCost").value) || 0;
+        const costPerShare = parseMoney(document.getElementById("stockCostPerShare").value) || 0;
+        const totalCost = parseMoney(document.getElementById("stockTotalCost").value) || 0;
         const shares = costPerShare > 0 ? totalCost / costPerShare : 0;
 
         const sd = {
@@ -3057,9 +3084,9 @@ create policy "Users can manage own data"
           document.getElementById("flowEditId").value = flow.id;
           document.getElementById("flowDate").value = flow.date;
           document.getElementById("flowType").value = flow.type;
-          document.getElementById("flowTHB").value = flow.amountTHB;
-          document.getElementById("flowRate").value = flow.rate;
-          document.getElementById("flowUSD").value = flow.amountUSD;
+          setMoneyValue("flowTHB", flow.amountTHB);
+          setMoneyValue("flowRate", flow.rate);
+          setMoneyValue("flowUSD", flow.amountUSD);
           document.getElementById("flowNote").value = flow.note || "";
         } else {
           document.getElementById("modalFlowTitle").textContent =
@@ -3078,10 +3105,10 @@ create policy "Users can manage own data"
         calcFlowUSD();
       }
       function calcFlowUSD() {
-        const thb = parseFloat(document.getElementById("flowTHB").value) || 0;
-        const rate = parseFloat(document.getElementById("flowRate").value) || 0;
+        const thb = parseMoney(document.getElementById("flowTHB").value) || 0;
+        const rate = parseMoney(document.getElementById("flowRate").value) || 0;
         if (rate > 0)
-          document.getElementById("flowUSD").value = (thb / rate).toFixed(2);
+          setMoneyValue("flowUSD", (thb / rate).toFixed(2));
       }
       document.getElementById("flowTHB").addEventListener("input", calcFlowUSD);
       document
@@ -3094,9 +3121,9 @@ create policy "Users can manage own data"
         const fd = {
           date: document.getElementById("flowDate").value,
           type: document.getElementById("flowType").value,
-          amountTHB: parseFloat(document.getElementById("flowTHB").value),
-          rate: parseFloat(document.getElementById("flowRate").value),
-          amountUSD: parseFloat(document.getElementById("flowUSD").value),
+          amountTHB: parseMoney(document.getElementById("flowTHB").value),
+          rate: parseMoney(document.getElementById("flowRate").value),
+          amountUSD: parseMoney(document.getElementById("flowUSD").value),
           note: document.getElementById("flowNote").value.trim(),
         };
         if (id) {
@@ -3215,8 +3242,8 @@ create policy "Users can manage own data"
           document.getElementById("divEditId").value = div.id;
           document.getElementById("divDate").value = div.date;
           document.getElementById("divTicker").value = div.ticker;
-          document.getElementById("divAmount").value = div.amount;
-          document.getElementById("divTax").value = div.tax || 0;
+          setMoneyValue("divAmount", div.amount);
+          setMoneyValue("divTax", div.tax || 0);
           document.getElementById("divNote").value = div.note || "";
         } else {
           document.getElementById("modalDivTitle").textContent = "Add Dividend";
@@ -3239,8 +3266,8 @@ create policy "Users can manage own data"
             .getElementById("divTicker")
             .value.toUpperCase()
             .trim(),
-          amount: parseFloat(document.getElementById("divAmount").value),
-          tax: parseFloat(document.getElementById("divTax").value) || 0,
+          amount: parseMoney(document.getElementById("divAmount").value),
+          tax: parseMoney(document.getElementById("divTax").value) || 0,
           note: document.getElementById("divNote").value.trim(),
         };
         if (id) {
