@@ -220,16 +220,16 @@
       .hero-card {
         background: linear-gradient(
           135deg,
-          #1a3a1a 0%,
-          #15301a 50%,
-          #0d2010 100%
+          #1e4a1e 0%,
+          #1a3d1f 50%,
+          #122a15 100%
         );
-        border: 1px solid rgba(132, 204, 22, 0.15);
+        border: 1px solid rgba(132, 204, 22, 0.2);
         border-radius: 20px;
         padding: 24px;
         color: #fff;
         margin-bottom: 20px;
-        box-shadow: 0 8px 32px rgba(132, 204, 22, 0.1);
+        box-shadow: 0 8px 32px rgba(132, 204, 22, 0.15);
         position: relative;
         overflow: hidden;
       }
@@ -1119,6 +1119,16 @@
         border-top: 1px solid var(--border);
         font-size: 12px;
         font-weight: 500;
+      }
+      .benchmark-vs-pill {
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 6px 12px;
+        margin-top: 8px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.06);
       }
       .benchmark-divider {
         height: 1px;
@@ -3369,17 +3379,17 @@
         }
 
         el.innerHTML = `<div class="benchmark-card">
-          <div class="section-title">Benchmark vs S&P 500</div>
+          <div class="section-title">Benchmark</div>
           <div class="benchmark-row">
-            <div class="benchmark-label"><span class="idx-badge" style="background:var(--accent)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> My Portfolio (Today)</div>
+            <div class="benchmark-label"><span class="idx-badge" style="background:var(--accent)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> My Portfolio</div>
             <div class="benchmark-value" style="color:${portColor}">${portfolioDailyPct >= 0 ? "+" : ""}${portfolioDailyPct.toFixed(2)}%</div>
           </div>
           <div class="benchmark-row">
-            <div class="benchmark-label"><span class="idx-badge" style="background:#3C3B6E">US</span> S&P 500 (Today)</div>
+            <div class="benchmark-label"><span class="idx-badge" style="background:#3C3B6E">US</span> S&P 500</div>
             <div class="benchmark-value" style="color:${spyColor}">${spyDailyPct >= 0 ? "+" : ""}${spyDailyPct.toFixed(2)}%</div>
           </div>
-          <div class="benchmark-result" style="color:var(--text-tertiary);font-weight:500">
-            ${beating ? "Beating" : "Trailing"} the market by <span style="color:${diffColor};font-weight:700">${Math.abs(diff).toFixed(2)}%</span>
+          <div class="benchmark-vs-pill" style="color:${diffColor}">
+            ${beating ? "▲" : "▼"} ${beating ? "Beating" : "Trailing"} S&P by ${Math.abs(diff).toFixed(2)}%
           </div>
           ${indicesHtml ? `<div class="benchmark-divider"></div><div class="benchmark-indices-title">Global Markets</div>${indicesHtml}` : ""}
         </div>`;
@@ -3925,7 +3935,7 @@
         const netTHB = totalDepTHB - totalWdTHB;
 
         document.getElementById("flowHero").innerHTML = `
-    <div class="hero-card" style="background:linear-gradient(135deg, #0a2a18 0%, #0d3520 50%, #052810 100%); border:1px solid rgba(34,197,94,0.15); box-shadow: 0 8px 32px rgba(34,197,94,0.1);">
+    <div class="hero-card" style="background:linear-gradient(135deg, #0f3a22 0%, #14472a 50%, #0a3018 100%); border:1px solid rgba(34,197,94,0.22); box-shadow: 0 8px 32px rgba(34,197,94,0.15);">
       <div class="hero-label">Net Investment (THB)</div>
       <div class="hero-value">${fmtTHB(netTHB)}</div>
       <div class="hero-stats">
@@ -4183,7 +4193,7 @@
         const monthlyAvg = filtered.length > 0 ? totalNet / monthCount : 0;
 
         document.getElementById("divHero").innerHTML = `
-    <div class="hero-card" style="background:linear-gradient(135deg, #2a1f05 0%, #3a2a08 50%, #1a1505 100%); border:1px solid rgba(245,158,11,0.15); box-shadow: 0 8px 32px rgba(245,158,11,0.1);">
+    <div class="hero-card" style="background:linear-gradient(135deg, #352808 0%, #4a360c 50%, #261c06 100%); border:1px solid rgba(245,158,11,0.22); box-shadow: 0 8px 32px rgba(245,158,11,0.15);">
       <div class="hero-label">Total Dividends${selectedYear !== "all" ? " &middot; " + selectedYear : ""}</div>
       <div class="hero-value">${fmtUSD(totalNet)}</div>
       <div class="hero-stats">
@@ -4293,13 +4303,13 @@
 
         document.getElementById("dashMini").innerHTML = `
     <div class="mini-card" onclick="navigateTo('dividends')">
-      <div class="mc-icon" style="background:var(--green-bg)">&#128178;</div>
+      <div class="mc-icon" style="background:var(--green-bg);color:var(--green);font-size:20px;font-weight:800">$</div>
       <div class="mc-label">Dividends <span class="widget-chevron">&#8250;</span></div>
       <div class="mc-value positive">${fmtUSD(totalDivNet)}</div>
       <div class="mc-sub">${data.dividends.length} payments</div>
     </div>
     <div class="mini-card" onclick="navigateTo('flow')">
-      <div class="mc-icon" style="background:var(--accent-bg)">&#128177;</div>
+      <div class="mc-icon" style="background:var(--accent-bg)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-light)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
       <div class="mc-label">Avg FX Rate <span class="widget-chevron">&#8250;</span></div>
       <div class="mc-value">${avgRate > 0 ? fmt(avgRate, 2) : "-"}</div>
       <div class="mc-sub">Invested ${fmtTHB(totalDepTHB)}</div>
