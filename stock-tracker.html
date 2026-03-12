@@ -1392,9 +1392,7 @@
     <!-- Dividends Page -->
     <div id="page-dividends" class="page">
       <div id="divHero"></div>
-      <div id="divProjectedIncome"></div>
-      <div class="section-title">Dividend Calendar</div>
-      <div id="divCalendar" class="div-calendar"></div>
+      <div id="divCalendarBanner"></div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div class="section-title" style="margin-bottom:0">Dividend Records</div>
         <select id="divYearFilter" onchange="renderDividends()" style="padding:6px 32px 6px 12px;border-radius:10px;border:1px solid var(--border);background-color:var(--card);font-family:inherit;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 10px center"></select>
@@ -3359,49 +3357,55 @@ create policy "Users can manage own data"
         });
       }
 
-      function renderDivProjectedIncome() {
-        const el = document.getElementById("divProjectedIncome");
+      function renderDivCalendarBanner() {
+        const el = document.getElementById("divCalendarBanner");
         if (!el) return;
         if (data.dividends.length === 0) { el.innerHTML = ""; return; }
-        const now = new Date();
-        const oneYearAgo = new Date(now);
-        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-        const last12 = data.dividends.filter(d => new Date(d.date) >= oneYearAgo);
-        const totalNet12 = last12.reduce((s, d) => s + d.amount - (d.tax || 0), 0);
-        const monthlyAvg = totalNet12 / 12;
-        const totalCost = data.stocks.reduce((s, st) => s + (st.totalCost || 0), 0);
-        const yieldOnCost = totalCost > 0 ? ((totalNet12 / totalCost) * 100).toFixed(2) : "N/A";
-        el.innerHTML = `<div class="div-projected-card">
-          <div class="dp-label">Projected Annual Income</div>
-          <div class="dp-value">${fmtUSD(totalNet12)}</div>
-          <div class="dp-stats">
-            <div><div class="dp-stat-label">Monthly Avg</div><div class="dp-stat-value">${fmtUSD(monthlyAvg)}</div></div>
-            <div><div class="dp-stat-label">Yield on Cost</div><div class="dp-stat-value">${yieldOnCost === "N/A" ? "N/A" : yieldOnCost + "%"}</div></div>
-          </div>
-        </div>`;
-      }
-
-      function renderDivCalendar() {
-        const el = document.getElementById("divCalendar");
-        if (!el) return;
         const year = new Date().getFullYear();
         const currentMonth = new Date().getMonth();
         const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
         const monthTotals = new Array(12).fill(0);
+        let activeMonths = 0;
         data.dividends.forEach(d => {
           const dt = new Date(d.date);
           if (dt.getFullYear() === year) {
             monthTotals[dt.getMonth()] += d.amount - (d.tax || 0);
           }
         });
-        el.innerHTML = months.map((m, i) => {
+        monthTotals.forEach(t => { if (t > 0) activeMonths++; });
+        const dots = months.map((m, i) => {
           const has = monthTotals[i] > 0;
           const isCurrent = i === currentMonth;
-          return `<div class="div-cal-month${has ? " has-div" : ""}${isCurrent ? " current" : ""}">
-            <div class="dcm-name">${m}</div>
-            <div class="dcm-amount">${has ? fmtUSD(monthTotals[i]) : "—"}</div>
-          </div>`;
+          return `<span style="width:8px;height:8px;border-radius:50%;background:${has ? "#10B981" : isCurrent ? "var(--accent)" : "var(--border)"};flex-shrink:0" title="${m}: ${has ? fmtUSD(monthTotals[i]) : '—'}"></span>`;
         }).join("");
+        el.innerHTML = `<div class="card" style="padding:14px 16px;margin-bottom:16px;cursor:pointer" onclick="toggleDivCalendarDetail()">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">&#128197; Dividend Calendar ${year}</div>
+            <div style="font-size:12px;color:var(--text-tertiary)">${activeMonths}/12 months <span id="divCalArrow" style="display:inline-block;transition:transform 0.2s">&#9660;</span></div>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:10px;justify-content:space-between">${dots}</div>
+          <div id="divCalendarDetail" class="div-calendar" style="display:none;margin-top:12px"></div>
+        </div>`;
+        // Render detail grid
+        const detail = document.getElementById("divCalendarDetail");
+        if (detail) {
+          detail.innerHTML = months.map((m, i) => {
+            const has = monthTotals[i] > 0;
+            const isCurrent = i === currentMonth;
+            return `<div class="div-cal-month${has ? " has-div" : ""}${isCurrent ? " current" : ""}">
+              <div class="dcm-name">${m}</div>
+              <div class="dcm-amount">${has ? fmtUSD(monthTotals[i]) : "—"}</div>
+            </div>`;
+          }).join("");
+        }
+      }
+      function toggleDivCalendarDetail() {
+        const d = document.getElementById("divCalendarDetail");
+        const a = document.getElementById("divCalArrow");
+        if (!d) return;
+        const show = d.style.display === "none";
+        d.style.display = show ? "grid" : "none";
+        if (a) a.style.transform = show ? "rotate(180deg)" : "";
       }
 
       function renderDividends() {
@@ -3420,6 +3424,9 @@ create policy "Users can manage own data"
         const totalTax = filtered.reduce((s, d) => s + (d.tax || 0), 0);
         const totalNet = totalGross - totalTax;
 
+        const monthCount = filtered.length > 0 ? new Set(filtered.map(d => d.date.slice(0,7))).size : 1;
+        const monthlyAvg = filtered.length > 0 ? totalNet / monthCount : 0;
+
         document.getElementById("divHero").innerHTML = `
     <div class="hero-card" style="background:linear-gradient(135deg, #D97706 0%, #F59E0B 50%, #FBBF24 100%); box-shadow: 0 8px 32px rgba(217,119,6,0.25);">
       <div class="hero-label">Total Dividends (Net)${selectedYear !== "all" ? " &middot; " + selectedYear : ""}</div>
@@ -3432,6 +3439,10 @@ create policy "Users can manage own data"
         <div class="hero-stat">
           <div class="hs-label">Tax</div>
           <div class="hs-value">-${fmtUSD(totalTax)}</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hs-label">Monthly Avg</div>
+          <div class="hs-value">${fmtUSD(monthlyAvg)}</div>
         </div>
       </div>
     </div>`;
@@ -3470,8 +3481,7 @@ create policy "Users can manage own data"
           });
           list.innerHTML = html;
         }
-        renderDivProjectedIncome();
-        renderDivCalendar();
+        renderDivCalendarBanner();
       }
 
       // ─── DASHBOARD ───
