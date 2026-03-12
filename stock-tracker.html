@@ -358,7 +358,7 @@
       .stock-item {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         padding: 16px;
         background: var(--card);
         border-radius: var(--radius-sm);
@@ -409,6 +409,7 @@
         display: flex;
         flex-direction: column;
         align-items: flex-end;
+        text-align: right;
         min-width: 90px;
       }
       .stock-price {
@@ -1586,8 +1587,8 @@
             </select>
           </div>
           <div class="form-row">
-            <div class="form-group">
-              <label>Amount (THB)</label>
+            <div class="form-group" id="flowTHBGroup">
+              <label id="flowTHBLabel">Amount (THB)</label>
               <input
                 type="text"
                 inputmode="decimal"
@@ -1609,8 +1610,8 @@
               />
             </div>
           </div>
-          <div class="form-group">
-            <label>Amount USD (auto)</label>
+          <div class="form-group" id="flowUSDGroup">
+            <label id="flowUSDLabel">Amount USD (auto)</label>
             <input
               type="text"
               inputmode="decimal"
@@ -1673,29 +1674,16 @@
               <div class="autocomplete-list" id="divTickerAC"></div>
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Amount (USD)</label>
-              <input
-                type="text"
-                inputmode="decimal"
-                data-money
-                id="divAmount"
-                placeholder="0.00"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label>Tax Withheld (USD)</label>
-              <input
-                type="text"
-                inputmode="decimal"
-                data-money
-                id="divTax"
-                placeholder="0.00"
-                value="0"
-              />
-            </div>
+          <div class="form-group">
+            <label>Net Amount (USD)</label>
+            <input
+              type="text"
+              inputmode="decimal"
+              data-money
+              id="divAmount"
+              placeholder="0.00"
+              required
+            />
           </div>
           <div class="form-group">
             <label>Note</label>
@@ -2670,12 +2658,23 @@ create policy "Users can manage own data"
         renderBenchmark();
       }
 
-      function renderBenchmark() {
+      async function renderBenchmark() {
         const el = document.getElementById("benchmarkCard");
         if (!el) return;
         const totalValue = data.stocks.reduce((s, st) => s + (st.shares || 0) * (st.currentPrice || 0), 0);
         const spy = marketCache.SPY;
         if (!spy || totalValue === 0) { el.innerHTML = ""; return; }
+
+        // Fetch fresh dailyPct for all stocks if not yet available
+        let hasDailyData = data.stocks.some(st => st.dailyPct !== undefined && st.dailyPct !== 0);
+        if (!hasDailyData && getApiKey()) {
+          for (const st of data.stocks) {
+            const q = await fetchFullQuote(st.ticker);
+            if (q) { st.dailyPct = q.dp || 0; st.currentPrice = q.c; }
+          }
+          save();
+        }
+
         // Weighted 1-day portfolio change
         let portfolioDailyPct = 0;
         data.stocks.forEach(st => {
@@ -3094,9 +3093,11 @@ create policy "Users can manage own data"
           document.getElementById("flowEditId").value = flow.id;
           document.getElementById("flowDate").value = flow.date;
           document.getElementById("flowType").value = flow.type;
-          setMoneyValue("flowTHB", flow.amountTHB);
+          const isDeposit = flow.type === "deposit";
+          setMoneyValue("flowTHB", isDeposit ? flow.amountTHB : flow.amountUSD);
           setMoneyValue("flowRate", flow.rate);
-          setMoneyValue("flowUSD", flow.amountUSD);
+          setMoneyValue("flowUSD", isDeposit ? flow.amountUSD : flow.amountTHB);
+          toggleFlowFields();
           document.getElementById("flowNote").value = flow.note || "";
         } else {
           document.getElementById("modalFlowTitle").textContent =
@@ -3108,32 +3109,48 @@ create policy "Users can manage own data"
           document.getElementById("flowDate").value = new Date()
             .toISOString()
             .slice(0, 10);
+          toggleFlowFields();
         }
         openModal("modalFlow");
       }
       function toggleFlowFields() {
-        calcFlowUSD();
+        const isDeposit = document.getElementById("flowType").value === "deposit";
+        document.getElementById("flowTHBLabel").textContent = isDeposit ? "Amount (THB)" : "Amount (USD)";
+        document.getElementById("flowTHB").placeholder = isDeposit ? "0.00" : "0.00";
+        document.getElementById("flowUSDLabel").textContent = isDeposit ? "Amount USD (auto)" : "Amount THB (auto)";
+        calcFlowAuto();
       }
-      function calcFlowUSD() {
-        const thb = parseMoney(document.getElementById("flowTHB").value) || 0;
+      function calcFlowAuto() {
+        const isDeposit = document.getElementById("flowType").value === "deposit";
+        const input = parseMoney(document.getElementById("flowTHB").value) || 0;
         const rate = parseMoney(document.getElementById("flowRate").value) || 0;
-        if (rate > 0)
-          setMoneyValue("flowUSD", (thb / rate).toFixed(2));
+        if (rate > 0) {
+          if (isDeposit) {
+            setMoneyValue("flowUSD", (input / rate).toFixed(2));
+          } else {
+            setMoneyValue("flowUSD", (input * rate).toFixed(2));
+          }
+        }
       }
-      document.getElementById("flowTHB").addEventListener("input", calcFlowUSD);
+      document.getElementById("flowTHB").addEventListener("input", calcFlowAuto);
       document
         .getElementById("flowRate")
-        .addEventListener("input", calcFlowUSD);
+        .addEventListener("input", calcFlowAuto);
 
       function saveFlow(e) {
         e.preventDefault();
         const id = document.getElementById("flowEditId").value;
+        const type = document.getElementById("flowType").value;
+        const inputVal = parseMoney(document.getElementById("flowTHB").value);
+        const rate = parseMoney(document.getElementById("flowRate").value);
+        const autoVal = parseMoney(document.getElementById("flowUSD").value);
+        const isDeposit = type === "deposit";
         const fd = {
           date: document.getElementById("flowDate").value,
-          type: document.getElementById("flowType").value,
-          amountTHB: parseMoney(document.getElementById("flowTHB").value),
-          rate: parseMoney(document.getElementById("flowRate").value),
-          amountUSD: parseMoney(document.getElementById("flowUSD").value),
+          type,
+          amountTHB: isDeposit ? inputVal : autoVal,
+          rate,
+          amountUSD: isDeposit ? autoVal : inputVal,
           note: document.getElementById("flowNote").value.trim(),
         };
         if (id) {
@@ -3253,7 +3270,6 @@ create policy "Users can manage own data"
           document.getElementById("divDate").value = div.date;
           document.getElementById("divTicker").value = div.ticker;
           setMoneyValue("divAmount", div.amount);
-          setMoneyValue("divTax", div.tax || 0);
           document.getElementById("divNote").value = div.note || "";
         } else {
           document.getElementById("modalDivTitle").textContent = "Add Dividend";
@@ -3277,7 +3293,7 @@ create policy "Users can manage own data"
             .value.toUpperCase()
             .trim(),
           amount: parseMoney(document.getElementById("divAmount").value),
-          tax: parseMoney(document.getElementById("divTax").value) || 0,
+          tax: 0,
           note: document.getElementById("divNote").value.trim(),
         };
         if (id) {
@@ -3320,7 +3336,7 @@ create policy "Users can manage own data"
         data.dividends.forEach(d => {
           const dt = new Date(d.date);
           if (dt.getFullYear() === year) {
-            monthTotals[dt.getMonth()] += d.amount - (d.tax || 0);
+            monthTotals[dt.getMonth()] += d.amount;
           }
         });
         monthTotals.forEach(t => { if (t > 0) activeMonths++; });
@@ -3373,25 +3389,19 @@ create policy "Users can manage own data"
 
         const filtered = selectedYear === "all" ? data.dividends : data.dividends.filter(d => d.date.startsWith(selectedYear));
 
-        const totalGross = filtered.reduce((s, d) => s + d.amount, 0);
-        const totalTax = filtered.reduce((s, d) => s + (d.tax || 0), 0);
-        const totalNet = totalGross - totalTax;
+        const totalNet = filtered.reduce((s, d) => s + d.amount, 0);
 
         const monthCount = filtered.length > 0 ? new Set(filtered.map(d => d.date.slice(0,7))).size : 1;
         const monthlyAvg = filtered.length > 0 ? totalNet / monthCount : 0;
 
         document.getElementById("divHero").innerHTML = `
     <div class="hero-card" style="background:linear-gradient(135deg, #D97706 0%, #F59E0B 50%, #FBBF24 100%); box-shadow: 0 8px 32px rgba(217,119,6,0.25);">
-      <div class="hero-label">Total Dividends (Net)${selectedYear !== "all" ? " &middot; " + selectedYear : ""}</div>
+      <div class="hero-label">Total Dividends${selectedYear !== "all" ? " &middot; " + selectedYear : ""}</div>
       <div class="hero-value">${fmtUSD(totalNet)}</div>
       <div class="hero-stats">
         <div class="hero-stat">
-          <div class="hs-label">Gross</div>
-          <div class="hs-value">${fmtUSD(totalGross)}</div>
-        </div>
-        <div class="hero-stat">
-          <div class="hs-label">Tax</div>
-          <div class="hs-value">-${fmtUSD(totalTax)}</div>
+          <div class="hs-label">Payments</div>
+          <div class="hs-value">${filtered.length}</div>
         </div>
         <div class="hero-stat">
           <div class="hs-label">Monthly Avg</div>
@@ -3417,7 +3427,6 @@ create policy "Users can manage own data"
               html += `<div style="padding:12px 4px 6px;font-size:13px;font-weight:700;color:var(--text-secondary);letter-spacing:0.3px">${MONTH_NAMES[mIdx]} ${parts[0]}</div>`;
               lastMonth = monthKey;
             }
-            const net = d.amount - (d.tax || 0);
             html += `<div class="list-item" onclick='openDivModal(${JSON.stringify(d).replace(/'/g, "&#39;")})'>
         <div class="li-left">
           <div class="li-icon li-icon-dividend">&#128178;</div>
@@ -3427,8 +3436,7 @@ create policy "Users can manage own data"
           </div>
         </div>
         <div class="li-right">
-          <div class="li-amount positive">${fmtUSD(net)}</div>
-          ${d.tax > 0 ? `<div class="li-detail">Tax: ${fmtUSD(d.tax)}</div>` : ""}
+          <div class="li-amount positive">${fmtUSD(d.amount)}</div>
         </div>
       </div>`;
           });
@@ -3468,7 +3476,7 @@ create policy "Users can manage own data"
         const totalPnl = totalValue - totalCost;
         const totalPnlPct = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
         const totalDivNet = data.dividends.reduce(
-          (s, d) => s + d.amount - (d.tax || 0),
+          (s, d) => s + d.amount,
           0,
         );
         const deposits = data.flows.filter((f) => f.type === "deposit");
