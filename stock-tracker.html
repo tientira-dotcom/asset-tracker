@@ -2673,22 +2673,27 @@ create policy "Users can manage own data"
       function renderBenchmark() {
         const el = document.getElementById("benchmarkCard");
         if (!el) return;
-        const totalCost = data.stocks.reduce((s, st) => s + (st.totalCost || 0), 0);
         const totalValue = data.stocks.reduce((s, st) => s + (st.shares || 0) * (st.currentPrice || 0), 0);
-        const portfolioReturn = totalCost > 0 ? ((totalValue - totalCost) / totalCost * 100) : 0;
         const spy = marketCache.SPY;
-        if (!spy || totalCost === 0) { el.innerHTML = ""; return; }
+        if (!spy || totalValue === 0) { el.innerHTML = ""; return; }
+        // Weighted 1-day portfolio change
+        let portfolioDailyPct = 0;
+        data.stocks.forEach(st => {
+          const val = (st.shares || 0) * (st.currentPrice || 0);
+          const weight = totalValue > 0 ? val / totalValue : 0;
+          portfolioDailyPct += weight * (st.dailyPct || 0);
+        });
         const spyDailyPct = spy.dp || 0;
-        const diff = portfolioReturn - spyDailyPct;
+        const diff = portfolioDailyPct - spyDailyPct;
         const beating = diff > 0;
-        const portColor = portfolioReturn >= 0 ? "#10B981" : "#EF4444";
+        const portColor = portfolioDailyPct >= 0 ? "#10B981" : "#EF4444";
         const spyColor = spyDailyPct >= 0 ? "#10B981" : "#EF4444";
         const diffColor = beating ? "#10B981" : "#EF4444";
         el.innerHTML = `<div class="benchmark-card">
           <div class="section-title">Benchmark vs S&P 500</div>
           <div class="benchmark-row">
-            <div class="benchmark-label">Your Portfolio</div>
-            <div class="benchmark-value" style="color:${portColor}">${portfolioReturn >= 0 ? "+" : ""}${portfolioReturn.toFixed(2)}%</div>
+            <div class="benchmark-label">Your Portfolio (Today)</div>
+            <div class="benchmark-value" style="color:${portColor}">${portfolioDailyPct >= 0 ? "+" : ""}${portfolioDailyPct.toFixed(2)}%</div>
           </div>
           <div class="benchmark-row">
             <div class="benchmark-label">S&P 500 (Today)</div>
@@ -2710,9 +2715,10 @@ create policy "Users can manage own data"
         let updated = 0;
         for (let i = 0; i < data.stocks.length; i++) {
           const stock = data.stocks[i];
-          const price = await fetchQuote(stock.ticker);
-          if (price !== null) {
-            stock.currentPrice = price;
+          const quote = await fetchFullQuote(stock.ticker);
+          if (quote !== null) {
+            stock.currentPrice = quote.c;
+            stock.dailyPct = quote.dp || 0;
             updated++;
           }
           if (i < data.stocks.length - 1) {
@@ -2965,11 +2971,13 @@ create policy "Users can manage own data"
           .trim();
 
         let currentPrice = 0;
+        let dailyPct = 0;
         if (getApiKey()) {
           showToast("Fetching price for " + ticker + "...");
-          const fetched = await fetchSinglePrice(ticker);
-          if (fetched !== null) {
-            currentPrice = fetched;
+          const quote = await fetchFullQuote(ticker);
+          if (quote !== null) {
+            currentPrice = quote.c;
+            dailyPct = quote.dp || 0;
           }
         }
 
@@ -2984,6 +2992,7 @@ create policy "Users can manage own data"
           totalCost,
           shares,
           currentPrice,
+          dailyPct,
           sector: document.getElementById("stockSector").value,
         };
         if (id) {
