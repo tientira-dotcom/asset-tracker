@@ -73,6 +73,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        max-width: 680px;
+        margin: 0 auto;
       }
       .top-header h1 {
         font-size: 22px;
@@ -191,6 +193,8 @@
         display: none;
         padding: 16px 20px;
         animation: fadeIn 0.3s ease;
+        max-width: 640px;
+        margin: 0 auto;
       }
       .page.active {
         display: block;
@@ -309,6 +313,11 @@
         border-radius: var(--radius-sm);
         padding: 16px;
         box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        transition: transform 0.15s;
+      }
+      .mini-card:active {
+        transform: scale(0.97);
       }
       .mini-card .mc-icon {
         width: 36px;
@@ -349,7 +358,7 @@
       .stock-item {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         padding: 16px;
         background: var(--card);
         border-radius: var(--radius-sm);
@@ -397,31 +406,34 @@
         margin-top: 1px;
       }
       .stock-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
         text-align: right;
+        min-width: 90px;
       }
       .stock-price {
         font-weight: 700;
         font-size: 15px;
         color: var(--text);
+        text-align: right;
+        width: 100%;
       }
       .stock-pnl {
         font-size: 13px;
         font-weight: 600;
         margin-top: 2px;
-      }
-      .stock-alloc-bar {
+        text-align: right;
         width: 100%;
-        height: 4px;
-        background: var(--border);
-        border-radius: 2px;
-        margin-top: 6px;
-        overflow: hidden;
       }
-      .stock-alloc-fill {
-        height: 100%;
-        background: var(--accent);
-        border-radius: 2px;
-        transition: width 0.3s;
+      .stock-alloc-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 11px;
+        color: var(--text-tertiary);
+        margin-top: 4px;
+        margin-left: auto;
       }
 
       /* ─── Flow / Dividend List ─── */
@@ -524,7 +536,7 @@
       .fab {
         position: fixed;
         bottom: 92px;
-        right: 20px;
+        right: max(20px, calc((100vw - 640px) / 2 + 20px));
         z-index: 40;
         width: 56px;
         height: 56px;
@@ -617,6 +629,14 @@
         font-weight: 500;
         outline: none;
         transition: all 0.2s;
+      }
+      .form-group select {
+        padding-right: 40px;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
       }
       .form-group input:focus,
       .form-group select:focus {
@@ -905,47 +925,7 @@
       .cloud-banner.cloud-on .cb-text,
       .cloud-banner.cloud-on .cb-arrow { color: var(--green); }
 
-      /* ─── Refresh Button ─── */
-      .refresh-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 14px;
-      }
-      .refresh-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 16px;
-        border-radius: 10px;
-        background: var(--accent);
-        color: #fff;
-        border: none;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        font-family: inherit;
-        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
-      }
-      .refresh-btn:active {
-        transform: scale(0.95);
-      }
-      .refresh-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .refresh-btn svg {
-        width: 16px;
-        height: 16px;
-      }
-      .refresh-btn.loading svg {
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
+      /* ─── Last Updated ─── */
       .last-updated {
         font-size: 11px;
         color: var(--text-tertiary);
@@ -1012,6 +992,200 @@
       }
 
       /* ─── Settings Page ─── */
+      /* ─── Widget Tap ─── */
+      .widget-tap {
+        cursor: pointer;
+        transition: transform 0.15s;
+      }
+      .widget-tap:active {
+        transform: scale(0.98);
+      }
+      .widget-chevron {
+        float: right;
+        color: var(--text-tertiary);
+        font-size: 18px;
+        line-height: 1;
+      }
+
+      /* ─── News Widget ─── */
+      .news-btn-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .news-btn-row .btn {
+        flex: 1;
+        padding: 10px;
+        font-size: 13px;
+      }
+      .news-pills {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .news-pills::-webkit-scrollbar { display: none; }
+      .news-pill {
+        flex-shrink: 0;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1.5px solid var(--border);
+        background: var(--card);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+      .news-pill.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      /* Benchmark Card */
+      .benchmark-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .benchmark-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+      }
+      .benchmark-row + .benchmark-row {
+        border-top: 1px solid var(--border);
+      }
+      .benchmark-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+      .benchmark-value {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .benchmark-result {
+        text-align: center;
+        padding: 10px 0 4px;
+        border-top: 1px solid var(--border);
+        font-size: 12px;
+        font-weight: 500;
+      }
+      /* Swipeable Chart */
+      .chart-swipe {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .chart-swipe::-webkit-scrollbar { display: none; }
+      .chart-swipe-page {
+        min-width: 100%;
+        scroll-snap-align: start;
+        flex-shrink: 0;
+      }
+      .chart-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .chart-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: var(--border);
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .chart-dot.active {
+        background: var(--accent);
+        width: 20px;
+        border-radius: 4px;
+      }
+      /* Dividend Calendar */
+      .div-projected-card {
+        background: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
+        color: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .div-projected-card .dp-label { font-size: 12px; opacity: 0.85; margin-bottom: 4px; }
+      .div-projected-card .dp-value { font-size: 28px; font-weight: 700; }
+      .div-projected-card .dp-stats { display: flex; gap: 20px; margin-top: 12px; }
+      .div-projected-card .dp-stat-label { font-size: 11px; opacity: 0.8; }
+      .div-projected-card .dp-stat-value { font-size: 15px; font-weight: 600; }
+      .div-calendar {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .div-cal-month {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 8px;
+        text-align: center;
+      }
+      .div-cal-month .dcm-name { font-size: 11px; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; }
+      .div-cal-month .dcm-amount { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-top: 4px; }
+      .div-cal-month.has-div { border-color: #10B981; background: rgba(16,185,129,0.06); }
+      .div-cal-month.has-div .dcm-amount { color: #059669; }
+      .div-cal-month.current { box-shadow: 0 0 0 2px var(--accent); }
+      .news-item {
+        display: block;
+        background: var(--card);
+        border-radius: var(--radius-sm);
+        padding: 12px 14px;
+        margin-bottom: 8px;
+        box-shadow: var(--shadow-sm);
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.15s;
+      }
+      .news-item:active {
+        transform: scale(0.985);
+      }
+      .news-item-headline {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.4;
+        margin-bottom: 4px;
+      }
+      .news-item-meta {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .news-ticker-badge {
+        display: inline-block;
+        background: var(--accent-bg);
+        color: var(--accent);
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .news-loading {
+        text-align: center;
+        padding: 20px;
+        color: var(--text-tertiary);
+        font-size: 13px;
+      }
+
       .settings-section {
         background: var(--card);
         border-radius: var(--radius);
@@ -1105,34 +1279,6 @@
           <span class="chip-dot"></span>
           <span id="userChipLabel">Cloud</span>
         </button>
-        <button class="icon-btn" onclick="exportData()" title="Export">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-        </button>
-        <button
-          class="icon-btn"
-          onclick="document.getElementById('importFile').click()"
-          title="Import"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" y1="3" x2="12" y2="15" />
-          </svg>
-        </button>
         <input
           type="file"
           id="importFile"
@@ -1145,47 +1291,41 @@
 
     <!-- Dashboard Page -->
     <div id="page-dashboard" class="page active">
-      <div id="cloudBanner"></div>
-      <div id="dashHero"></div>
+      <div id="dashHero" onclick="navigateTo('stocks')" class="widget-tap"></div>
       <div class="mini-cards" id="dashMini"></div>
+      <!-- Benchmark vs S&P 500 -->
+      <div id="benchmarkCard"></div>
       <div class="card">
-        <div class="section-title">Allocation</div>
-        <div class="chart-container"><canvas id="pieChart"></canvas></div>
-        <div id="pieEmpty"></div>
-      </div>
-      <div class="card">
-        <div class="section-title">P&L by Stock</div>
-        <div style="position: relative; width: 100%; height: 200px">
-          <canvas id="pnlChart"></canvas>
+        <div class="chart-swipe" id="chartSwipe">
+          <div class="chart-swipe-page">
+            <div class="section-title">Allocation</div>
+            <div class="chart-container"><canvas id="pieChart"></canvas></div>
+            <div id="pieEmpty"></div>
+          </div>
+          <div class="chart-swipe-page">
+            <div class="section-title">P&L by Stock</div>
+            <div style="position:relative;width:100%;height:200px"><canvas id="pnlChart"></canvas></div>
+            <div id="pnlEmpty"></div>
+          </div>
         </div>
-        <div id="pnlEmpty"></div>
+        <div class="chart-dots" id="chartDots">
+          <span class="chart-dot active" onclick="scrollChartTo(0)"></span>
+          <span class="chart-dot" onclick="scrollChartTo(1)"></span>
+        </div>
+      </div>
+
+      <!-- News Widget -->
+      <div class="card">
+        <div class="section-title">&#128240; Stock News</div>
+        <div class="news-pills" id="newsPills"></div>
+        <div id="newsWidgetList"></div>
       </div>
     </div>
 
     <!-- Stocks Page -->
     <div id="page-stocks" class="page">
       <div id="stocksHero"></div>
-      <div id="apiBanner"></div>
-      <div class="refresh-row">
-        <div class="section-title" style="margin-bottom: 0">Holdings</div>
-        <button
-          class="refresh-btn"
-          id="refreshBtn"
-          onclick="refreshAllPrices()"
-          title="Refresh prices"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-          >
-            <polyline points="23 4 23 10 17 10" />
-            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-          </svg>
-          <span id="refreshLabel">Refresh</span>
-        </button>
-      </div>
+      <div class="section-title">Holdings</div>
       <div
         class="last-updated"
         id="lastUpdated"
@@ -1198,14 +1338,21 @@
     <div id="page-flow" class="page">
       <div id="flowHero"></div>
       <div class="fx-row" id="fxRow"></div>
-      <div class="section-title">Transactions</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="section-title" style="margin-bottom:0">Transactions</div>
+        <select id="flowYearFilter" onchange="renderFlows()" style="padding:6px 32px 6px 12px;border-radius:10px;border:1px solid var(--border);background-color:var(--card);font-family:inherit;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 10px center"></select>
+      </div>
       <div id="flowList"></div>
     </div>
 
     <!-- Dividends Page -->
     <div id="page-dividends" class="page">
       <div id="divHero"></div>
-      <div class="section-title">Dividend Records</div>
+      <div id="divCalendarBanner"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="section-title" style="margin-bottom:0">Dividend Records</div>
+        <select id="divYearFilter" onchange="renderDividends()" style="padding:6px 32px 6px 12px;border-radius:10px;border:1px solid var(--border);background-color:var(--card);font-family:inherit;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 10px center"></select>
+      </div>
       <div id="divList"></div>
     </div>
 
@@ -1366,20 +1513,22 @@
             <div class="form-group">
               <label>Cost per Share (USD)</label>
               <input
-                type="number"
+                type="text"
+                inputmode="decimal"
+                data-money
                 id="stockCostPerShare"
                 placeholder="0.00"
-                step="any"
                 required
               />
             </div>
             <div class="form-group">
               <label>Total Cost (USD)</label>
               <input
-                type="number"
+                type="text"
+                inputmode="decimal"
+                data-money
                 id="stockTotalCost"
                 placeholder="0.00"
-                step="any"
                 required
               />
             </div>
@@ -1404,13 +1553,13 @@
           <button type="submit" class="btn btn-primary" id="stockSubmitBtn">
             Add Stock
           </button>
-          <div id="stockEditActions" style="display: none">
+          <div id="stockEditActions" style="display:none;text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
             <button
               type="button"
-              class="btn btn-danger"
+              style="background:none;border:none;color:#EF4444;font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline"
               onclick="confirmDeleteStock()"
             >
-              Delete Stock
+              Delete this stock
             </button>
           </div>
           <button
@@ -1443,34 +1592,37 @@
             </select>
           </div>
           <div class="form-row">
-            <div class="form-group">
-              <label>Amount (THB)</label>
+            <div class="form-group" id="flowTHBGroup">
+              <label id="flowTHBLabel">Amount (THB)</label>
               <input
-                type="number"
+                type="text"
+                inputmode="decimal"
+                data-money
                 id="flowTHB"
                 placeholder="0.00"
-                step="any"
                 required
               />
             </div>
             <div class="form-group">
               <label>FX Rate (THB/USD)</label>
               <input
-                type="number"
+                type="text"
+                inputmode="decimal"
+                data-money
                 id="flowRate"
                 placeholder="e.g. 35.50"
-                step="any"
                 required
               />
             </div>
           </div>
-          <div class="form-group">
-            <label>Amount USD (auto)</label>
+          <div class="form-group" id="flowUSDGroup">
+            <label id="flowUSDLabel">Amount USD (auto)</label>
             <input
-              type="number"
+              type="text"
+              inputmode="decimal"
+              data-money
               id="flowUSD"
               placeholder="0.00"
-              step="any"
               readonly
               style="opacity: 0.6"
             />
@@ -1482,13 +1634,13 @@
           <button type="submit" class="btn btn-primary" id="flowSubmitBtn">
             Add Transaction
           </button>
-          <div id="flowEditActions" style="display: none">
+          <div id="flowEditActions" style="display:none;text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
             <button
               type="button"
-              class="btn btn-danger"
+              style="background:none;border:none;color:#EF4444;font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline"
               onclick="confirmDeleteFlow()"
             >
-              Delete
+              Delete this record
             </button>
           </div>
           <button
@@ -1527,27 +1679,16 @@
               <div class="autocomplete-list" id="divTickerAC"></div>
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Amount (USD)</label>
-              <input
-                type="number"
-                id="divAmount"
-                placeholder="0.00"
-                step="any"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label>Tax Withheld (USD)</label>
-              <input
-                type="number"
-                id="divTax"
-                placeholder="0.00"
-                step="any"
-                value="0"
-              />
-            </div>
+          <div class="form-group">
+            <label>Net Amount (USD)</label>
+            <input
+              type="text"
+              inputmode="decimal"
+              data-money
+              id="divAmount"
+              placeholder="0.00"
+              required
+            />
           </div>
           <div class="form-group">
             <label>Note</label>
@@ -1560,13 +1701,13 @@
           <button type="submit" class="btn btn-primary" id="divSubmitBtn">
             Add Dividend
           </button>
-          <div id="divEditActions" style="display: none">
+          <div id="divEditActions" style="display:none;text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
             <button
               type="button"
-              class="btn btn-danger"
+              style="background:none;border:none;color:#EF4444;font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline"
               onclick="confirmDeleteDiv()"
             >
-              Delete
+              Delete this dividend
             </button>
           </div>
           <button
@@ -2050,6 +2191,7 @@ create policy "Users can manage own data"
       }
 
       // ─── Supabase Cloud Sync ───
+      const SITE_URL = "https://files-seven-kappa.vercel.app";
       const SB_URL_KEY = "dime_sb_url";
       const SB_ANON_KEY = "dime_sb_anon";
       let sb = null;
@@ -2116,7 +2258,10 @@ create policy "Users can manage own data"
         if (!email || !pass) { showToast("Enter email and password"); return; }
         if (pass.length < 6) { showToast("Password must be at least 6 characters"); return; }
         try {
-          const { data: authData, error } = await sb.auth.signUp({ email, password: pass });
+          const { data: authData, error } = await sb.auth.signUp({
+            email, password: pass,
+            options: { emailRedirectTo: SITE_URL }
+          });
           if (error) throw error;
           if (authData.user) {
             currentUser = authData.user;
@@ -2201,10 +2346,34 @@ create policy "Users can manage own data"
             currentUser = sessionData.session.user;
             updateUserChip();
             renderCloudBanner();
+            await cloudPull();
           }
         } catch (e) {
           console.warn("Auth init error:", e);
         }
+        // Listen for auth state changes (e.g. password recovery redirect)
+        sb.auth.onAuthStateChange((event, session) => {
+          if (event === "PASSWORD_RECOVERY" && session) {
+            currentUser = session.user;
+            updateUserChip();
+            // Show password reset UI
+            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+            document.getElementById("page-settings").classList.add("active");
+            document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
+            document.querySelector('[data-page="settings"]').classList.add("active");
+            renderSettings();
+            setTimeout(() => {
+              const el = document.getElementById("changePwSection");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+              showToast("Set your new password below");
+            }, 300);
+          } else if (event === "SIGNED_IN" && session) {
+            currentUser = session.user;
+            updateUserChip();
+            renderCloudBanner();
+            renderSettings();
+          }
+        });
       }
 
       function showCloudSection(id) {
@@ -2331,6 +2500,122 @@ create policy "Users can manage own data"
         }
       }
 
+      // ─── Stock News ───
+      let newsCache = {};
+      let activeNewsPill = "__market__";
+      let newsFetchInProgress = false;
+      const NEWS_DAYS = 7;
+
+      function getNewsDateRange() {
+        const to = new Date();
+        const from = new Date();
+        from.setDate(from.getDate() - NEWS_DAYS);
+        return { from: from.toISOString().slice(0, 10), to: to.toISOString().slice(0, 10) };
+      }
+
+      async function fetchMarketNews() {
+        const key = getApiKey();
+        if (!key) return [];
+        try {
+          const resp = await fetch(
+            `https://finnhub.io/api/v1/news?category=general&token=${encodeURIComponent(key)}`
+          );
+          if (!resp.ok) return [];
+          const articles = await resp.json();
+          return Array.isArray(articles) ? articles.slice(0, 8) : [];
+        } catch (e) {
+          console.warn("Market news fetch error", e);
+          return [];
+        }
+      }
+
+      async function fetchCompanyNews(ticker) {
+        const key = getApiKey();
+        if (!key) return [];
+        const { from, to } = getNewsDateRange();
+        try {
+          const resp = await fetch(
+            `https://finnhub.io/api/v1/company-news?symbol=${encodeURIComponent(ticker)}&from=${from}&to=${to}&token=${encodeURIComponent(key)}`
+          );
+          if (!resp.ok) return [];
+          const articles = await resp.json();
+          return Array.isArray(articles) ? articles.slice(0, 8) : [];
+        } catch (e) {
+          console.warn("News fetch error for", ticker, e);
+          return [];
+        }
+      }
+
+      async function selectNewsPill(pill) {
+        if (newsFetchInProgress) return;
+        activeNewsPill = pill;
+        renderNewsPills();
+
+        const listEl = document.getElementById("newsWidgetList");
+        if (!listEl) return;
+        listEl.innerHTML = '<div class="news-loading">&#8987; Loading news...</div>';
+
+        newsFetchInProgress = true;
+        try {
+          const articles = pill === "__market__"
+            ? await fetchMarketNews()
+            : await fetchCompanyNews(pill);
+          newsCache[pill] = { articles, fetchedAt: Date.now() };
+        } catch (e) {
+          console.warn("News fetch failed", e);
+        }
+        newsFetchInProgress = false;
+        renderNewsArticles();
+      }
+
+      function renderNewsPills() {
+        const el = document.getElementById("newsPills");
+        if (!el) return;
+        let html = `<button class="news-pill${activeNewsPill === "__market__" ? " active" : ""}" onclick="event.stopPropagation(); selectNewsPill('__market__')">&#127758; US Market</button>`;
+        data.stocks.forEach(s => {
+          html += `<button class="news-pill${activeNewsPill === s.ticker ? " active" : ""}" onclick="event.stopPropagation(); selectNewsPill('${s.ticker}')">${s.ticker}</button>`;
+        });
+        el.innerHTML = html;
+      }
+
+      function renderNewsArticles() {
+        const listEl = document.getElementById("newsWidgetList");
+        if (!listEl) return;
+        const cached = newsCache[activeNewsPill];
+        if (!cached || !cached.articles.length) {
+          listEl.innerHTML = '<div class="news-loading">No recent news found</div>';
+          return;
+        }
+        let html = "";
+        cached.articles.forEach(a => {
+          const date = new Date(a.datetime * 1000);
+          const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+          const badge = activeNewsPill === "__market__" ? "" : `<span class="news-ticker-badge">${activeNewsPill}</span>`;
+          html += `<a class="news-item" href="${a.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+            <div class="news-item-headline">${a.headline}</div>
+            <div class="news-item-meta">
+              ${badge}
+              <span>${a.source}</span>
+              <span>&middot;</span>
+              <span>${dateStr}</span>
+            </div>
+          </a>`;
+        });
+        listEl.innerHTML = html;
+      }
+
+      function renderNewsWidget() {
+        renderNewsPills();
+
+        // Show cached articles or trigger fetch
+        const cached = newsCache[activeNewsPill];
+        if (cached) {
+          renderNewsArticles();
+        } else if (currentPage === "dashboard") {
+          selectNewsPill(activeNewsPill);
+        }
+      }
+
       async function fetchQuote(ticker) {
         const key = getApiKey();
         if (!key) return null;
@@ -2348,53 +2633,117 @@ create policy "Users can manage own data"
         }
       }
 
-      async function refreshAllPrices() {
+
+      // ─── Market Indices ───
+      let marketCache = { SPY: null, QQQ: null, fetchedAt: 0 };
+      const MARKET_CACHE_TTL = 10 * 60 * 1000;
+
+      async function fetchFullQuote(ticker) {
         const key = getApiKey();
-        if (!key) {
-          openApiSettings();
-          return;
+        if (!key) return null;
+        try {
+          const resp = await fetch(
+            `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${encodeURIComponent(key)}`
+          );
+          if (!resp.ok) return null;
+          const json = await resp.json();
+          if (json.c && json.c > 0) return { c: json.c, pc: json.pc, d: json.d, dp: json.dp };
+          return null;
+        } catch (e) {
+          console.warn("Quote fetch error for", ticker, e);
+          return null;
         }
-        if (data.stocks.length === 0) {
-          showToast("No stocks to refresh");
-          return;
+      }
+
+      async function fetchMarketIndices() {
+        if (Date.now() - marketCache.fetchedAt < MARKET_CACHE_TTL && marketCache.SPY) return;
+        const spy = await fetchFullQuote("SPY");
+        if (spy) marketCache.SPY = spy;
+        marketCache.fetchedAt = Date.now();
+        renderBenchmark();
+      }
+
+      async function renderBenchmark() {
+        const el = document.getElementById("benchmarkCard");
+        if (!el) return;
+        const totalValue = data.stocks.reduce((s, st) => s + (st.shares || 0) * (st.currentPrice || 0), 0);
+        const spy = marketCache.SPY;
+        if (!spy || totalValue === 0) { el.innerHTML = ""; return; }
+
+        // Fetch fresh dailyPct for all stocks if not yet available
+        let hasDailyData = data.stocks.some(st => st.dailyPct !== undefined && st.dailyPct !== 0);
+        if (!hasDailyData && getApiKey()) {
+          for (const st of data.stocks) {
+            const q = await fetchFullQuote(st.ticker);
+            if (q) { st.dailyPct = q.dp || 0; st.currentPrice = q.c; }
+          }
+          save();
         }
 
-        const btn = document.getElementById("refreshBtn");
-        const label = document.getElementById("refreshLabel");
-        btn.disabled = true;
-        btn.classList.add("loading");
-        label.textContent = "Updating...";
+        // Weighted 1-day portfolio change
+        let portfolioDailyPct = 0;
+        data.stocks.forEach(st => {
+          const val = (st.shares || 0) * (st.currentPrice || 0);
+          const weight = totalValue > 0 ? val / totalValue : 0;
+          portfolioDailyPct += weight * (st.dailyPct || 0);
+        });
+        const spyDailyPct = spy.dp || 0;
+        const diff = portfolioDailyPct - spyDailyPct;
+        const beating = diff > 0;
+        const portColor = portfolioDailyPct >= 0 ? "#10B981" : "#EF4444";
+        const spyColor = spyDailyPct >= 0 ? "#10B981" : "#EF4444";
+        const diffColor = beating ? "#10B981" : "#EF4444";
+        el.innerHTML = `<div class="benchmark-card">
+          <div class="section-title">Benchmark vs S&P 500</div>
+          <div class="benchmark-row">
+            <div class="benchmark-label">Your Portfolio (Today)</div>
+            <div class="benchmark-value" style="color:${portColor}">${portfolioDailyPct >= 0 ? "+" : ""}${portfolioDailyPct.toFixed(2)}%</div>
+          </div>
+          <div class="benchmark-row">
+            <div class="benchmark-label">S&P 500 (Today)</div>
+            <div class="benchmark-value" style="color:${spyColor}">${spyDailyPct >= 0 ? "+" : ""}${spyDailyPct.toFixed(2)}%</div>
+          </div>
+          <div class="benchmark-result" style="color:var(--text-tertiary);font-weight:500">
+            ${beating ? "Beating" : "Trailing"} the market by <span style="color:${diffColor};font-weight:700">${Math.abs(diff).toFixed(2)}%</span>
+          </div>
+        </div>`;
+      }
+
+      let priceRefreshTimer = null;
+      const PRICE_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
+
+      async function refreshAllPrices(silent = false) {
+        const key = getApiKey();
+        if (!key || data.stocks.length === 0) return;
 
         let updated = 0;
-        let failed = 0;
         for (let i = 0; i < data.stocks.length; i++) {
           const stock = data.stocks[i];
-          label.textContent = `${i + 1}/${data.stocks.length}`;
-          const price = await fetchQuote(stock.ticker);
-          if (price !== null) {
-            stock.currentPrice = price;
+          const quote = await fetchFullQuote(stock.ticker);
+          if (quote !== null) {
+            stock.currentPrice = quote.c;
+            stock.dailyPct = quote.dp || 0;
             updated++;
-          } else {
-            failed++;
           }
           if (i < data.stocks.length - 1) {
             await new Promise((r) => setTimeout(r, 250));
           }
         }
 
-        save();
-        localStorage.setItem(LAST_UPDATE_STORAGE, Date.now().toString());
-        renderAll();
-
-        btn.disabled = false;
-        btn.classList.remove("loading");
-        label.textContent = "Refresh";
-
-        if (failed > 0) {
-          showToast(`Updated ${updated}, failed ${failed}`);
-        } else {
-          showToast(`All ${updated} prices updated`);
+        if (updated > 0) {
+          save();
+          localStorage.setItem(LAST_UPDATE_STORAGE, Date.now().toString());
+          renderAll();
+          renderBenchmark();
         }
+      }
+
+      function startPriceAutoRefresh() {
+        if (priceRefreshTimer) clearInterval(priceRefreshTimer);
+        // Initial refresh after 3 seconds
+        setTimeout(() => refreshAllPrices(true), 3000);
+        // Then every 10 minutes
+        priceRefreshTimer = setInterval(() => refreshAllPrices(true), PRICE_REFRESH_INTERVAL);
       }
 
       async function fetchSinglePrice(ticker) {
@@ -2495,10 +2844,23 @@ create policy "Users can manage own data"
             .classList.add("active");
           // Hide FAB on settings page
           document.getElementById("fab").style.display =
-            currentPage === "settings" ? "none" : "flex";
+            (currentPage === "settings") ? "none" : "flex";
           renderAll();
         });
       });
+
+      function navigateTo(page) {
+        currentPage = page;
+        document.querySelectorAll(".nav-item").forEach(b => {
+          b.classList.toggle("active", b.dataset.page === page);
+        });
+        document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+        document.getElementById("page-" + page).classList.add("active");
+        document.getElementById("fab").style.display =
+          (page === "settings") ? "none" : "flex";
+        renderAll();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
 
       // ─── Modal Helpers ───
       function openModal(id) {
@@ -2542,6 +2904,26 @@ create policy "Users can manage own data"
       });
 
       // ─── Format Helpers ───
+      // ─── Money Input Formatter ───
+      function parseMoney(str) {
+        return parseFloat(String(str).replace(/,/g, "")) || 0;
+      }
+      function formatMoneyInput(el) {
+        const raw = el.value.replace(/,/g, "");
+        if (raw === "" || raw === "-" || raw.endsWith(".")) return;
+        const parts = raw.split(".");
+        const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        el.value = parts.length > 1 ? intPart + "." + parts[1] : intPart;
+      }
+      document.addEventListener("input", e => {
+        if (e.target.hasAttribute("data-money")) formatMoneyInput(e.target);
+      });
+      function setMoneyValue(id, val) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = val ? Number(val).toLocaleString("en-US", { maximumFractionDigits: 10 }) : val;
+      }
+
       function fmt(n, d = 2) {
         return Number(n).toLocaleString("en-US", {
           minimumFractionDigits: d,
@@ -2573,8 +2955,8 @@ create policy "Users can manage own data"
           document.getElementById("stockEditId").value = stock.id;
           document.getElementById("stockTicker").value = stock.ticker;
           document.getElementById("stockNameInput").value = stock.name || "";
-          document.getElementById("stockCostPerShare").value = stock.costPerShare || 0;
-          document.getElementById("stockTotalCost").value = stock.totalCost || 0;
+          setMoneyValue("stockCostPerShare", stock.costPerShare || 0);
+          setMoneyValue("stockTotalCost", stock.totalCost || 0);
           document.getElementById("stockSector").value = stock.sector || "";
         } else {
           document.getElementById("modalStockTitle").textContent = "Add Stock";
@@ -2594,16 +2976,18 @@ create policy "Users can manage own data"
           .trim();
 
         let currentPrice = 0;
+        let dailyPct = 0;
         if (getApiKey()) {
           showToast("Fetching price for " + ticker + "...");
-          const fetched = await fetchSinglePrice(ticker);
-          if (fetched !== null) {
-            currentPrice = fetched;
+          const quote = await fetchFullQuote(ticker);
+          if (quote !== null) {
+            currentPrice = quote.c;
+            dailyPct = quote.dp || 0;
           }
         }
 
-        const costPerShare = parseFloat(document.getElementById("stockCostPerShare").value) || 0;
-        const totalCost = parseFloat(document.getElementById("stockTotalCost").value) || 0;
+        const costPerShare = parseMoney(document.getElementById("stockCostPerShare").value) || 0;
+        const totalCost = parseMoney(document.getElementById("stockTotalCost").value) || 0;
         const shares = costPerShare > 0 ? totalCost / costPerShare : 0;
 
         const sd = {
@@ -2613,6 +2997,7 @@ create policy "Users can manage own data"
           totalCost,
           shares,
           currentPrice,
+          dailyPct,
           sector: document.getElementById("stockSector").value,
         };
         if (id) {
@@ -2694,7 +3079,7 @@ create policy "Users can manage own data"
         <div class="stock-right">
           <div class="stock-price">${fmtUSD(value)}</div>
           <div class="stock-pnl ${pnlClass(pnl)}">${fmtPct(pnlPct)}</div>
-          <div class="stock-alloc-bar"><div class="stock-alloc-fill" style="width:${alloc}%"></div></div>
+          <div class="stock-alloc-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg> ${alloc.toFixed(1)}%</div>
         </div>
       </div>`;
           })
@@ -2713,9 +3098,11 @@ create policy "Users can manage own data"
           document.getElementById("flowEditId").value = flow.id;
           document.getElementById("flowDate").value = flow.date;
           document.getElementById("flowType").value = flow.type;
-          document.getElementById("flowTHB").value = flow.amountTHB;
-          document.getElementById("flowRate").value = flow.rate;
-          document.getElementById("flowUSD").value = flow.amountUSD;
+          const isDeposit = flow.type === "deposit";
+          setMoneyValue("flowTHB", isDeposit ? flow.amountTHB : flow.amountUSD);
+          setMoneyValue("flowRate", flow.rate);
+          setMoneyValue("flowUSD", isDeposit ? flow.amountUSD : flow.amountTHB);
+          toggleFlowFields();
           document.getElementById("flowNote").value = flow.note || "";
         } else {
           document.getElementById("modalFlowTitle").textContent =
@@ -2727,32 +3114,48 @@ create policy "Users can manage own data"
           document.getElementById("flowDate").value = new Date()
             .toISOString()
             .slice(0, 10);
+          toggleFlowFields();
         }
         openModal("modalFlow");
       }
       function toggleFlowFields() {
-        calcFlowUSD();
+        const isDeposit = document.getElementById("flowType").value === "deposit";
+        document.getElementById("flowTHBLabel").textContent = isDeposit ? "Amount (THB)" : "Amount (USD)";
+        document.getElementById("flowTHB").placeholder = isDeposit ? "0.00" : "0.00";
+        document.getElementById("flowUSDLabel").textContent = isDeposit ? "Amount USD (auto)" : "Amount THB (auto)";
+        calcFlowAuto();
       }
-      function calcFlowUSD() {
-        const thb = parseFloat(document.getElementById("flowTHB").value) || 0;
-        const rate = parseFloat(document.getElementById("flowRate").value) || 0;
-        if (rate > 0)
-          document.getElementById("flowUSD").value = (thb / rate).toFixed(2);
+      function calcFlowAuto() {
+        const isDeposit = document.getElementById("flowType").value === "deposit";
+        const input = parseMoney(document.getElementById("flowTHB").value) || 0;
+        const rate = parseMoney(document.getElementById("flowRate").value) || 0;
+        if (rate > 0) {
+          if (isDeposit) {
+            setMoneyValue("flowUSD", (input / rate).toFixed(2));
+          } else {
+            setMoneyValue("flowUSD", (input * rate).toFixed(2));
+          }
+        }
       }
-      document.getElementById("flowTHB").addEventListener("input", calcFlowUSD);
+      document.getElementById("flowTHB").addEventListener("input", calcFlowAuto);
       document
         .getElementById("flowRate")
-        .addEventListener("input", calcFlowUSD);
+        .addEventListener("input", calcFlowAuto);
 
       function saveFlow(e) {
         e.preventDefault();
         const id = document.getElementById("flowEditId").value;
+        const type = document.getElementById("flowType").value;
+        const inputVal = parseMoney(document.getElementById("flowTHB").value);
+        const rate = parseMoney(document.getElementById("flowRate").value);
+        const autoVal = parseMoney(document.getElementById("flowUSD").value);
+        const isDeposit = type === "deposit";
         const fd = {
           date: document.getElementById("flowDate").value,
-          type: document.getElementById("flowType").value,
-          amountTHB: parseFloat(document.getElementById("flowTHB").value),
-          rate: parseFloat(document.getElementById("flowRate").value),
-          amountUSD: parseFloat(document.getElementById("flowUSD").value),
+          type,
+          amountTHB: isDeposit ? inputVal : autoVal,
+          rate,
+          amountUSD: isDeposit ? autoVal : inputVal,
           note: document.getElementById("flowNote").value.trim(),
         };
         if (id) {
@@ -2779,8 +3182,20 @@ create policy "Users can manage own data"
       }
 
       function renderFlows() {
-        const deposits = data.flows.filter((f) => f.type === "deposit");
-        const withdraws = data.flows.filter((f) => f.type === "withdraw");
+        // Build year options
+        const years = [...new Set(data.flows.map(f => f.date.split("-")[0]))].sort((a, b) => b.localeCompare(a));
+        const yearSel = document.getElementById("flowYearFilter");
+        const prevYear = yearSel.value;
+        yearSel.innerHTML = `<option value="all">All Years</option>` + years.map(y => `<option value="${y}">${y}</option>`).join("");
+        if (prevYear && years.includes(prevYear)) yearSel.value = prevYear;
+        else if (years.length > 0 && !prevYear) yearSel.value = years[0];
+        const selectedYear = yearSel.value;
+
+        // Filter flows by year
+        const filtered = selectedYear === "all" ? data.flows : data.flows.filter(f => f.date.startsWith(selectedYear));
+
+        const deposits = filtered.filter((f) => f.type === "deposit");
+        const withdraws = filtered.filter((f) => f.type === "withdraw");
         const totalDepTHB = deposits.reduce((s, f) => s + f.amountTHB, 0);
         const totalDepUSD = deposits.reduce((s, f) => s + f.amountUSD, 0);
         const totalWdTHB = withdraws.reduce((s, f) => s + f.amountTHB, 0);
@@ -2806,15 +3221,15 @@ create policy "Users can manage own data"
         document.getElementById("fxRow").innerHTML = `
     <div class="fx-card"><div class="fx-label">Avg FX Rate</div><div class="fx-value">${avgRate > 0 ? fmt(avgRate, 2) : "-"}</div></div>
     <div class="fx-card"><div class="fx-label">Total USD</div><div class="fx-value">${fmtUSD(totalDepUSD)}</div></div>
-    <div class="fx-card"><div class="fx-label">Transactions</div><div class="fx-value">${data.flows.length}</div></div>`;
+    <div class="fx-card"><div class="fx-label">Transactions</div><div class="fx-value">${filtered.length}</div></div>`;
 
         const list = document.getElementById("flowList");
-        if (data.flows.length === 0) {
+        if (filtered.length === 0) {
           list.innerHTML =
             '<div class="empty-state"><div class="empty-icon">&#128176;</div><p>No transactions yet</p><p class="empty-sub">Track your THB to USD transfers</p></div>';
         } else {
           const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-          const sorted = [...data.flows].sort((a, b) => b.date.localeCompare(a.date));
+          const sorted = [...filtered].sort((a, b) => b.date.localeCompare(a.date));
           let html = "";
           let lastMonth = "";
           sorted.forEach((f) => {
@@ -2859,8 +3274,7 @@ create policy "Users can manage own data"
           document.getElementById("divEditId").value = div.id;
           document.getElementById("divDate").value = div.date;
           document.getElementById("divTicker").value = div.ticker;
-          document.getElementById("divAmount").value = div.amount;
-          document.getElementById("divTax").value = div.tax || 0;
+          setMoneyValue("divAmount", div.amount);
           document.getElementById("divNote").value = div.note || "";
         } else {
           document.getElementById("modalDivTitle").textContent = "Add Dividend";
@@ -2883,8 +3297,8 @@ create policy "Users can manage own data"
             .getElementById("divTicker")
             .value.toUpperCase()
             .trim(),
-          amount: parseFloat(document.getElementById("divAmount").value),
-          tax: parseFloat(document.getElementById("divTax").value) || 0,
+          amount: parseMoney(document.getElementById("divAmount").value),
+          tax: 0,
           note: document.getElementById("divNote").value.trim(),
         };
         if (id) {
@@ -2911,37 +3325,114 @@ create policy "Users can manage own data"
         });
       }
 
+      let divCalYear = new Date().getFullYear();
+
+      function renderDivCalendarBanner() {
+        const el = document.getElementById("divCalendarBanner");
+        if (!el) return;
+        if (data.dividends.length === 0) { el.innerHTML = ""; return; }
+        const year = divCalYear;
+        const nowYear = new Date().getFullYear();
+        const currentMonth = year === nowYear ? new Date().getMonth() : -1;
+        const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        const calYears = [...new Set(data.dividends.map(d => d.date.split("-")[0]).concat([String(nowYear)]))].sort((a, b) => b.localeCompare(a));
+        const monthTotals = new Array(12).fill(0);
+        let activeMonths = 0;
+        data.dividends.forEach(d => {
+          const dt = new Date(d.date);
+          if (dt.getFullYear() === year) {
+            monthTotals[dt.getMonth()] += d.amount;
+          }
+        });
+        monthTotals.forEach(t => { if (t > 0) activeMonths++; });
+        const dots = months.map((m, i) => {
+          const has = monthTotals[i] > 0;
+          const isCurrent = i === currentMonth;
+          return `<span style="width:8px;height:8px;border-radius:50%;background:${has ? "#10B981" : isCurrent ? "var(--accent)" : "var(--border)"};flex-shrink:0" title="${m}: ${has ? fmtUSD(monthTotals[i]) : '—'}"></span>`;
+        }).join("");
+        const yearOpts = calYears.map(y => `<option value="${y}" ${String(year)===y?"selected":""}>${y}</option>`).join("");
+        el.innerHTML = `<div class="card" style="padding:14px 16px;margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer" onclick="toggleDivCalendarDetail()">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">&#128197; Dividend Calendar
+              <select onclick="event.stopPropagation()" onchange="divCalYear=parseInt(this.value);renderDivCalendarBanner()" style="border:none;background:none;font-size:13px;font-weight:700;color:var(--text);font-family:inherit;cursor:pointer;padding:0">${yearOpts}</select>
+            </div>
+            <div style="font-size:12px;color:var(--text-tertiary)">${activeMonths}/12 months <span id="divCalArrow" style="display:inline-block;transition:transform 0.3s;font-size:16px">&#8250;</span></div>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:10px;justify-content:space-between">${dots}</div>
+          <div id="divCalendarDetail" class="div-calendar" style="display:none;margin-top:12px"></div>
+        </div>`;
+        const detail = document.getElementById("divCalendarDetail");
+        if (detail) {
+          detail.innerHTML = months.map((m, i) => {
+            const has = monthTotals[i] > 0;
+            const isCurrent = i === currentMonth;
+            return `<div class="div-cal-month${has ? " has-div" : ""}${isCurrent ? " current" : ""}">
+              <div class="dcm-name">${m}</div>
+              <div class="dcm-amount">${has ? fmtUSD(monthTotals[i]) : "—"}</div>
+            </div>`;
+          }).join("");
+        }
+      }
+      function toggleDivCalendarDetail() {
+        const d = document.getElementById("divCalendarDetail");
+        const a = document.getElementById("divCalArrow");
+        if (!d) return;
+        const show = d.style.display === "none";
+        d.style.display = show ? "grid" : "none";
+        if (a) a.style.transform = show ? "rotate(90deg)" : "";
+      }
+
       function renderDividends() {
-        const totalGross = data.dividends.reduce((s, d) => s + d.amount, 0);
-        const totalTax = data.dividends.reduce((s, d) => s + (d.tax || 0), 0);
-        const totalNet = totalGross - totalTax;
+        // Year filter
+        const years = [...new Set(data.dividends.map(d => d.date.split("-")[0]))].sort((a, b) => b.localeCompare(a));
+        const yearSel = document.getElementById("divYearFilter");
+        const prevYear = yearSel.value;
+        yearSel.innerHTML = `<option value="all">All Years</option>` + years.map(y => `<option value="${y}">${y}</option>`).join("");
+        if (prevYear && (prevYear === "all" || years.includes(prevYear))) yearSel.value = prevYear;
+        else if (years.length > 0 && !prevYear) yearSel.value = years[0];
+        const selectedYear = yearSel.value;
+
+        const filtered = selectedYear === "all" ? data.dividends : data.dividends.filter(d => d.date.startsWith(selectedYear));
+
+        const totalNet = filtered.reduce((s, d) => s + d.amount, 0);
+
+        const monthCount = filtered.length > 0 ? new Set(filtered.map(d => d.date.slice(0,7))).size : 1;
+        const monthlyAvg = filtered.length > 0 ? totalNet / monthCount : 0;
 
         document.getElementById("divHero").innerHTML = `
     <div class="hero-card" style="background:linear-gradient(135deg, #D97706 0%, #F59E0B 50%, #FBBF24 100%); box-shadow: 0 8px 32px rgba(217,119,6,0.25);">
-      <div class="hero-label">Total Dividends (Net)</div>
+      <div class="hero-label">Total Dividends${selectedYear !== "all" ? " &middot; " + selectedYear : ""}</div>
       <div class="hero-value">${fmtUSD(totalNet)}</div>
       <div class="hero-stats">
         <div class="hero-stat">
-          <div class="hs-label">Gross</div>
-          <div class="hs-value">${fmtUSD(totalGross)}</div>
+          <div class="hs-label">Payments</div>
+          <div class="hs-value">${filtered.length}</div>
         </div>
         <div class="hero-stat">
-          <div class="hs-label">Tax</div>
-          <div class="hs-value">-${fmtUSD(totalTax)}</div>
+          <div class="hs-label">Monthly Avg</div>
+          <div class="hs-value">${fmtUSD(monthlyAvg)}</div>
         </div>
       </div>
     </div>`;
 
         const list = document.getElementById("divList");
-        if (data.dividends.length === 0) {
+        if (filtered.length === 0) {
           list.innerHTML =
             '<div class="empty-state"><div class="empty-icon">&#128181;</div><p>No dividends yet</p><p class="empty-sub">Record your dividend income</p></div>';
         } else {
-          list.innerHTML = data.dividends
-            .sort((a, b) => b.date.localeCompare(a.date))
-            .map((d) => {
-              const net = d.amount - (d.tax || 0);
-              return `<div class="list-item" onclick='openDivModal(${JSON.stringify(d).replace(/'/g, "&#39;")})'>
+          const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+          const sorted = [...filtered].sort((a, b) => b.date.localeCompare(a.date));
+          let html = "";
+          let lastMonth = "";
+          sorted.forEach(d => {
+            const parts = d.date.split("-");
+            const monthKey = parts[0] + "-" + parts[1];
+            if (monthKey !== lastMonth) {
+              const mIdx = parseInt(parts[1], 10) - 1;
+              html += `<div style="padding:12px 4px 6px;font-size:13px;font-weight:700;color:var(--text-secondary);letter-spacing:0.3px">${MONTH_NAMES[mIdx]} ${parts[0]}</div>`;
+              lastMonth = monthKey;
+            }
+            html += `<div class="list-item" onclick='openDivModal(${JSON.stringify(d).replace(/'/g, "&#39;")})'>
         <div class="li-left">
           <div class="li-icon li-icon-dividend">&#128178;</div>
           <div class="li-info">
@@ -2950,13 +3441,13 @@ create policy "Users can manage own data"
           </div>
         </div>
         <div class="li-right">
-          <div class="li-amount positive">${fmtUSD(net)}</div>
-          ${d.tax > 0 ? `<div class="li-detail">Tax: ${fmtUSD(d.tax)}</div>` : ""}
+          <div class="li-amount positive">${fmtUSD(d.amount)}</div>
         </div>
       </div>`;
-            })
-            .join("");
+          });
+          list.innerHTML = html;
         }
+        renderDivCalendarBanner();
       }
 
       // ─── DASHBOARD ───
@@ -2990,7 +3481,7 @@ create policy "Users can manage own data"
         const totalPnl = totalValue - totalCost;
         const totalPnlPct = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
         const totalDivNet = data.dividends.reduce(
-          (s, d) => s + d.amount - (d.tax || 0),
+          (s, d) => s + d.amount,
           0,
         );
         const deposits = data.flows.filter((f) => f.type === "deposit");
@@ -3006,21 +3497,23 @@ create policy "Users can manage own data"
     </div>`;
 
         document.getElementById("dashMini").innerHTML = `
-    <div class="mini-card">
+    <div class="mini-card" onclick="navigateTo('dividends')">
       <div class="mc-icon" style="background:var(--green-bg)">&#128178;</div>
-      <div class="mc-label">Dividends</div>
+      <div class="mc-label">Dividends <span class="widget-chevron">&#8250;</span></div>
       <div class="mc-value positive">${fmtUSD(totalDivNet)}</div>
       <div class="mc-sub">${data.dividends.length} payments</div>
     </div>
-    <div class="mini-card">
+    <div class="mini-card" onclick="navigateTo('flow')">
       <div class="mc-icon" style="background:var(--accent-bg)">&#128177;</div>
-      <div class="mc-label">Avg FX Rate</div>
+      <div class="mc-label">Avg FX Rate <span class="widget-chevron">&#8250;</span></div>
       <div class="mc-value">${avgRate > 0 ? fmt(avgRate, 2) : "-"}</div>
       <div class="mc-sub">Invested ${fmtTHB(totalDepTHB)}</div>
     </div>`;
 
         renderPieChart();
         renderPnlChart();
+        renderNewsWidget();
+        fetchMarketIndices();
       }
 
       function renderPieChart() {
@@ -3066,7 +3559,7 @@ create policy "Users can manage own data"
                   padding: 14,
                   font: { size: 12, family: "Inter", weight: "500" },
                   usePointStyle: true,
-                  pointStyleWidth: 8,
+                  pointStyle: "circle",
                 },
               },
               tooltip: {
@@ -3149,6 +3642,22 @@ create policy "Users can manage own data"
         });
       }
 
+      // ─── Chart Swipe ───
+      function initChartSwipe() {
+        const el = document.getElementById("chartSwipe");
+        if (!el) return;
+        el.addEventListener("scroll", () => {
+          const page = Math.round(el.scrollLeft / el.offsetWidth);
+          const dots = document.querySelectorAll("#chartDots .chart-dot");
+          dots.forEach((d, i) => d.classList.toggle("active", i === page));
+        });
+      }
+      function scrollChartTo(page) {
+        const el = document.getElementById("chartSwipe");
+        if (el) el.scrollTo({ left: page * el.offsetWidth, behavior: "smooth" });
+      }
+      document.addEventListener("DOMContentLoaded", initChartSwipe);
+
       // ─── SETTINGS ───
       function renderSettings() {
         // Cloud status
@@ -3180,6 +3689,9 @@ create policy "Users can manage own data"
             <div class="settings-btn-row">
               <button class="btn btn-primary" onclick="settingsSignIn()" style="margin:0">Sign In</button>
               <button class="btn btn-outline" onclick="settingsSignUp()" style="margin:0">Sign Up</button>
+            </div>
+            <div style="text-align:center;margin-top:8px">
+              <a href="#" onclick="resetPassword();return false" style="color:var(--accent);font-size:13px;text-decoration:none">Forgot Password?</a>
             </div>`;
         }
 
@@ -3194,6 +3706,7 @@ create policy "Users can manage own data"
           ? `<div class="settings-status status-ok">&#9679; Connected</div>`
           : `<div class="settings-status status-off">&#9679; Not configured</div>`;
         document.getElementById("settingFinnhubKey").value = fKey;
+
       }
 
       function saveSettingsSupabase() {
@@ -3254,7 +3767,10 @@ create policy "Users can manage own data"
         if (!email || !pass) { showToast("Enter email and password"); return; }
         if (pass.length < 6) { showToast("Password min 6 characters"); return; }
         try {
-          const { data: authData, error } = await sb.auth.signUp({ email, password: pass });
+          const { data: authData, error } = await sb.auth.signUp({
+            email, password: pass,
+            options: { emailRedirectTo: SITE_URL }
+          });
           if (error) throw error;
           if (authData.user) {
             currentUser = authData.user;
@@ -3284,6 +3800,22 @@ create policy "Users can manage own data"
           showToast("Password updated!");
           document.getElementById("settingsNewPass").value = "";
           document.getElementById("settingsNewPassConfirm").value = "";
+        } catch (e) {
+          showToast("Failed: " + (e.message || e));
+        }
+      }
+
+      async function resetPassword() {
+        if (!sb) initSupabase();
+        if (!sb) { showToast("Supabase not configured"); return; }
+        const email = document.getElementById("settingsEmail").value.trim();
+        if (!email) { showToast("Enter your email first"); return; }
+        try {
+          const { error } = await sb.auth.resetPasswordForEmail(email, {
+            redirectTo: SITE_URL
+          });
+          if (error) throw error;
+          showToast("Reset link sent! Check your email.");
         } catch (e) {
           showToast("Failed: " + (e.message || e));
         }
@@ -3336,6 +3868,7 @@ create policy "Users can manage own data"
       setupAutocomplete("divTicker", "divTickerAC");
       renderAll();
       initAuth();
+      startPriceAutoRefresh();
     </script>
   </body>
 </html>
