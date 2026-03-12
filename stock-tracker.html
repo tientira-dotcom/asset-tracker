@@ -1102,33 +1102,6 @@
       .div-cal-month.has-div { border-color: #10B981; background: rgba(16,185,129,0.06); }
       .div-cal-month.has-div .dcm-amount { color: #059669; }
       .div-cal-month.current { box-shadow: 0 0 0 2px var(--accent); }
-      .news-summary-card {
-        background: linear-gradient(135deg, #f0f9ff 0%, #ede9fe 100%);
-        border-radius: var(--radius-sm);
-        padding: 16px;
-        margin-bottom: 16px;
-      }
-      .news-summary-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 10px;
-      }
-      .news-summary-title {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--text);
-      }
-      .news-summary-time {
-        font-size: 11px;
-        color: var(--text-tertiary);
-      }
-      .news-summary-body {
-        font-size: 12px;
-        line-height: 1.7;
-        color: var(--text-secondary);
-        white-space: pre-wrap;
-      }
       .news-item {
         display: block;
         background: var(--card);
@@ -1303,11 +1276,7 @@
       <div class="card">
         <div class="section-title">&#128240; Stock News</div>
         <div class="news-pills" id="newsPills"></div>
-        <div id="aiSummaryCard" style="display:none"></div>
         <div id="newsWidgetList"></div>
-        <div class="news-btn-row" style="margin-top:12px;margin-bottom:0">
-          <button class="btn btn-outline" onclick="event.stopPropagation(); generateAiSummary()">&#10024; AI Summary</button>
-        </div>
       </div>
     </div>
 
@@ -1391,21 +1360,6 @@
         <div class="settings-btn-row">
           <button class="btn btn-primary" onclick="saveSettingsFinnhub()">Save</button>
           <button class="btn btn-ghost" onclick="removeSettingsFinnhub()" style="margin:0; color:var(--red)">Remove</button>
-        </div>
-      </div>
-
-      <!-- Gemini AI Config -->
-      <div class="settings-section">
-        <div class="settings-section-title"><span class="ss-icon">&#129302;</span> Gemini AI</div>
-        <div id="settingsGeminiStatus"></div>
-        <div class="settings-item">
-          <label>API Key</label>
-          <input type="text" id="settingGeminiKey" placeholder="Your Gemini API key" />
-          <div class="si-hint">Free key at <b>aistudio.google.com</b></div>
-        </div>
-        <div class="settings-btn-row">
-          <button class="btn btn-primary" onclick="saveSettingsGemini()">Save</button>
-          <button class="btn btn-ghost" onclick="removeSettingsGemini()" style="margin:0; color:var(--red)">Remove</button>
         </div>
       </div>
 
@@ -2513,27 +2467,8 @@ create policy "Users can manage own data"
         }
       }
 
-      // ─── Gemini AI API ───
-      const GEMINI_KEY_STORAGE = "dime_gemini_key";
-      function getGeminiKey() {
-        return localStorage.getItem(GEMINI_KEY_STORAGE) || "";
-      }
-      function saveSettingsGemini() {
-        const key = document.getElementById("settingGeminiKey").value.trim();
-        if (!key) { showToast("Enter a Gemini API key"); return; }
-        localStorage.setItem(GEMINI_KEY_STORAGE, key);
-        showToast("Gemini key saved!");
-        renderSettings();
-      }
-      function removeSettingsGemini() {
-        localStorage.removeItem(GEMINI_KEY_STORAGE);
-        showToast("Gemini key removed");
-        renderSettings();
-      }
-
       // ─── Stock News ───
       let newsCache = {};
-      let aiSummaryCache = null;
       let activeNewsPill = "__market__";
       let newsFetchInProgress = false;
       const NEWS_DAYS = 7;
@@ -2639,83 +2574,12 @@ create policy "Users can manage own data"
       function renderNewsWidget() {
         renderNewsPills();
 
-        // AI Summary
-        const card = document.getElementById("aiSummaryCard");
-        if (card && aiSummaryCache) {
-          const d = new Date(aiSummaryCache.generatedAt);
-          const timeStr = d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
-          card.style.display = "block";
-          card.innerHTML = `<div class="news-summary-card">
-            <div class="news-summary-header">
-              <div class="news-summary-title">&#129302; AI Insights</div>
-              <span class="news-summary-time">${timeStr}</span>
-            </div>
-            <div class="news-summary-body">${aiSummaryCache.text.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</div>
-          </div>`;
-        }
-
         // Show cached articles or trigger fetch
         const cached = newsCache[activeNewsPill];
         if (cached) {
           renderNewsArticles();
         } else if (currentPage === "dashboard") {
           selectNewsPill(activeNewsPill);
-        }
-      }
-
-      async function generateAiSummary() {
-        const geminiKey = getGeminiKey();
-        if (!geminiKey) { showToast("Set up Gemini API key in Settings"); return; }
-
-        const allNews = [];
-        for (const ticker of Object.keys(newsCache)) {
-          const cached = newsCache[ticker];
-          if (!cached || !cached.articles.length) continue;
-          const label = ticker === "__market__" ? "US Market" : ticker;
-          cached.articles.forEach(a => {
-            allNews.push({ ticker: label, headline: a.headline, summary: a.summary || "",
-              date: new Date(a.datetime * 1000).toISOString().slice(0, 10) });
-          });
-        }
-        if (allNews.length === 0) { showToast("No news loaded yet"); return; }
-
-        const card = document.getElementById("aiSummaryCard");
-        card.style.display = "block";
-        card.innerHTML = '<div class="news-loading">&#9203; Generating AI summary...</div>';
-
-        const newsText = allNews.slice(0, 50).map(n =>
-          `[${n.ticker}] ${n.date} - ${n.headline}: ${n.summary}`
-        ).join("\n");
-
-        const prompt = `You are a concise financial analyst. Based on these recent news headlines for stocks in my portfolio, provide:
-1. Key investment insights (3-5 bullet points)
-2. Notable risks or concerns
-3. Overall market sentiment
-
-Keep it under 300 words. Use - for bullets.
-
-Portfolio news (last 7 days):
-${newsText}`;
-
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(geminiKey)}`;
-        const geminiBody = { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) };
-        try {
-          let resp = await fetch(geminiUrl, geminiBody);
-          if (resp.status === 429) {
-            card.innerHTML = '<div class="news-loading">&#9203; Rate limited, retrying in 3s...</div>';
-            await new Promise(r => setTimeout(r, 3000));
-            resp = await fetch(geminiUrl, geminiBody);
-          }
-          if (!resp.ok) throw new Error("API error " + resp.status);
-          const result = await resp.json();
-          const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "No summary generated.";
-          aiSummaryCache = { text, generatedAt: Date.now() };
-          renderNewsWidget();
-          showToast("AI summary generated!");
-        } catch (e) {
-          card.innerHTML = `<div class="news-summary-card"><div class="news-summary-body">Failed: ${e.message}. Check your API key in Settings.</div></div>`;
-          showToast("AI summary failed");
         }
       }
 
@@ -3682,16 +3546,6 @@ ${newsText}`;
           : `<div class="settings-status status-off">&#9679; Not configured</div>`;
         document.getElementById("settingFinnhubKey").value = fKey;
 
-        // Gemini status + key
-        const gKey = getGeminiKey();
-        const gEl = document.getElementById("settingsGeminiStatus");
-        if (gEl) {
-          gEl.innerHTML = gKey
-            ? `<div class="settings-status status-ok">&#9679; Connected</div>`
-            : `<div class="settings-status status-off">&#9679; Not configured</div>`;
-        }
-        const gInput = document.getElementById("settingGeminiKey");
-        if (gInput) gInput.value = gKey;
       }
 
       function saveSettingsSupabase() {
