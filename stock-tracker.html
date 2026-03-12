@@ -1395,24 +1395,18 @@
       <div class="dashboard-grid">
         <!-- Benchmark vs S&P 500 -->
         <div id="benchmarkCard"></div>
+        <!-- Allocation Pie -->
         <div class="card">
-          <div class="chart-swipe" id="chartSwipe">
-            <div class="chart-swipe-page">
-              <div class="section-title">Allocation</div>
-              <div class="chart-container"><canvas id="pieChart"></canvas></div>
-              <div id="pieEmpty"></div>
-            </div>
-            <div class="chart-swipe-page">
-              <div class="section-title">P&L by Stock</div>
-              <div style="position:relative;width:100%;height:200px"><canvas id="pnlChart"></canvas></div>
-              <div id="pnlEmpty"></div>
-            </div>
-          </div>
-          <div class="chart-dots" id="chartDots">
-            <span class="chart-dot active" onclick="scrollChartTo(0)"></span>
-            <span class="chart-dot" onclick="scrollChartTo(1)"></span>
-          </div>
+          <div class="section-title">Allocation</div>
+          <div class="chart-container"><canvas id="pieChart"></canvas></div>
+          <div id="pieEmpty"></div>
         </div>
+      </div>
+      <!-- P&L by Stock (full width) -->
+      <div class="card">
+        <div class="section-title">P&L by Stock</div>
+        <div style="position:relative;width:100%;height:220px"><canvas id="pnlChart"></canvas></div>
+        <div id="pnlEmpty"></div>
       </div>
 
       <!-- News Widget -->
@@ -3756,20 +3750,7 @@ create policy "Users can manage own data"
       }
 
       // ─── Chart Swipe ───
-      function initChartSwipe() {
-        const el = document.getElementById("chartSwipe");
-        if (!el) return;
-        el.addEventListener("scroll", () => {
-          const page = Math.round(el.scrollLeft / el.offsetWidth);
-          const dots = document.querySelectorAll("#chartDots .chart-dot");
-          dots.forEach((d, i) => d.classList.toggle("active", i === page));
-        });
-      }
-      function scrollChartTo(page) {
-        const el = document.getElementById("chartSwipe");
-        if (el) el.scrollTo({ left: page * el.offsetWidth, behavior: "smooth" });
-      }
-      document.addEventListener("DOMContentLoaded", initChartSwipe);
+      // Chart swipe removed — charts are now separate cards
 
       // ─── SETTINGS ───
       function renderSettings() {
