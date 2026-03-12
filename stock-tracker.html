@@ -1060,10 +1060,11 @@
       /* Benchmark Card */
       .benchmark-card {
         background: var(--card);
-        border: 1px solid var(--border);
+        border: 1px solid var(--card-border);
         border-radius: 16px;
         padding: 16px;
         margin-bottom: 16px;
+        height: 100%;
       }
       .benchmark-row {
         display: flex;
@@ -1321,7 +1322,9 @@
         .page { max-width: 960px; }
         .dashboard-grid {
           display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+          margin-bottom: 16px;
         }
+        .dashboard-grid > * { min-width: 0; margin-bottom: 0; overflow: hidden; }
         .dashboard-grid > .card { margin-bottom: 0; }
         #stockList {
           display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
