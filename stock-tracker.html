@@ -358,7 +358,7 @@
       .stock-item {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
         padding: 16px;
         background: var(--card);
         border-radius: var(--radius-sm);
@@ -387,6 +387,12 @@
         color: var(--accent);
         margin-right: 12px;
         flex-shrink: 0;
+        overflow: hidden;
+      }
+      .stock-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
       }
       .stock-item-inner {
         display: flex;
@@ -2725,6 +2731,10 @@ create policy "Users can manage own data"
             stock.dailyPct = quote.dp || 0;
             updated++;
           }
+          if (!stock.logo) {
+            const logoUrl = await fetchCompanyLogo(stock.ticker);
+            if (logoUrl) stock.logo = logoUrl;
+          }
           if (i < data.stocks.length - 1) {
             await new Promise((r) => setTimeout(r, 250));
           }
@@ -2967,6 +2977,17 @@ create policy "Users can manage own data"
         openModal("modalStock");
       }
 
+      async function fetchCompanyLogo(ticker) {
+        const key = getApiKey();
+        if (!key) return "";
+        try {
+          const resp = await fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${encodeURIComponent(ticker)}&token=${encodeURIComponent(key)}`);
+          if (!resp.ok) return "";
+          const json = await resp.json();
+          return json.logo || "";
+        } catch (e) { return ""; }
+      }
+
       async function saveStock(e) {
         e.preventDefault();
         const id = document.getElementById("stockEditId").value;
@@ -2977,13 +2998,18 @@ create policy "Users can manage own data"
 
         let currentPrice = 0;
         let dailyPct = 0;
+        let logo = "";
         if (getApiKey()) {
           showToast("Fetching price for " + ticker + "...");
-          const quote = await fetchFullQuote(ticker);
+          const [quote, logoUrl] = await Promise.all([
+            fetchFullQuote(ticker),
+            fetchCompanyLogo(ticker)
+          ]);
           if (quote !== null) {
             currentPrice = quote.c;
             dailyPct = quote.dp || 0;
           }
+          logo = logoUrl;
         }
 
         const costPerShare = parseMoney(document.getElementById("stockCostPerShare").value) || 0;
@@ -2998,6 +3024,7 @@ create policy "Users can manage own data"
           shares,
           currentPrice,
           dailyPct,
+          logo,
           sector: document.getElementById("stockSector").value,
         };
         if (id) {
@@ -3070,7 +3097,7 @@ create policy "Users can manage own data"
             const alloc = totalValue > 0 ? (value / totalValue) * 100 : 0;
             return `<div class="stock-item" onclick='openStockModal(${JSON.stringify(s).replace(/'/g, "&#39;")})'>
         <div class="stock-item-inner" style="flex:1">
-          <div class="stock-icon">${s.ticker.slice(0, 2)}</div>
+          <div class="stock-icon">${s.logo ? `<img src="${s.logo}" alt="${s.ticker}" onerror="this.parentElement.textContent='${s.ticker.slice(0, 2)}'">` : s.ticker.slice(0, 2)}</div>
           <div class="stock-info">
             <div class="stock-ticker">${s.ticker}</div>
             <div class="stock-name">${s.name || s.sector || ""}</div>
