@@ -1039,6 +1039,39 @@
         color: #fff;
         border-color: var(--accent);
       }
+      /* Benchmark Card */
+      .benchmark-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .benchmark-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+      }
+      .benchmark-row + .benchmark-row {
+        border-top: 1px solid var(--border);
+      }
+      .benchmark-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+      .benchmark-value {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .benchmark-result {
+        text-align: center;
+        padding: 10px 0 4px;
+        border-top: 1px solid var(--border);
+        font-size: 13px;
+        font-weight: 600;
+      }
       /* Market Index Card */
       .market-index-card {
         display: flex;
@@ -1303,6 +1336,8 @@
           <span class="chart-dot" onclick="scrollMarketTo(1)"></span>
         </div>
       </div>
+      <!-- Benchmark vs S&P 500 -->
+      <div id="benchmarkCard"></div>
       <div class="card">
         <div class="chart-swipe" id="chartSwipe">
           <div class="chart-swipe-page">
@@ -2679,6 +2714,7 @@ create policy "Users can manage own data"
         if (qqq) marketCache.QQQ = qqq;
         marketCache.fetchedAt = Date.now();
         renderMarketWidget();
+        renderBenchmark();
       }
 
       function renderMarketIndexPage(elId, label, data) {
@@ -2717,6 +2753,36 @@ create policy "Users can manage own data"
       function scrollMarketTo(page) {
         const el = document.getElementById("marketSwipe");
         if (el) el.scrollTo({ left: page * el.offsetWidth, behavior: "smooth" });
+      }
+
+      function renderBenchmark() {
+        const el = document.getElementById("benchmarkCard");
+        if (!el) return;
+        const totalCost = data.stocks.reduce((s, st) => s + (st.totalCost || 0), 0);
+        const totalValue = data.stocks.reduce((s, st) => s + (st.shares || 0) * (st.currentPrice || 0), 0);
+        const portfolioReturn = totalCost > 0 ? ((totalValue - totalCost) / totalCost * 100) : 0;
+        const spy = marketCache.SPY;
+        if (!spy || totalCost === 0) { el.innerHTML = ""; return; }
+        const spyDailyPct = spy.dp || 0;
+        const diff = portfolioReturn - spyDailyPct;
+        const beating = diff > 0;
+        const portColor = portfolioReturn >= 0 ? "#10B981" : "#EF4444";
+        const spyColor = spyDailyPct >= 0 ? "#10B981" : "#EF4444";
+        const diffColor = beating ? "#10B981" : "#EF4444";
+        el.innerHTML = `<div class="benchmark-card">
+          <div class="section-title">Benchmark vs S&P 500</div>
+          <div class="benchmark-row">
+            <div class="benchmark-label">Your Portfolio</div>
+            <div class="benchmark-value" style="color:${portColor}">${portfolioReturn >= 0 ? "+" : ""}${portfolioReturn.toFixed(2)}%</div>
+          </div>
+          <div class="benchmark-row">
+            <div class="benchmark-label">S&P 500 (Today)</div>
+            <div class="benchmark-value" style="color:${spyColor}">${spyDailyPct >= 0 ? "+" : ""}${spyDailyPct.toFixed(2)}%</div>
+          </div>
+          <div class="benchmark-result" style="color:${diffColor}">
+            ${beating ? "&#128640; Beating" : "&#128308; Trailing"} the market by ${Math.abs(diff).toFixed(2)}%
+          </div>
+        </div>`;
       }
 
       let priceRefreshTimer = null;
