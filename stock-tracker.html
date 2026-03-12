@@ -492,8 +492,8 @@
         color: var(--red);
       }
       .li-icon-dividend {
-        background: rgba(245, 158, 11, 0.1);
-        color: var(--yellow);
+        background: rgba(250, 204, 21, 0.12);
+        color: #facc15;
       }
       .list-item .li-info {
         flex: 1;
@@ -1502,6 +1502,7 @@
           margin-bottom: 0;
         }
         .fab {
+          bottom: 32px;
           right: max(20px, calc((100vw - 220px - 960px) / 2 + 20px));
         }
         .div-calendar {
@@ -3354,7 +3355,7 @@
         el.innerHTML = `<div class="benchmark-card">
           <div class="section-title">Benchmark vs S&P 500</div>
           <div class="benchmark-row">
-            <div class="benchmark-label">Your Portfolio (Today)</div>
+            <div class="benchmark-label">👤 My Portfolio (Today)</div>
             <div class="benchmark-value" style="color:${portColor}">${portfolioDailyPct >= 0 ? "+" : ""}${portfolioDailyPct.toFixed(2)}%</div>
           </div>
           <div class="benchmark-row">
