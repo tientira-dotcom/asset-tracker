@@ -494,6 +494,8 @@
       .li-icon-dividend {
         background: rgba(250, 204, 21, 0.12);
         color: #facc15;
+        font-size: 20px;
+        font-weight: 800;
       }
       .list-item .li-info {
         flex: 1;
@@ -1133,6 +1135,20 @@
       }
       .benchmark-index-row {
         padding: 7px 0;
+      }
+      .idx-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 16px;
+        border-radius: 3px;
+        font-size: 9px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 0.5px;
+        vertical-align: middle;
+        margin-right: 2px;
       }
       /* Swipeable Chart */
       .chart-swipe {
@@ -3271,10 +3287,10 @@
       }
 
       const GLOBAL_INDICES = [
-        { ticker: "THD",  label: "SET (Thailand)",  flag: "🇹🇭" },
-        { ticker: "EWJ",  label: "Nikkei (Japan)",  flag: "🇯🇵" },
-        { ticker: "MCHI", label: "CSI (China)",      flag: "🇨🇳" },
-        { ticker: "INDA", label: "Sensex (India)",   flag: "🇮🇳" },
+        { ticker: "THD",  label: "SET (Thailand)",  flag: "TH", color: "#ED1C24" },
+        { ticker: "EWJ",  label: "Nikkei (Japan)",  flag: "JP", color: "#BC002D" },
+        { ticker: "MCHI", label: "CSI (China)",      flag: "CN", color: "#DE2910" },
+        { ticker: "INDA", label: "Sensex (India)",   flag: "IN", color: "#FF9933" },
       ];
 
       async function fetchMarketIndices() {
@@ -3346,7 +3362,7 @@
             const pct = q.dp || 0;
             const color = pct >= 0 ? "#22c55e" : "#EF4444";
             indicesHtml += `<div class="benchmark-row benchmark-index-row">
-              <div class="benchmark-label">${idx.flag} ${idx.label}</div>
+              <div class="benchmark-label"><span class="idx-badge" style="background:${idx.color}">${idx.flag}</span> ${idx.label}</div>
               <div class="benchmark-value" style="color:${color}">${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%</div>
             </div>`;
           }
@@ -3355,11 +3371,11 @@
         el.innerHTML = `<div class="benchmark-card">
           <div class="section-title">Benchmark vs S&P 500</div>
           <div class="benchmark-row">
-            <div class="benchmark-label">👤 My Portfolio (Today)</div>
+            <div class="benchmark-label"><span class="idx-badge" style="background:var(--accent)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> My Portfolio (Today)</div>
             <div class="benchmark-value" style="color:${portColor}">${portfolioDailyPct >= 0 ? "+" : ""}${portfolioDailyPct.toFixed(2)}%</div>
           </div>
           <div class="benchmark-row">
-            <div class="benchmark-label">🇺🇸 S&P 500 (Today)</div>
+            <div class="benchmark-label"><span class="idx-badge" style="background:#3C3B6E">US</span> S&P 500 (Today)</div>
             <div class="benchmark-value" style="color:${spyColor}">${spyDailyPct >= 0 ? "+" : ""}${spyDailyPct.toFixed(2)}%</div>
           </div>
           <div class="benchmark-result" style="color:var(--text-tertiary);font-weight:500">
@@ -4216,7 +4232,7 @@
             }
             html += `<div class="list-item" onclick='openDivModal(${JSON.stringify(d).replace(/'/g, "&#39;")})'>
         <div class="li-left">
-          <div class="li-icon li-icon-dividend">&#128178;</div>
+          <div class="li-icon li-icon-dividend">$</div>
           <div class="li-info">
             <div class="li-title">${d.ticker}</div>
             <div class="li-sub">${d.date.split("-").reverse().join("/")}${d.note ? " &middot; " + d.note : ""}</div>
