@@ -16,29 +16,29 @@
     />
     <style>
       :root {
-        --bg: #f0f2f5;
-        --card: #ffffff;
-        --card-hover: #f8f9fb;
-        --text: #1a1a2e;
-        --text-secondary: #6b7280;
-        --text-tertiary: #9ca3af;
-        --border: #e5e7eb;
-        --accent: #4f46e5;
-        --accent-light: #818cf8;
-        --accent-bg: rgba(79, 70, 229, 0.08);
-        --green: #10b981;
-        --green-bg: rgba(16, 185, 129, 0.1);
+        --bg: #0a0f0a;
+        --bg-secondary: #111a11;
+        --card: rgba(255,255,255,0.04);
+        --card-hover: rgba(255,255,255,0.07);
+        --card-border: rgba(255,255,255,0.08);
+        --text: #f0f0f0;
+        --text-secondary: rgba(255,255,255,0.55);
+        --text-tertiary: rgba(255,255,255,0.35);
+        --border: rgba(255,255,255,0.08);
+        --accent: #84cc16;
+        --accent-light: #a3e635;
+        --accent-bg: rgba(132,204,22,0.12);
+        --green: #22c55e;
+        --green-bg: rgba(34,197,94,0.12);
         --red: #ef4444;
-        --red-bg: rgba(239, 68, 68, 0.1);
+        --red-bg: rgba(239,68,68,0.12);
         --yellow: #f59e0b;
         --radius: 16px;
         --radius-sm: 12px;
-        --shadow-sm:
-          0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-        --shadow: 0 4px 16px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
-        --shadow-lg:
-          0 8px 30px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
-        --nav-bg: #1e1b4b;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+        --shadow: 0 4px 16px rgba(0,0,0,0.3);
+        --shadow-lg: 0 8px 30px rgba(0,0,0,0.4);
+        --nav-bg: #0d1210;
       }
       * {
         margin: 0;
@@ -66,7 +66,7 @@
         position: sticky;
         top: 0;
         z-index: 50;
-        background: rgba(240, 242, 245, 0.85);
+        background: rgba(10, 15, 10, 0.85);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         padding: 14px 20px;
@@ -160,7 +160,7 @@
         padding: 8px 8px 10px;
         width: 100%;
         max-width: 500px;
-        box-shadow: 0 -4px 30px rgba(30, 27, 75, 0.15);
+        box-shadow: 0 -4px 30px rgba(10, 18, 16, 0.5);
       }
       .nav-item {
         display: flex;
@@ -214,15 +214,16 @@
       .hero-card {
         background: linear-gradient(
           135deg,
-          #4f46e5 0%,
-          #7c3aed 50%,
-          #a78bfa 100%
+          #1a3a1a 0%,
+          #15301a 50%,
+          #0d2010 100%
         );
+        border: 1px solid rgba(132,204,22,0.15);
         border-radius: 20px;
         padding: 24px;
         color: #fff;
         margin-bottom: 20px;
-        box-shadow: 0 8px 32px rgba(79, 70, 229, 0.25);
+        box-shadow: 0 8px 32px rgba(132,204,22,0.1);
         position: relative;
         overflow: hidden;
       }
@@ -295,10 +296,12 @@
       /* ─── Cards ─── */
       .card {
         background: var(--card);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--card-border);
         border-radius: var(--radius);
         padding: 20px;
         margin-bottom: 16px;
-        box-shadow: var(--shadow);
       }
 
       /* ─── Summary Mini Cards ─── */
@@ -310,9 +313,9 @@
       }
       .mini-card {
         background: var(--card);
+        border: 1px solid var(--card-border);
         border-radius: var(--radius-sm);
         padding: 16px;
-        box-shadow: var(--shadow-sm);
         cursor: pointer;
         transition: transform 0.15s;
       }
@@ -361,11 +364,11 @@
         align-items: center;
         padding: 16px;
         background: var(--card);
+        border: 1px solid var(--card-border);
         border-radius: var(--radius-sm);
         margin-bottom: 10px;
         cursor: pointer;
         transition: all 0.2s;
-        box-shadow: var(--shadow-sm);
       }
       .stock-item:active {
         transform: scale(0.985);
@@ -449,11 +452,11 @@
         align-items: center;
         padding: 14px 16px;
         background: var(--card);
+        border: 1px solid var(--card-border);
         border-radius: var(--radius-sm);
         margin-bottom: 10px;
         cursor: pointer;
         transition: all 0.2s;
-        box-shadow: var(--shadow-sm);
       }
       .list-item:active {
         transform: scale(0.985);
@@ -520,10 +523,10 @@
       }
       .fx-card {
         background: var(--card);
+        border: 1px solid var(--card-border);
         border-radius: var(--radius-sm);
         padding: 14px;
         text-align: center;
-        box-shadow: var(--shadow-sm);
       }
       .fx-card .fx-label {
         font-size: 10px;
@@ -553,7 +556,7 @@
         font-size: 28px;
         font-weight: 300;
         cursor: pointer;
-        box-shadow: 0 6px 24px rgba(79, 70, 229, 0.35);
+        box-shadow: 0 6px 24px rgba(132, 204, 22, 0.35);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -578,7 +581,8 @@
         display: flex;
       }
       .modal {
-        background: var(--card);
+        background: var(--bg-secondary);
+        border: 1px solid var(--card-border);
         border-radius: 24px 24px 0 0;
         width: 100%;
         max-width: 500px;
@@ -640,15 +644,15 @@
         padding-right: 40px;
         appearance: none;
         -webkit-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff55' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
         background-position: right 14px center;
       }
       .form-group input:focus,
       .form-group select:focus {
         border-color: var(--accent);
-        background: #fff;
-        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        background: var(--bg-secondary);
+        box-shadow: 0 0 0 4px rgba(132, 204, 22, 0.1);
       }
       .form-group input::placeholder {
         color: var(--text-tertiary);
@@ -676,7 +680,7 @@
       .btn-primary {
         background: linear-gradient(135deg, var(--accent), var(--accent-light));
         color: #fff;
-        box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+        box-shadow: 0 4px 16px rgba(132, 204, 22, 0.3);
       }
       .btn-danger {
         background: var(--red);
@@ -843,7 +847,8 @@
         display: flex;
       }
       .confirm-box {
-        background: var(--card);
+        background: var(--bg-secondary);
+        border: 1px solid var(--card-border);
         border-radius: 20px;
         padding: 28px 24px;
         max-width: 320px;
@@ -878,7 +883,7 @@
         transition: background 0.2s;
       }
       .api-banner:active {
-        background: rgba(79, 70, 229, 0.14);
+        background: rgba(132, 204, 22, 0.14);
       }
       .api-banner .ab-icon {
         font-size: 18px;
@@ -941,7 +946,7 @@
       .cloud-section { display: none; }
       .cloud-section.active { display: block; }
       .sql-box {
-        background: #1e1b4b;
+        background: rgba(0,0,0,0.3);
         color: #a5b4fc;
         border-radius: 12px;
         padding: 14px;
@@ -1119,7 +1124,8 @@
       }
       /* Dividend Calendar */
       .div-projected-card {
-        background: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
+        background: linear-gradient(135deg, #0a2a18 0%, #0d3520 50%, #052810 100%);
+        border: 1px solid rgba(34,197,94,0.15);
         color: #fff;
         border-radius: 16px;
         padding: 20px;
@@ -1145,12 +1151,13 @@
       }
       .div-cal-month .dcm-name { font-size: 11px; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; }
       .div-cal-month .dcm-amount { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-top: 4px; }
-      .div-cal-month.has-div { border-color: #10B981; background: rgba(16,185,129,0.06); }
-      .div-cal-month.has-div .dcm-amount { color: #059669; }
+      .div-cal-month.has-div { border-color: #22c55e; background: rgba(34,197,94,0.08); }
+      .div-cal-month.has-div .dcm-amount { color: #22c55e; }
       .div-cal-month.current { box-shadow: 0 0 0 2px var(--accent); }
       .news-item {
         display: block;
         background: var(--card);
+        border: 1px solid var(--card-border);
         border-radius: var(--radius-sm);
         padding: 12px 14px;
         margin-bottom: 8px;
@@ -1194,10 +1201,10 @@
 
       .settings-section {
         background: var(--card);
+        border: 1px solid var(--card-border);
         border-radius: var(--radius);
         padding: 20px;
         margin-bottom: 16px;
-        box-shadow: var(--shadow);
       }
       .settings-section-title {
         font-size: 14px;
@@ -1238,7 +1245,7 @@
       }
       .settings-item input:focus {
         border-color: var(--accent);
-        background: #fff;
+        background: var(--bg-secondary);
       }
       .settings-item .si-value {
         font-size: 13px;
@@ -1274,9 +1281,92 @@
       ::-webkit-scrollbar {
         width: 0;
       }
+
+      /* ─── Sidebar (hidden on mobile) ─── */
+      .sidebar { display: none; }
+      .sidebar-brand {
+        display: flex; align-items: center; gap: 10px;
+        padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px;
+      }
+      .sidebar-logo {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-light));
+        display: flex; align-items: center; justify-content: center;
+        color: #0a0f0a; font-weight: 800; font-size: 14px; flex-shrink: 0;
+      }
+      .sidebar-title { font-size: 17px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+      .sidebar-nav { display: flex; flex-direction: column; gap: 4px; padding: 0 12px; }
+      .sidebar-nav-item {
+        display: flex; align-items: center; gap: 12px;
+        padding: 11px 14px; border-radius: 12px; border: none; background: none;
+        color: rgba(255,255,255,0.4); font-size: 14px; font-weight: 500;
+        cursor: pointer; transition: all 0.2s; font-family: inherit; width: 100%; text-align: left;
+      }
+      .sidebar-nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); }
+      .sidebar-nav-item.active { background: rgba(132,204,22,0.12); color: #fff; }
+      .sidebar-nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+      /* ─── Desktop Layout ─── */
+      @media (min-width: 768px) {
+        .sidebar {
+          display: flex; flex-direction: column; position: fixed;
+          top: 0; left: 0; bottom: 0; width: 220px;
+          background: var(--nav-bg); border-right: 1px solid var(--border);
+          z-index: 60; padding: 24px 0; overflow-y: auto;
+        }
+        .main-content { margin-left: 220px; }
+        .bottom-nav { display: none !important; }
+        body { padding-bottom: 0; }
+        .top-header { max-width: 960px; }
+        .page { max-width: 960px; }
+        .dashboard-grid {
+          display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+        }
+        .dashboard-grid > .card { margin-bottom: 0; }
+        #stockList {
+          display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+        }
+        #stockList .stock-item { margin-bottom: 0; }
+        .fab {
+          right: max(20px, calc((100vw - 220px - 960px) / 2 + 20px));
+        }
+        .div-calendar { grid-template-columns: repeat(6, 1fr); }
+        .toast { left: calc(220px + (100vw - 220px) / 2); }
+      }
     </style>
   </head>
   <body>
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <span class="sidebar-logo">AT</span>
+        <span class="sidebar-title">Asset Tracker</span>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-nav-item active" data-page="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="sidebar-nav-item" data-page="stocks">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>Stocks</span>
+        </button>
+        <button class="sidebar-nav-item" data-page="flow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>Money</span>
+        </button>
+        <button class="sidebar-nav-item" data-page="dividends">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <span>Dividends</span>
+        </button>
+        <button class="sidebar-nav-item" data-page="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Settings</span>
+        </button>
+      </nav>
+    </aside>
+
+    <main class="main-content">
     <!-- Top Header -->
     <div class="top-header">
       <h1>Asset Tracker</h1>
@@ -1299,24 +1389,26 @@
     <div id="page-dashboard" class="page active">
       <div id="dashHero" onclick="navigateTo('stocks')" class="widget-tap"></div>
       <div class="mini-cards" id="dashMini"></div>
-      <!-- Benchmark vs S&P 500 -->
-      <div id="benchmarkCard"></div>
-      <div class="card">
-        <div class="chart-swipe" id="chartSwipe">
-          <div class="chart-swipe-page">
-            <div class="section-title">Allocation</div>
-            <div class="chart-container"><canvas id="pieChart"></canvas></div>
-            <div id="pieEmpty"></div>
+      <div class="dashboard-grid">
+        <!-- Benchmark vs S&P 500 -->
+        <div id="benchmarkCard"></div>
+        <div class="card">
+          <div class="chart-swipe" id="chartSwipe">
+            <div class="chart-swipe-page">
+              <div class="section-title">Allocation</div>
+              <div class="chart-container"><canvas id="pieChart"></canvas></div>
+              <div id="pieEmpty"></div>
+            </div>
+            <div class="chart-swipe-page">
+              <div class="section-title">P&L by Stock</div>
+              <div style="position:relative;width:100%;height:200px"><canvas id="pnlChart"></canvas></div>
+              <div id="pnlEmpty"></div>
+            </div>
           </div>
-          <div class="chart-swipe-page">
-            <div class="section-title">P&L by Stock</div>
-            <div style="position:relative;width:100%;height:200px"><canvas id="pnlChart"></canvas></div>
-            <div id="pnlEmpty"></div>
+          <div class="chart-dots" id="chartDots">
+            <span class="chart-dot active" onclick="scrollChartTo(0)"></span>
+            <span class="chart-dot" onclick="scrollChartTo(1)"></span>
           </div>
-        </div>
-        <div class="chart-dots" id="chartDots">
-          <span class="chart-dot active" onclick="scrollChartTo(0)"></span>
-          <span class="chart-dot" onclick="scrollChartTo(1)"></span>
         </div>
       </div>
 
@@ -1346,7 +1438,7 @@
       <div class="fx-row" id="fxRow"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
         <div class="section-title" style="margin-bottom:0">Transactions</div>
-        <select id="flowYearFilter" onchange="renderFlows()" style="padding:6px 32px 6px 12px;border-radius:10px;border:1px solid var(--border);background-color:var(--card);font-family:inherit;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 10px center"></select>
+        <select id="flowYearFilter" onchange="renderFlows()" style="padding:6px 32px 6px 12px;border-radius:10px;border:1px solid var(--border);background-color:var(--card);font-family:inherit;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ffffff55' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 10px center"></select>
       </div>
       <div id="flowList"></div>
     </div>
@@ -1357,14 +1449,14 @@
       <div id="divCalendarBanner"></div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div class="section-title" style="margin-bottom:0">Dividend Records</div>
-        <select id="divYearFilter" onchange="renderDividends()" style="padding:6px 32px 6px 12px;border-radius:10px;border:1px solid var(--border);background-color:var(--card);font-family:inherit;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 10px center"></select>
+        <select id="divYearFilter" onchange="renderDividends()" style="padding:6px 32px 6px 12px;border-radius:10px;border:1px solid var(--border);background-color:var(--card);font-family:inherit;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ffffff55' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E&quot;);background-repeat:no-repeat;background-position:right 10px center"></select>
       </div>
       <div id="divList"></div>
     </div>
 
     <!-- Settings Page -->
     <div id="page-settings" class="page">
-      <div class="hero-card" style="background:linear-gradient(135deg, #475569 0%, #64748b 50%, #94a3b8 100%); box-shadow: 0 8px 32px rgba(71,85,105,0.25);">
+      <div class="hero-card" style="background:linear-gradient(135deg, #1a2420 0%, #1e2e25 50%, #0d1a10 100%); border:1px solid rgba(255,255,255,0.08); box-shadow: none;">
         <div class="hero-label">Admin Settings</div>
         <div class="hero-value" style="font-size:24px">&#9881; Configuration</div>
       </div>
@@ -1424,6 +1516,8 @@
 
     <!-- FAB -->
     <button class="fab" id="fab" onclick="openAddModal()">+</button>
+
+    </main>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
@@ -2696,9 +2790,9 @@ create policy "Users can manage own data"
         const spyDailyPct = spy.dp || 0;
         const diff = portfolioDailyPct - spyDailyPct;
         const beating = diff > 0;
-        const portColor = portfolioDailyPct >= 0 ? "#10B981" : "#EF4444";
-        const spyColor = spyDailyPct >= 0 ? "#10B981" : "#EF4444";
-        const diffColor = beating ? "#10B981" : "#EF4444";
+        const portColor = portfolioDailyPct >= 0 ? "#22c55e" : "#EF4444";
+        const spyColor = spyDailyPct >= 0 ? "#22c55e" : "#EF4444";
+        const diffColor = beating ? "#22c55e" : "#EF4444";
         el.innerHTML = `<div class="benchmark-card">
           <div class="section-title">Benchmark vs S&P 500</div>
           <div class="benchmark-row">
@@ -2839,29 +2933,18 @@ create policy "Users can manage own data"
 
       // ─── Navigation ───
       let currentPage = "dashboard";
-      document.querySelectorAll(".nav-item").forEach((btn) => {
+      document.querySelectorAll(".nav-item, .sidebar-nav-item").forEach((btn) => {
         btn.addEventListener("click", () => {
-          currentPage = btn.dataset.page;
-          document
-            .querySelectorAll(".nav-item")
-            .forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-          document
-            .querySelectorAll(".page")
-            .forEach((p) => p.classList.remove("active"));
-          document
-            .getElementById("page-" + currentPage)
-            .classList.add("active");
-          // Hide FAB on settings page
-          document.getElementById("fab").style.display =
-            (currentPage === "settings") ? "none" : "flex";
-          renderAll();
+          navigateTo(btn.dataset.page);
         });
       });
 
       function navigateTo(page) {
         currentPage = page;
         document.querySelectorAll(".nav-item").forEach(b => {
+          b.classList.toggle("active", b.dataset.page === page);
+        });
+        document.querySelectorAll(".sidebar-nav-item").forEach(b => {
           b.classList.toggle("active", b.dataset.page === page);
         });
         document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
@@ -3230,7 +3313,7 @@ create policy "Users can manage own data"
         const netTHB = totalDepTHB - totalWdTHB;
 
         document.getElementById("flowHero").innerHTML = `
-    <div class="hero-card" style="background:linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%); box-shadow: 0 8px 32px rgba(5,150,105,0.25);">
+    <div class="hero-card" style="background:linear-gradient(135deg, #0a2a18 0%, #0d3520 50%, #052810 100%); border:1px solid rgba(34,197,94,0.15); box-shadow: 0 8px 32px rgba(34,197,94,0.1);">
       <div class="hero-label">Net Investment (THB)</div>
       <div class="hero-value">${fmtTHB(netTHB)}</div>
       <div class="hero-stats">
@@ -3375,7 +3458,7 @@ create policy "Users can manage own data"
         const dots = months.map((m, i) => {
           const has = monthTotals[i] > 0;
           const isCurrent = i === currentMonth;
-          return `<span style="width:8px;height:8px;border-radius:50%;background:${has ? "#10B981" : isCurrent ? "var(--accent)" : "var(--border)"};flex-shrink:0" title="${m}: ${has ? fmtUSD(monthTotals[i]) : '—'}"></span>`;
+          return `<span style="width:8px;height:8px;border-radius:50%;background:${has ? "#22c55e" : isCurrent ? "var(--accent)" : "var(--border)"};flex-shrink:0" title="${m}: ${has ? fmtUSD(monthTotals[i]) : '—'}"></span>`;
         }).join("");
         const yearOpts = calYears.map(y => `<option value="${y}" ${String(year)===y?"selected":""}>${y}</option>`).join("");
         el.innerHTML = `<div class="card" style="padding:14px 16px;margin-bottom:16px">
@@ -3427,7 +3510,7 @@ create policy "Users can manage own data"
         const monthlyAvg = filtered.length > 0 ? totalNet / monthCount : 0;
 
         document.getElementById("divHero").innerHTML = `
-    <div class="hero-card" style="background:linear-gradient(135deg, #D97706 0%, #F59E0B 50%, #FBBF24 100%); box-shadow: 0 8px 32px rgba(217,119,6,0.25);">
+    <div class="hero-card" style="background:linear-gradient(135deg, #2a1f05 0%, #3a2a08 50%, #1a1505 100%); border:1px solid rgba(245,158,11,0.15); box-shadow: 0 8px 32px rgba(245,158,11,0.1);">
       <div class="hero-label">Total Dividends${selectedYear !== "all" ? " &middot; " + selectedYear : ""}</div>
       <div class="hero-value">${fmtUSD(totalNet)}</div>
       <div class="hero-stats">
@@ -3481,18 +3564,18 @@ create policy "Users can manage own data"
       let pieChart = null,
         pnlChart = null;
       const COLORS = [
-        "#4F46E5",
-        "#10B981",
-        "#F59E0B",
-        "#EF4444",
-        "#8B5CF6",
+        "#84CC16",
+        "#22c55e",
         "#06B6D4",
+        "#F59E0B",
+        "#8B5CF6",
         "#EC4899",
         "#14B8A6",
         "#F97316",
         "#6366F1",
-        "#84CC16",
+        "#EF4444",
         "#A855F7",
+        "#3B82F6",
       ];
 
       function renderDashboard() {
@@ -3570,7 +3653,7 @@ create policy "Users can manage own data"
                   (_, i) => COLORS[i % COLORS.length],
                 ),
                 borderWidth: 3,
-                borderColor: "#fff",
+                borderColor: "rgba(255,255,255,0.1)",
               },
             ],
           },
@@ -3582,7 +3665,7 @@ create policy "Users can manage own data"
               legend: {
                 position: "bottom",
                 labels: {
-                  color: "#6b7280",
+                  color: "rgba(255,255,255,0.55)",
                   padding: 14,
                   font: { size: 12, family: "Inter", weight: "500" },
                   usePointStyle: true,
@@ -3631,7 +3714,7 @@ create policy "Users can manage own data"
               {
                 data: values,
                 backgroundColor: values.map((v) =>
-                  v >= 0 ? "#10B981" : "#EF4444",
+                  v >= 0 ? "#22c55e" : "#EF4444",
                 ),
                 borderRadius: 8,
                 barThickness: "flex",
@@ -3651,18 +3734,18 @@ create policy "Users can manage own data"
             scales: {
               x: {
                 ticks: {
-                  color: "#9ca3af",
+                  color: "rgba(255,255,255,0.35)",
                   font: { size: 11, family: "Inter", weight: "600" },
                 },
                 grid: { display: false },
               },
               y: {
                 ticks: {
-                  color: "#9ca3af",
+                  color: "rgba(255,255,255,0.35)",
                   font: { size: 10 },
                   callback: (v) => "$" + v.toFixed(0),
                 },
-                grid: { color: "#f0f0f0" },
+                grid: { color: "rgba(255,255,255,0.06)" },
               },
             },
           },
