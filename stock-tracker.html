@@ -1039,6 +1039,44 @@
         color: #fff;
         border-color: var(--accent);
       }
+      /* Market Index Card */
+      .market-index-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 0;
+      }
+      .market-index-left .mi-label {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .market-index-left .mi-price {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text);
+        margin-top: 2px;
+      }
+      .market-index-right {
+        text-align: right;
+      }
+      .market-index-right .mi-change {
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .market-index-right .mi-change-dollar {
+        font-size: 12px;
+        color: var(--text-tertiary);
+        margin-top: 2px;
+      }
+      .mi-loading {
+        text-align: center;
+        padding: 24px;
+        color: var(--text-tertiary);
+        font-size: 13px;
+      }
       /* Swipeable Chart */
       .chart-swipe {
         display: flex;
@@ -1253,6 +1291,18 @@
     <div id="page-dashboard" class="page active">
       <div id="dashHero" onclick="navigateTo('stocks')" class="widget-tap"></div>
       <div class="mini-cards" id="dashMini"></div>
+      <!-- Market Overview Widget -->
+      <div class="card">
+        <div class="section-title">Market Overview</div>
+        <div class="chart-swipe" id="marketSwipe">
+          <div class="chart-swipe-page" id="marketSPY"><div class="mi-loading">Loading...</div></div>
+          <div class="chart-swipe-page" id="marketQQQ"><div class="mi-loading">Loading...</div></div>
+        </div>
+        <div class="chart-dots" id="marketDots">
+          <span class="chart-dot active" onclick="scrollMarketTo(0)"></span>
+          <span class="chart-dot" onclick="scrollMarketTo(1)"></span>
+        </div>
+      </div>
       <div class="card">
         <div class="chart-swipe" id="chartSwipe">
           <div class="chart-swipe-page">
@@ -2601,6 +2651,74 @@ create policy "Users can manage own data"
       }
 
 
+      // ─── Market Indices ───
+      let marketCache = { SPY: null, QQQ: null, fetchedAt: 0 };
+      const MARKET_CACHE_TTL = 10 * 60 * 1000;
+
+      async function fetchFullQuote(ticker) {
+        const key = getApiKey();
+        if (!key) return null;
+        try {
+          const resp = await fetch(
+            `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(ticker)}&token=${encodeURIComponent(key)}`
+          );
+          if (!resp.ok) return null;
+          const json = await resp.json();
+          if (json.c && json.c > 0) return { c: json.c, pc: json.pc, d: json.d, dp: json.dp };
+          return null;
+        } catch (e) {
+          console.warn("Quote fetch error for", ticker, e);
+          return null;
+        }
+      }
+
+      async function fetchMarketIndices() {
+        if (Date.now() - marketCache.fetchedAt < MARKET_CACHE_TTL && marketCache.SPY) return;
+        const [spy, qqq] = await Promise.all([fetchFullQuote("SPY"), fetchFullQuote("QQQ")]);
+        if (spy) marketCache.SPY = spy;
+        if (qqq) marketCache.QQQ = qqq;
+        marketCache.fetchedAt = Date.now();
+        renderMarketWidget();
+      }
+
+      function renderMarketIndexPage(elId, label, data) {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        if (!data) { el.innerHTML = '<div class="mi-loading">No data</div>'; return; }
+        const isUp = data.dp >= 0;
+        const color = isUp ? "#10B981" : "#EF4444";
+        const arrow = isUp ? "&#9650;" : "&#9660;";
+        el.innerHTML = `<div class="market-index-card">
+          <div class="market-index-left">
+            <div class="mi-label">${label}</div>
+            <div class="mi-price">$${data.c.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+          </div>
+          <div class="market-index-right">
+            <div class="mi-change" style="color:${color}">${arrow} ${isUp?"+":""}${data.dp.toFixed(2)}%</div>
+            <div class="mi-change-dollar">${isUp?"+":""}$${data.d.toFixed(2)}</div>
+          </div>
+        </div>`;
+      }
+
+      function renderMarketWidget() {
+        renderMarketIndexPage("marketSPY", "S&P 500 (SPY)", marketCache.SPY);
+        renderMarketIndexPage("marketQQQ", "Nasdaq 100 (QQQ)", marketCache.QQQ);
+      }
+
+      function initMarketSwipe() {
+        const el = document.getElementById("marketSwipe");
+        if (!el) return;
+        el.addEventListener("scroll", () => {
+          const page = Math.round(el.scrollLeft / el.offsetWidth);
+          const dots = document.querySelectorAll("#marketDots .chart-dot");
+          dots.forEach((d, i) => d.classList.toggle("active", i === page));
+        });
+      }
+      function scrollMarketTo(page) {
+        const el = document.getElementById("marketSwipe");
+        if (el) el.scrollTo({ left: page * el.offsetWidth, behavior: "smooth" });
+      }
+
       let priceRefreshTimer = null;
       const PRICE_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
@@ -3353,6 +3471,7 @@ create policy "Users can manage own data"
         renderPieChart();
         renderPnlChart();
         renderNewsWidget();
+        fetchMarketIndices();
       }
 
       function renderPieChart() {
@@ -3495,7 +3614,7 @@ create policy "Users can manage own data"
         const el = document.getElementById("chartSwipe");
         if (el) el.scrollTo({ left: page * el.offsetWidth, behavior: "smooth" });
       }
-      document.addEventListener("DOMContentLoaded", initChartSwipe);
+      document.addEventListener("DOMContentLoaded", () => { initChartSwipe(); initMarketSwipe(); });
 
       // ─── SETTINGS ───
       function renderSettings() {
