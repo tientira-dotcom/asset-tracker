@@ -7,6 +7,7 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no"
     />
     <title>Asset Tracker</title>
+    <link rel="icon" type="image/png" href="logo-asset-tracker.png" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -44,6 +45,13 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+      }
+      select {
+        color-scheme: dark;
+      }
+      select option {
+        background: #1a2a1a;
+        color: var(--text);
       }
       body {
         font-family:
@@ -1423,15 +1431,9 @@
       .sidebar-logo {
         width: 36px;
         height: 36px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, var(--accent), var(--accent-light));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #0a0f0a;
-        font-weight: 800;
-        font-size: 14px;
+        border-radius: 12px;
         flex-shrink: 0;
+        object-fit: cover;
       }
       .sidebar-title {
         font-size: 17px;
@@ -1530,8 +1532,8 @@
           margin-bottom: 0;
         }
         .fab {
-          bottom: 32px;
-          right: max(20px, calc((100vw - 220px - 960px) / 2 + 20px));
+          bottom: 24px;
+          right: max(32px, calc((100vw - 220px - 960px) / 2 + 20px));
         }
         .div-calendar {
           grid-template-columns: repeat(6, 1fr);
@@ -1546,7 +1548,7 @@
     <!-- Desktop Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
-        <span class="sidebar-logo">AT</span>
+        <img class="sidebar-logo" src="logo-asset-tracker.png" alt="AT" />
         <span class="sidebar-title">Asset Tracker</span>
       </div>
       <nav class="sidebar-nav">
@@ -4304,14 +4306,14 @@
     </div>`;
 
         document.getElementById("dashMini").innerHTML = `
-    <div class="mini-card" onclick="navigateTo('dividends')">
-      <div class="mc-icon" style="background:rgba(250,204,21,0.12);color:#facc15;font-size:20px;font-weight:800">$</div>
+    <div class="mini-card" onclick="navigateTo('dividends')" style="background:linear-gradient(135deg, #2a2204 0%, #332a06 50%, #1e1803 100%); border:1px solid rgba(250,204,21,0.12);">
+      <div class="mc-icon" style="background:rgba(250,204,21,0.15);color:#facc15;font-size:20px;font-weight:800">$</div>
       <div class="mc-label">Dividends <span class="widget-chevron">&#8250;</span></div>
       <div class="mc-value positive">${fmtUSD(totalDivNet)}</div>
       <div class="mc-sub">${data.dividends.length} payments</div>
     </div>
-    <div class="mini-card" onclick="navigateTo('flow')">
-      <div class="mc-icon" style="background:rgba(34,197,94,0.12)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
+    <div class="mini-card" onclick="navigateTo('flow')" style="background:linear-gradient(135deg, #0b2a18 0%, #0f3320 50%, #081f12 100%); border:1px solid rgba(34,197,94,0.12);">
+      <div class="mc-icon" style="background:rgba(34,197,94,0.15)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></div>
       <div class="mc-label">Avg FX Rate <span class="widget-chevron">&#8250;</span></div>
       <div class="mc-value">${avgRate > 0 ? fmt(avgRate, 2) : "-"}</div>
       <div class="mc-sub">Invested ${fmtTHB(totalDepTHB)}</div>
