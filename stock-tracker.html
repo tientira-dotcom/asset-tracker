@@ -673,12 +673,6 @@
       .form-group input::placeholder {
         color: var(--text-tertiary);
       }
-      .form-group input[type="date"] {
-        padding: 10px 12px;
-        font-size: 14px;
-        min-height: 44px;
-        max-height: 48px;
-      }
       .form-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -3567,6 +3561,13 @@
         document.getElementById(id).classList.remove("show");
         document.body.style.overflow = "";
       }
+
+      // Close modal when clicking outside (on overlay)
+      document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) closeModal(overlay.id);
+        });
+      });
       function openAddModal() {
         if (currentPage === "stocks" || currentPage === "dashboard")
           openStockModal();
