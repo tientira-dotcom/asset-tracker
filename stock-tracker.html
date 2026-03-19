@@ -673,6 +673,23 @@
       .form-group input::placeholder {
         color: var(--text-tertiary);
       }
+      /* Date picker icon & native controls — make visible on dark bg */
+      .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1) brightness(0.8);
+        cursor: pointer;
+      }
+      .form-group input[type="date"]::-webkit-datetime-edit {
+        color: var(--text);
+      }
+      /* Fix oversized native date input on mobile */
+      @media (max-width: 767px) {
+        .form-group input[type="date"] {
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          min-height: 0;
+        }
+      }
       .form-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
