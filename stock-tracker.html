@@ -1999,13 +1999,17 @@
           <h3 id="quickFormTitle" style="font-size:15px;margin-bottom:12px"></h3>
           <div class="form-row">
             <div class="form-group">
-              <label id="quickSharesLabel">Shares</label>
-              <input type="text" inputmode="decimal" id="quickShares" placeholder="0" required>
+              <label id="quickField1Label">Cost per Share (USD)</label>
+              <input type="text" inputmode="decimal" data-money id="quickCostPerShare" placeholder="0.00" required>
             </div>
-            <div class="form-group" id="quickPriceGroup">
-              <label>Price per Share</label>
-              <input type="text" inputmode="decimal" data-money id="quickPrice" placeholder="0.00">
+            <div class="form-group" id="quickField2Group">
+              <label id="quickField2Label">Total Cost (USD)</label>
+              <input type="text" inputmode="decimal" data-money id="quickTotalCost" placeholder="0.00">
             </div>
+          </div>
+          <div class="form-group" id="quickSellSharesGroup" style="display:none">
+            <label>Shares to Sell</label>
+            <input type="text" inputmode="decimal" id="quickSellShares" placeholder="0">
           </div>
           <div id="quickPreview" style="background:var(--bg);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px;font-size:13px;color:var(--text-secondary)"></div>
           <button type="button" class="btn btn-primary" id="quickSubmitBtn" onclick="executeQuickAction()">Confirm</button>
@@ -3846,13 +3850,15 @@
         const form = document.getElementById("stockQuickForm");
         form.style.display = "block";
         document.getElementById("quickFormTitle").textContent = "Buy More " + detailStock.ticker;
-        document.getElementById("quickSharesLabel").textContent = "Shares to Buy";
-        document.getElementById("quickPriceGroup").style.display = "block";
+        document.getElementById("quickField1Label").textContent = "Cost per Share (USD)";
+        document.getElementById("quickField2Label").textContent = "Total Cost (USD)";
+        document.getElementById("quickField2Group").style.display = "block";
+        document.getElementById("quickSellSharesGroup").style.display = "none";
         document.getElementById("quickSubmitBtn").textContent = "Confirm Buy";
         document.getElementById("quickSubmitBtn").style.background = "var(--green)";
         document.getElementById("quickSubmitBtn").style.borderColor = "var(--green)";
-        document.getElementById("quickShares").value = "";
-        document.getElementById("quickPrice").value = "";
+        document.getElementById("quickCostPerShare").value = "";
+        document.getElementById("quickTotalCost").value = "";
         document.getElementById("quickPreview").innerHTML = "";
         setupQuickPreview();
       }
@@ -3862,78 +3868,85 @@
         const form = document.getElementById("stockQuickForm");
         form.style.display = "block";
         document.getElementById("quickFormTitle").textContent = "Sell " + detailStock.ticker;
-        document.getElementById("quickSharesLabel").textContent = "Shares to Sell";
-        document.getElementById("quickPriceGroup").style.display = "none";
+        document.getElementById("quickField1Label").textContent = "Cost per Share (USD)";
+        document.getElementById("quickField2Group").style.display = "none";
+        document.getElementById("quickSellSharesGroup").style.display = "block";
         document.getElementById("quickSubmitBtn").textContent = "Confirm Sell";
         document.getElementById("quickSubmitBtn").style.background = "#ef4444";
         document.getElementById("quickSubmitBtn").style.borderColor = "#ef4444";
-        document.getElementById("quickShares").value = "";
+        document.getElementById("quickCostPerShare").value = "";
+        document.getElementById("quickSellShares").value = "";
         document.getElementById("quickPreview").innerHTML = "";
         setupQuickPreview();
       }
 
       function setupQuickPreview() {
-        const sharesInput = document.getElementById("quickShares");
-        const priceInput = document.getElementById("quickPrice");
+        const cpsInput = document.getElementById("quickCostPerShare");
+        const tcInput = document.getElementById("quickTotalCost");
+        const sellInput = document.getElementById("quickSellShares");
         const update = () => {
-          const newShares = parseFloat(sharesInput.value) || 0;
           const s = detailStock;
           const preview = document.getElementById("quickPreview");
           if (quickAction === "buy") {
-            const newPrice = parseMoney(priceInput.value) || 0;
-            if (newShares <= 0) { preview.innerHTML = ""; return; }
-            const addCost = newShares * newPrice;
-            const totalShares = (s.shares || 0) + newShares;
-            const totalCost = (s.totalCost || 0) + addCost;
+            const addCPS = parseMoney(cpsInput.value) || 0;
+            const addTC = parseMoney(tcInput.value) || 0;
+            if (addCPS <= 0 || addTC <= 0) { preview.innerHTML = ""; return; }
+            const addShares = addTC / addCPS;
+            const totalShares = (s.shares || 0) + addShares;
+            const totalCost = (s.totalCost || 0) + addTC;
             const avgCost = totalShares > 0 ? totalCost / totalShares : 0;
             preview.innerHTML = `
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Shares Added</span><strong>${fmt(addShares, 4)}</strong></div>
               <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>New Total Shares</span><strong>${fmt(totalShares, 4)}</strong></div>
               <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>New Total Cost</span><strong>${fmtUSD(totalCost)}</strong></div>
               <div style="display:flex;justify-content:space-between"><span>New Avg Cost</span><strong>${fmtUSD(avgCost)}</strong></div>`;
           } else {
-            if (newShares <= 0) { preview.innerHTML = ""; return; }
+            const sellShares = parseFloat(sellInput.value) || 0;
+            if (sellShares <= 0) { preview.innerHTML = ""; return; }
             const maxShares = s.shares || 0;
-            const sellShares = Math.min(newShares, maxShares);
-            const remainShares = maxShares - sellShares;
+            const actualSell = Math.min(sellShares, maxShares);
+            const remainShares = maxShares - actualSell;
             const avgCost = s.costPerShare || 0;
             const remainCost = remainShares * avgCost;
             preview.innerHTML = `
-              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Shares to Sell</span><strong>${fmt(sellShares, 4)} / ${fmt(maxShares, 4)}</strong></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Shares to Sell</span><strong>${fmt(actualSell, 4)} / ${fmt(maxShares, 4)}</strong></div>
               <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Remaining Shares</span><strong>${fmt(remainShares, 4)}</strong></div>
               <div style="display:flex;justify-content:space-between"><span>Remaining Cost</span><strong>${fmtUSD(remainCost)}</strong></div>
-              ${sellShares >= maxShares ? '<div style="color:#ef4444;margin-top:8px;font-weight:600">This will close your entire position</div>' : ''}`;
+              ${actualSell >= maxShares ? '<div style="color:#ef4444;margin-top:8px;font-weight:600">This will close your entire position</div>' : ''}`;
           }
         };
-        sharesInput.oninput = update;
-        priceInput.oninput = update;
+        cpsInput.oninput = update;
+        tcInput.oninput = update;
+        sellInput.oninput = update;
       }
 
       function executeQuickAction() {
-        const newShares = parseFloat(document.getElementById("quickShares").value) || 0;
-        if (newShares <= 0) { showToast("Enter number of shares"); return; }
         const s = detailStock;
         const idx = data.stocks.findIndex(st => st.id === s.id);
         if (idx === -1) return;
 
         if (quickAction === "buy") {
-          const newPrice = parseMoney(document.getElementById("quickPrice").value) || 0;
-          if (newPrice <= 0) { showToast("Enter price per share"); return; }
-          const addCost = newShares * newPrice;
-          data.stocks[idx].shares = (s.shares || 0) + newShares;
-          data.stocks[idx].totalCost = (s.totalCost || 0) + addCost;
+          const addCPS = parseMoney(document.getElementById("quickCostPerShare").value) || 0;
+          const addTC = parseMoney(document.getElementById("quickTotalCost").value) || 0;
+          if (addCPS <= 0 || addTC <= 0) { showToast("Enter cost per share and total cost"); return; }
+          const addShares = addTC / addCPS;
+          data.stocks[idx].shares = (s.shares || 0) + addShares;
+          data.stocks[idx].totalCost = (s.totalCost || 0) + addTC;
           data.stocks[idx].costPerShare = data.stocks[idx].totalCost / data.stocks[idx].shares;
-          showToast(`Bought ${newShares} more ${s.ticker}`);
+          showToast(`Bought more ${s.ticker}`);
         } else {
+          const sellShares = parseFloat(document.getElementById("quickSellShares").value) || 0;
+          if (sellShares <= 0) { showToast("Enter shares to sell"); return; }
           const maxShares = s.shares || 0;
-          const sellShares = Math.min(newShares, maxShares);
-          const remainShares = maxShares - sellShares;
+          const actualSell = Math.min(sellShares, maxShares);
+          const remainShares = maxShares - actualSell;
           if (remainShares <= 0) {
             data.stocks.splice(idx, 1);
             showToast(`Closed ${s.ticker} position`);
           } else {
             data.stocks[idx].shares = remainShares;
             data.stocks[idx].totalCost = remainShares * (s.costPerShare || 0);
-            showToast(`Sold ${sellShares} ${s.ticker}`);
+            showToast(`Sold ${fmt(actualSell, 4)} ${s.ticker}`);
           }
         }
         save();
