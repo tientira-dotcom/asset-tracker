@@ -1986,6 +1986,37 @@
       </div>
     </nav>
 
+    <!-- Stock Detail Modal -->
+    <div class="modal-overlay" id="modalStockDetail">
+      <div class="modal">
+        <div class="modal-handle"></div>
+        <div id="stockDetailContent"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
+          <button type="button" class="btn btn-primary" style="background:var(--green);border-color:var(--green)" onclick="openBuyMore()">Buy More</button>
+          <button type="button" class="btn btn-primary" style="background:#ef4444;border-color:#ef4444" onclick="openSellShares()">Sell</button>
+        </div>
+        <div id="stockQuickForm" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+          <h3 id="quickFormTitle" style="font-size:15px;margin-bottom:12px"></h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label id="quickSharesLabel">Shares</label>
+              <input type="text" inputmode="decimal" id="quickShares" placeholder="0" required>
+            </div>
+            <div class="form-group" id="quickPriceGroup">
+              <label>Price per Share</label>
+              <input type="text" inputmode="decimal" data-money id="quickPrice" placeholder="0.00">
+            </div>
+          </div>
+          <div id="quickPreview" style="background:var(--bg);border-radius:var(--radius-sm);padding:12px;margin-bottom:12px;font-size:13px;color:var(--text-secondary)"></div>
+          <button type="button" class="btn btn-primary" id="quickSubmitBtn" onclick="executeQuickAction()">Confirm</button>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px">
+          <button type="button" class="btn btn-ghost" style="flex:1" onclick="openEditFromDetail()">Edit Details</button>
+          <button type="button" class="btn btn-ghost" style="flex:1" onclick="closeModal('modalStockDetail')">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Stock Modal -->
     <div class="modal-overlay" id="modalStock">
       <div class="modal">
@@ -3763,6 +3794,158 @@
         });
       }
 
+      // ─── Stock Detail + Buy More / Sell ───
+      let detailStock = null;
+      let quickAction = null; // "buy" or "sell"
+
+      function openStockDetail(stock) {
+        detailStock = stock;
+        quickAction = null;
+        document.getElementById("stockQuickForm").style.display = "none";
+        const s = stock;
+        const value = (s.shares || 0) * (s.currentPrice || 0);
+        const cost = s.totalCost || 0;
+        const pnl = value - cost;
+        const pnlPct = cost > 0 ? (pnl / cost) * 100 : 0;
+        const pColor = pnl >= 0 ? "var(--green)" : "#ef4444";
+        document.getElementById("stockDetailContent").innerHTML = `
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+            <div class="stock-icon" style="width:44px;height:44px;font-size:14px;border-radius:12px">${s.logo ? `<img src="${s.logo}" alt="${s.ticker}" style="width:100%;height:100%;border-radius:12px;object-fit:cover" onerror="this.parentElement.textContent='${s.ticker.slice(0, 2)}'">` : s.ticker.slice(0, 2)}</div>
+            <div>
+              <div style="font-weight:700;font-size:18px">${s.ticker}</div>
+              <div style="font-size:13px;color:var(--text-secondary)">${s.name || ""}</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px">
+              <div style="font-size:11px;color:var(--text-tertiary)">Shares</div>
+              <div style="font-weight:700;font-size:15px">${fmt(s.shares || 0, 4)}</div>
+            </div>
+            <div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px">
+              <div style="font-size:11px;color:var(--text-tertiary)">Avg Cost</div>
+              <div style="font-weight:700;font-size:15px">${fmtUSD(s.costPerShare || 0)}</div>
+            </div>
+            <div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px">
+              <div style="font-size:11px;color:var(--text-tertiary)">Total Cost</div>
+              <div style="font-weight:700;font-size:15px">${fmtUSD(cost)}</div>
+            </div>
+            <div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px">
+              <div style="font-size:11px;color:var(--text-tertiary)">Market Value</div>
+              <div style="font-weight:700;font-size:15px">${fmtUSD(value)}</div>
+            </div>
+            <div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px;grid-column:span 2">
+              <div style="font-size:11px;color:var(--text-tertiary)">P&L</div>
+              <div style="font-weight:700;font-size:15px;color:${pColor}">${fmtPct(pnlPct)} (${pnl >= 0 ? "+" : ""}${fmtUSD(pnl)})</div>
+            </div>
+          </div>`;
+        openModal("modalStockDetail");
+      }
+
+      function openBuyMore() {
+        quickAction = "buy";
+        const form = document.getElementById("stockQuickForm");
+        form.style.display = "block";
+        document.getElementById("quickFormTitle").textContent = "Buy More " + detailStock.ticker;
+        document.getElementById("quickSharesLabel").textContent = "Shares to Buy";
+        document.getElementById("quickPriceGroup").style.display = "block";
+        document.getElementById("quickSubmitBtn").textContent = "Confirm Buy";
+        document.getElementById("quickSubmitBtn").style.background = "var(--green)";
+        document.getElementById("quickSubmitBtn").style.borderColor = "var(--green)";
+        document.getElementById("quickShares").value = "";
+        document.getElementById("quickPrice").value = "";
+        document.getElementById("quickPreview").innerHTML = "";
+        setupQuickPreview();
+      }
+
+      function openSellShares() {
+        quickAction = "sell";
+        const form = document.getElementById("stockQuickForm");
+        form.style.display = "block";
+        document.getElementById("quickFormTitle").textContent = "Sell " + detailStock.ticker;
+        document.getElementById("quickSharesLabel").textContent = "Shares to Sell";
+        document.getElementById("quickPriceGroup").style.display = "none";
+        document.getElementById("quickSubmitBtn").textContent = "Confirm Sell";
+        document.getElementById("quickSubmitBtn").style.background = "#ef4444";
+        document.getElementById("quickSubmitBtn").style.borderColor = "#ef4444";
+        document.getElementById("quickShares").value = "";
+        document.getElementById("quickPreview").innerHTML = "";
+        setupQuickPreview();
+      }
+
+      function setupQuickPreview() {
+        const sharesInput = document.getElementById("quickShares");
+        const priceInput = document.getElementById("quickPrice");
+        const update = () => {
+          const newShares = parseFloat(sharesInput.value) || 0;
+          const s = detailStock;
+          const preview = document.getElementById("quickPreview");
+          if (quickAction === "buy") {
+            const newPrice = parseMoney(priceInput.value) || 0;
+            if (newShares <= 0) { preview.innerHTML = ""; return; }
+            const addCost = newShares * newPrice;
+            const totalShares = (s.shares || 0) + newShares;
+            const totalCost = (s.totalCost || 0) + addCost;
+            const avgCost = totalShares > 0 ? totalCost / totalShares : 0;
+            preview.innerHTML = `
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>New Total Shares</span><strong>${fmt(totalShares, 4)}</strong></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>New Total Cost</span><strong>${fmtUSD(totalCost)}</strong></div>
+              <div style="display:flex;justify-content:space-between"><span>New Avg Cost</span><strong>${fmtUSD(avgCost)}</strong></div>`;
+          } else {
+            if (newShares <= 0) { preview.innerHTML = ""; return; }
+            const maxShares = s.shares || 0;
+            const sellShares = Math.min(newShares, maxShares);
+            const remainShares = maxShares - sellShares;
+            const avgCost = s.costPerShare || 0;
+            const remainCost = remainShares * avgCost;
+            preview.innerHTML = `
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Shares to Sell</span><strong>${fmt(sellShares, 4)} / ${fmt(maxShares, 4)}</strong></div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Remaining Shares</span><strong>${fmt(remainShares, 4)}</strong></div>
+              <div style="display:flex;justify-content:space-between"><span>Remaining Cost</span><strong>${fmtUSD(remainCost)}</strong></div>
+              ${sellShares >= maxShares ? '<div style="color:#ef4444;margin-top:8px;font-weight:600">This will close your entire position</div>' : ''}`;
+          }
+        };
+        sharesInput.oninput = update;
+        priceInput.oninput = update;
+      }
+
+      function executeQuickAction() {
+        const newShares = parseFloat(document.getElementById("quickShares").value) || 0;
+        if (newShares <= 0) { showToast("Enter number of shares"); return; }
+        const s = detailStock;
+        const idx = data.stocks.findIndex(st => st.id === s.id);
+        if (idx === -1) return;
+
+        if (quickAction === "buy") {
+          const newPrice = parseMoney(document.getElementById("quickPrice").value) || 0;
+          if (newPrice <= 0) { showToast("Enter price per share"); return; }
+          const addCost = newShares * newPrice;
+          data.stocks[idx].shares = (s.shares || 0) + newShares;
+          data.stocks[idx].totalCost = (s.totalCost || 0) + addCost;
+          data.stocks[idx].costPerShare = data.stocks[idx].totalCost / data.stocks[idx].shares;
+          showToast(`Bought ${newShares} more ${s.ticker}`);
+        } else {
+          const maxShares = s.shares || 0;
+          const sellShares = Math.min(newShares, maxShares);
+          const remainShares = maxShares - sellShares;
+          if (remainShares <= 0) {
+            data.stocks.splice(idx, 1);
+            showToast(`Closed ${s.ticker} position`);
+          } else {
+            data.stocks[idx].shares = remainShares;
+            data.stocks[idx].totalCost = remainShares * (s.costPerShare || 0);
+            showToast(`Sold ${sellShares} ${s.ticker}`);
+          }
+        }
+        save();
+        closeModal("modalStockDetail");
+        renderAll();
+      }
+
+      function openEditFromDetail() {
+        closeModal("modalStockDetail");
+        setTimeout(() => openStockModal(detailStock), 200);
+      }
+
       function renderStocks() {
         renderApiBanner();
         renderLastUpdated();
@@ -3811,7 +3994,7 @@
             const pnl = value - cost;
             const pnlPct = cost > 0 ? (pnl / cost) * 100 : 0;
             const alloc = totalValue > 0 ? (value / totalValue) * 100 : 0;
-            return `<div class="stock-item" onclick='openStockModal(${JSON.stringify(s).replace(/'/g, "&#39;")})'>
+            return `<div class="stock-item" onclick='openStockDetail(${JSON.stringify(s).replace(/'/g, "&#39;")})'>
         <div class="stock-item-inner" style="flex:1">
           <div class="stock-icon">${s.logo ? `<img src="${s.logo}" alt="${s.ticker}" onerror="this.parentElement.textContent='${s.ticker.slice(0, 2)}'">` : s.ticker.slice(0, 2)}</div>
           <div class="stock-info">
